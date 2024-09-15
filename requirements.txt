@@ -1,0 +1,10 @@
+pandas
+jugaad-data
+progressbar2
+lxml
+beautifulsoup4
+tqdm
+requests
+urllib3
+bs4
+boxsdk
