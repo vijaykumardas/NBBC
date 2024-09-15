@@ -530,7 +530,7 @@ def GetBSEindexDataBhavCopy():
 Session = requests.Session()
 global nselive
 nselive = NSELive()
-historicalDays=input("For How many days of Data to Fetch (Default 1): ")
+historicalDays=1
 if(historicalDays == ''):
     historicalDays = 1
 EndDate=datetime.today()
