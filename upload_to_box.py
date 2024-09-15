@@ -14,7 +14,8 @@ auth = JWTAuth(
 client = Client(auth)
 
 # Specify the folder ID on Box where you want to upload the file
-folder_id = '0'  # Use '0' for the root folder or specify your folder's ID
+#284903365364 = /Stocks and Investments/NSEBSEBhavCopy
+folder_id = '284903365364'  # Use '0' for the root folder or specify your folder's ID
 
 # File to upload
 file_path = 'output.csv'  # Adjust based on your generated CSV file name
