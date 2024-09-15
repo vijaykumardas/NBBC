@@ -450,7 +450,7 @@ def DownloadNSEIndexBhavCopy(tday):
             logging.info("Error : "+NseIndexSnapShopUrl)
     except requests.exceptions.RequestException:
         # If a timeout or other exception occurs, print a timeout message
-        logging.exception(f'Timeout occurred Probable holiday {single_date.date()}.')
+        logging.exception(f'Timeout occurred Probable holiday {tday}.')
         
 def GetBSEindexDataBhavCopy():
     # Define the CURL command headers and URL
@@ -530,7 +530,7 @@ def GetBSEindexDataBhavCopy():
 Session = requests.Session()
 global nselive
 nselive = NSELive()
-historicalDays=1
+historicalDays=1#input("For How many days of Data to Fetch (Default 1): ")
 if(historicalDays == ''):
     historicalDays = 1
 EndDate=datetime.today()
