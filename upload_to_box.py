@@ -1,5 +1,14 @@
 import os
 from boxsdk import JWTAuth, Client
+from datetime import datetime
+import pytz
+
+# Define the IST timezone
+ist = pytz.timezone('Asia/Kolkata')
+
+# Get the current date in IST
+date_str = datetime.now(ist).strftime('%Y-%m-%d')
+file_name = f'{date_str}-NSE-BSE-IS-ALL-EQ.CSV'
 
 # Authenticate with Box using JWT
 auth = JWTAuth(
@@ -14,13 +23,15 @@ auth = JWTAuth(
 client = Client(auth)
 
 # Specify the folder ID on Box where you want to upload the file
-#284903365364 = /Stocks and Investments/NSEBSEBhavCopy
 folder_id = '284903365364'  # Use '0' for the root folder or specify your folder's ID
 
 # File to upload
-file_path = 'output.csv'  # Adjust based on your generated CSV file name
+file_path = file_name  # Use the dynamically generated file name
 
-with open(file_path, 'rb') as file:
-    uploaded_file = client.folder(folder_id).upload_stream(file, file_name='output.csv')
-
-print(f'File "{uploaded_file.name}" uploaded to Box with ID {uploaded_file.id}')
+# Check if the file exists
+if os.path.exists(file_path):
+    with open(file_path, 'rb') as file:
+        uploaded_file = client.folder(folder_id).upload_stream(file, file_name=file_name)
+    print(f'File "{uploaded_file.name}" uploaded to Box with ID {uploaded_file.id}')
+else:
+    print(f'Error: The file "{file_path}" does not exist.')
