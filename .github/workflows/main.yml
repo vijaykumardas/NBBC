@@ -62,26 +62,27 @@ jobs:
         echo "MOST_RECENT_FILE=${{ env.MOST_RECENT_FILE }}"
 
     - name: Download most recent file from Dropbox and save with same name
-  run: |
-    # Extract filename from path
-    $filename = "${{ env.MOST_RECENT_FILE }}" -replace '.*/', ''
+      run: |
+        # Extract filename from path
+        $filename = "${{ env.MOST_RECENT_FILE }}" -replace '.*/', ''
+    
+        # Print filename for debugging
+        Write-Output "Filename: $filename"
+    
+        # Create the directory if it does not exist
+        if (-not (Test-Path ".")) {
+          New-Item -Path "." -ItemType Directory
+        }
+    
+        # URL encode the file path
+        $encoded_path = [System.Web.HttpUtility]::UrlEncode("${{ env.MOST_RECENT_FILE }}")
+    
+        # Download the file
+        curl -X POST https://api.dropboxapi.com/2/files/download `
+        --header "Authorization: Bearer ${{ secrets.DROPBOX_ACCESS_TOKEN }}" `
+        --header "Dropbox-API-Arg: {\"path\": \"$encoded_path\"}" `
+        --output "./$filename"
 
-    # Print filename for debugging
-    Write-Output "Filename: $filename"
-
-    # Create the directory if it does not exist
-    if (-not (Test-Path ".")) {
-      New-Item -Path "." -ItemType Directory
-    }
-
-    # URL encode the file path
-    $encoded_path = [System.Web.HttpUtility]::UrlEncode("${{ env.MOST_RECENT_FILE }}")
-
-    # Download the file
-    curl -X POST https://api.dropboxapi.com/2/files/download `
-    --header "Authorization: Bearer ${{ secrets.DROPBOX_ACCESS_TOKEN }}" `
-    --header "Dropbox-API-Arg: {\"path\": \"$encoded_path\"}" `
-    --output "./$filename"
         
     # Step 6: Run the first Python script (NSEBSEBhavCopyDownload_V3.py)
     #- name: Run NSEBSEBhavCopyDownload_V3.py
