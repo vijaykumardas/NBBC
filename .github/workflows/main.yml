@@ -5,9 +5,9 @@ on:
     # Cron syntax: minute hour day(month) month day(week)
     # This example will run every day at 00:00 (midnight) UTC
     - cron: '30 14 * * 1-5'  # Runs every day at 2:30 PM UTC, which is 8:00 PM IST
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
 
 jobs:
   run-script-and-upload:
