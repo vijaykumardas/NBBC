@@ -30,7 +30,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         
-    # Step 4: Determine the  Latest ValueStocks CSV File from DropBox.
     - name: List files and get the most recent file
       id: list_files
       run: |
@@ -40,24 +39,42 @@ jobs:
         --header "Content-Type: application/json" `
         --data '{"path": "/NSEBSEBhavCopy/ValueStocks"}'
 
+        # Print the raw response for debugging
+        Write-Output "Response: $response"
+
         # Extract client_modified and path_display fields
         $files = $response | ConvertFrom-Json | ForEach-Object { $_.entries | ForEach-Object { [PSCustomObject]@{ Date = $_.client_modified; Path = $_.path_display } } }
+
+        # Print extracted files for debugging
+        Write-Output "Files: $($files | ConvertTo-Json -Depth 5)"
 
         # Sort by date and get the most recent file
         $most_recent_file = $files | Sort-Object Date -Descending | Select-Object -First 1
 
-        # Output the most recent file path to the environment
+        # Print the most recent file path for debugging
         Write-Output "Most recent file path: $($most_recent_file.Path)"
+
+        # Output the most recent file path to the environment
         echo "MOST_RECENT_FILE=$($most_recent_file.Path)" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-    # Step 5: Download the  Latest ValueStocks CSV File from DropBox.
+    - name: Debug environment variables
+      run: |
+        echo "MOST_RECENT_FILE=${{ env.MOST_RECENT_FILE }}"
+
     - name: Download most recent file from Dropbox and save with same name
       run: |
+        # Extract filename from path
         $filename = "${{ env.MOST_RECENT_FILE }}" -replace '.*/', ''
-        Write-Output "Downloading file: $filename"
-        if (-not (Test-Path ".\")) {
-          New-Item -Path ".\" -ItemType Directory
+        
+        # Print filename for debugging
+        Write-Output "Filename: $filename"
+
+        # Create the directory if it does not exist
+        if (-not (Test-Path ".")) {
+          New-Item -Path "." -ItemType Directory
         }
+        
+        # Download the file
         curl -X POST https://api.dropboxapi.com/2/files/download `
         --header "Authorization: Bearer ${{ secrets.DROPBOX_ACCESS_TOKEN }}" `
         --header "Dropbox-API-Arg: '{\"path\": \"${{ env.MOST_RECENT_FILE }}\"}'" `
