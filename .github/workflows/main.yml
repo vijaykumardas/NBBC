@@ -30,7 +30,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-        
     - name: List files and get the most recent file
       id: list_files
       run: |
