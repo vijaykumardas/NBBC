@@ -524,7 +524,19 @@ def GetBSEindexDataBhavCopy():
 
     except requests.exceptions.RequestException as e:
         logging.exception("Error Generating BSE BhavCopy")
-        
+# Dropbox access token (replace with your actual token)
+DROPBOX_ACCESS_TOKEN = 'sl.B8-Etfrh5db67j0qETTuSo8IHORhTRENqPA8LYq09i5yb6MNTNgIK2J8l5t85L-jgguBxZyOQxkZzEJYKFA_mjOF0rZEqt95LkOu4dYVQ84-YgIsWZ4PyUzyiz4paLiFMZX5uOzCKJYM'
+
+def upload_to_dropbox(file_path, dropbox_path):
+    """Uploads the file at file_path to Dropbox at dropbox_path."""
+    dbx = dropbox.Dropbox(DROPBOX_ACCESS_TOKEN)
+    
+    with open(file_path, 'rb') as f:
+        dbx.files_upload(f.read(), dropbox_path)
+    
+    print(f"File {file_path} successfully uploaded to Dropbox at {dropbox_path}")
+    logging.debug(f"File {file_path} successfully uploaded to Dropbox at {dropbox_path}")
+    
 #dateformat MM/DD/YYYY
 #enter start and end date as per your requirement
 Session = requests.Session()
@@ -582,3 +594,6 @@ for tday in dt:
     merged_df.to_csv(filename, header = True,index = False,date_format='%Y%m%d')
     print(datetime.strftime(tday,'%d-%b-%Y').upper() + ":   ==>  "+filename + "   [Done]")
     dataframestoWrite=[]
+    # Uploading the generated CSV to Dropbox
+    dropbox_path = f"/NSEBSEBhavcopy/DailyBhavCopy/"  # Adjust the Dropbox folder path as needed
+    upload_to_dropbox(filename, dropbox_path)
