@@ -29,20 +29,35 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        
+    # Step 4: Determine the  Latest ValueStocks CSV File from DropBox.
+    - name: List files and get the most recent file
+      id: list_files
+      run: |
+        # List files in the specified folder (/NSEBSEBhavCopy/ValueStocks)
+        $response = curl -X POST https://api.dropboxapi.com/2/files/list_folder `
+        --header "Authorization: Bearer ${{ secrets.DROPBOX_ACCESS_TOKEN }}" `
+        --header "Content-Type: application/json" `
+        --data '{"path": "/NSEBSEBhavCopy/ValueStocks"}' | jq -r '.entries[] | "$_.client_modified $_.path_display"'
 
-    # Step 4: Run the first Python script (NSEBSEBhavCopyDownload_V3.py)
+        # Find the most recent file
+        $most_recent_file = $response | Sort-Object -Descending | Select-Object -First 1 | ForEach-Object { $_.Split()[1] }
+
+        # Output the most recent file path
+        echo "MOST_RECENT_FILE=$most_recent_file" | Out-File -FilePath $env:GITHUB_ENV -Append
+    # Step 5: Download the  Latest ValueStocks CSV File from DropBox.
+    - name: Download most recent file from Dropbox and save with same name
+      run: |
+        $filename = "${{ env.MOST_RECENT_FILE }}" -replace '.*/', ''
+        curl -X POST https://api.dropboxapi.com/2/files/download `
+        --header "Authorization: Bearer ${{ secrets.DROPBOX_ACCESS_TOKEN }}" `
+        --header "Dropbox-API-Arg: '{\"path\": \"${{ env.MOST_RECENT_FILE }}\"}'" `
+        --output "./$filename"
+        
+    # Step 6: Run the first Python script (NSEBSEBhavCopyDownload_V3.py)
     - name: Run NSEBSEBhavCopyDownload_V3.py
       run: |
         python NSEBSEBhavCopyDownload_V3.py
 
-    # Step 5: Upload the generated CSV file to Box.com
-    - name: Upload CSV to Box
-      run: |
-        python upload_to_box.py
       env:
-        BOX_CLIENT_ID: ${{ secrets.BOX_CLIENT_ID }}
-        BOX_CLIENT_SECRET: ${{ secrets.BOX_CLIENT_SECRET }}
-        BOX_ENTERPRISE_ID: ${{ secrets.BOX_ENTERPRISE_ID }}
-        BOX_JWT_PRIVATE_KEY: ${{ secrets.BOX_JWT_PRIVATE_KEY }}
-        BOX_PUBLIC_KEY_ID: ${{ secrets.BOX_PUBLIC_KEY_ID }}
-        BOX_PASSPHRASE: ${{ secrets.BOX_PASSPHRASE }}
+        DROPBOX_ACCESS_TOKEN: ${{ secrets.DROPBOX_ACCESS_TOKEN }} 
