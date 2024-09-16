@@ -595,5 +595,5 @@ for tday in dt:
     print(datetime.strftime(tday,'%d-%b-%Y').upper() + ":   ==>  "+filename + "   [Done]")
     dataframestoWrite=[]
     # Uploading the generated CSV to Dropbox
-    dropbox_path = f"/NSEBSEBhavcopy/DailyBhavCopy/"  # Adjust the Dropbox folder path as needed
+    dropbox_path = f"/NSEBSEBhavcopy/DailyBhavCopy/{filename}"  # Adjust the Dropbox folder path as needed
     upload_to_dropbox(filename, dropbox_path)
