@@ -5,9 +5,9 @@ on:
     # Cron syntax: minute hour day(month) month day(week)
     # This example will run every day at 00:00 (midnight) UTC
     - cron: '30 14 * * 1-5'  # Runs every day at 2:30 PM UTC, which is 8:00 PM IST
-  #push:
-  #  branches:
-  #    - main
+  push:
+    branches:
+      - main
 
 jobs:
   run-script-and-upload:
@@ -55,9 +55,9 @@ jobs:
         --output "./$filename"
         
     # Step 6: Run the first Python script (NSEBSEBhavCopyDownload_V3.py)
-    - name: Run NSEBSEBhavCopyDownload_V3.py
-      run: |
-        python NSEBSEBhavCopyDownload_V3.py
+    #- name: Run NSEBSEBhavCopyDownload_V3.py
+    #  run: |
+    #    python NSEBSEBhavCopyDownload_V3.py
 
       env:
         DROPBOX_ACCESS_TOKEN: ${{ secrets.DROPBOX_ACCESS_TOKEN }} 
