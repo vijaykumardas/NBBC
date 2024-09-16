@@ -33,14 +33,24 @@ logging.basicConfig(filename="NSEBSEBhavCopyDownload.Log",level=logging.DEBUG,fo
 pd.options.mode.chained_assignment = None  # default='warn'
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
 
-# Your Dropbox access token
-ACCESS_TOKEN = 'sl.B9Cw0uLNUhc4XzluiselE75zkiSyau3_l1t1V1_R_Ur_gL0yJuh7LBcBFjgzwjgABj8RClSvbW4HMmAnS12JdP8asblw4IJm_tKvHEkIvFvDVm3w6STMCyAKogPL3f2a0uigVjjvu_Gfy-vSNPm1'
 
 # Folder path on Dropbox
 DROPBOX_FOLDER_PATH = '/NSEBSEBhavCopy/ValueStocks'
+# Dropbox access token (replace with your actual token)
+DROPBOX_ACCESS_TOKEN = 'sl.B9Cw0uLNUhc4XzluiselE75zkiSyau3_l1t1V1_R_Ur_gL0yJuh7LBcBFjgzwjgABj8RClSvbW4HMmAnS12JdP8asblw4IJm_tKvHEkIvFvDVm3w6STMCyAKogPL3f2a0uigVjjvu_Gfy-vSNPm1'
 
 # Initialize Dropbox client
-dbx = dropbox.Dropbox(ACCESS_TOKEN)
+dbx = dropbox.Dropbox(DROPBOX_ACCESS_TOKEN)
+
+def upload_to_dropbox(file_path, dropbox_path):
+    """Uploads the file at file_path to Dropbox at dropbox_path."""
+    dbx = dropbox.Dropbox(DROPBOX_ACCESS_TOKEN)
+    
+    with open(file_path, 'rb') as f:
+        dbx.files_upload(f.read(), dropbox_path)
+    
+    print(f"File {file_path} successfully uploaded to Dropbox at {dropbox_path}")
+    logging.debug(f"File {file_path} successfully uploaded to Dropbox at {dropbox_path}")
 
 def GetMostRecentValueStocksDataFile():
     try:
@@ -572,18 +582,6 @@ def GetBSEindexDataBhavCopy():
 
     except requests.exceptions.RequestException as e:
         logging.exception("Error Generating BSE BhavCopy")
-# Dropbox access token (replace with your actual token)
-DROPBOX_ACCESS_TOKEN = 'sl.B8-Etfrh5db67j0qETTuSo8IHORhTRENqPA8LYq09i5yb6MNTNgIK2J8l5t85L-jgguBxZyOQxkZzEJYKFA_mjOF0rZEqt95LkOu4dYVQ84-YgIsWZ4PyUzyiz4paLiFMZX5uOzCKJYM'
-
-def upload_to_dropbox(file_path, dropbox_path):
-    """Uploads the file at file_path to Dropbox at dropbox_path."""
-    dbx = dropbox.Dropbox(DROPBOX_ACCESS_TOKEN)
-    
-    with open(file_path, 'rb') as f:
-        dbx.files_upload(f.read(), dropbox_path)
-    
-    print(f"File {file_path} successfully uploaded to Dropbox at {dropbox_path}")
-    logging.debug(f"File {file_path} successfully uploaded to Dropbox at {dropbox_path}")
 
 # Download the Most Recent ValueStocks DataFile.
 # Get the most recent file
@@ -592,6 +590,7 @@ most_recent_file = GetMostRecentValueStocksDataFile()
 if most_recent_file:
     # Download the most recent file
     DownloadValueStocksDataFile(most_recent_file)
+'''
 #dateformat MM/DD/YYYY
 #enter start and end date as per your requirement
 Session = requests.Session()
@@ -652,3 +651,4 @@ for tday in dt:
     # Uploading the generated CSV to Dropbox
     dropbox_path = f"/NSEBSEBhavcopy/DailyBhavCopy/{filename}"  # Adjust the Dropbox folder path as needed
     upload_to_dropbox(filename, dropbox_path)
+'''
