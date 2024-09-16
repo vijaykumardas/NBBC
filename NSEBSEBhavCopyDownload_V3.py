@@ -52,8 +52,8 @@ def isUrlValid(url):
 def GetValueStockInputFile():
     #StockDDataPath="C:\\VijayDas\\SamsungT5\\Finance\\BhavCopyArchive\\StockD\\"
     #InputFilesList=dir_list = glob.glob(StockDDataPath+'ALL_*.txt')
-    ValueStocksDataPath="C:\\VijayDas\\SamsungT5\\Finance\\Scripts\\ValueStocks\\"
-    ValueStocksDataFiles=glob.glob(ValueStocksDataPath+'*3.DLEVEL_ADVANCED_INFO.CSV')
+    #ValueStocksDataPath="C:\\VijayDas\\SamsungT5\\Finance\\Scripts\\ValueStocks\\"
+    ValueStocksDataFiles=glob.glob('*3.DLEVEL_ADVANCED_INFO.CSV')
     ValueStocksDataFiles.sort(reverse=True)
     ValueStocksDataFile=ValueStocksDataFiles[0]
     logging.debug("Returned ValueStock Input File : " + ValueStocksDataFile)
