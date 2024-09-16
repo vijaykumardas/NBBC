@@ -38,13 +38,17 @@ jobs:
         $response = curl -X POST https://api.dropboxapi.com/2/files/list_folder `
         --header "Authorization: Bearer ${{ secrets.DROPBOX_ACCESS_TOKEN }}" `
         --header "Content-Type: application/json" `
-        --data '{"path": "/NSEBSEBhavCopy/ValueStocks"}' | jq -r '.entries[] | "$_.client_modified $_.path_display"'
+        --data '{"path": "/NSEBSEBhavCopy/ValueStocks"}'
 
-        # Find the most recent file
-        $most_recent_file = $response | Sort-Object -Descending | Select-Object -First 1 | ForEach-Object { $_.Split()[1] }
+        # Extract client_modified and path_display fields
+        $files = $response | ConvertFrom-Json | ForEach-Object { $_.entries | ForEach-Object { [PSCustomObject]@{ Date = $_.client_modified; Path = $_.path_display } } }
 
-        # Output the most recent file path
-        echo "MOST_RECENT_FILE=$most_recent_file" | Out-File -FilePath $env:GITHUB_ENV -Append
+        # Sort by date and get the most recent file
+        $most_recent_file = $files | Sort-Object Date -Descending | Select-Object -First 1
+
+        # Output the most recent file path to the environment
+        echo "MOST_RECENT_FILE=$($most_recent_file.Path)" | Out-File -FilePath $env:GITHUB_ENV -Append
+
     # Step 5: Download the  Latest ValueStocks CSV File from DropBox.
     - name: Download most recent file from Dropbox and save with same name
       run: |
