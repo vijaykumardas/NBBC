@@ -74,17 +74,15 @@ jobs:
           New-Item -Path "." -ItemType Directory
         }
     
-        # Encode the file path
-        $encoded_path = [System.Uri]::EscapeDataString("${{ env.MOST_RECENT_FILE }}")
-    
-        # Print encoded path for debugging
-        Write-Output "Encoded path: $encoded_path"
+        # Print the file path for debugging
+        Write-Output "File path: ${{ env.MOST_RECENT_FILE }}"
     
         # Download the file
         curl -X POST https://api.dropboxapi.com/2/files/download `
         --header "Authorization: Bearer ${{ secrets.DROPBOX_ACCESS_TOKEN }}" `
-        --header "Dropbox-API-Arg: {\"path\": \"$encoded_path\"}" `
+        --header "Dropbox-API-Arg: {\"path\": \"${{ env.MOST_RECENT_FILE }}\"}" `
         --output "./$filename"
+
 
 
         
