@@ -3,6 +3,41 @@ from datetime import datetime
 import os
 import logging
 import sys
+import dropbox
+
+# Dropbox access token (replace with your actual token)
+DROPBOX_ACCESS_TOKEN = os.getenv('DROPBOX_ACCESS_TOKEN')
+
+# Initialize Dropbox client
+dbx = dropbox.Dropbox(DROPBOX_ACCESS_TOKEN)
+
+def upload_to_dropbox(file_path, dropbox_path):
+    """Uploads the file at file_path to Dropbox at dropbox_path."""
+    dbx = dropbox.Dropbox(DROPBOX_ACCESS_TOKEN)
+    
+    with open(file_path, 'rb') as f:
+        dbx.files_upload(f.read(), dropbox_path)
+    
+    print(f"File {file_path} successfully uploaded to Dropbox at {dropbox_path}")
+    logging.debug(f"File {file_path} successfully uploaded to Dropbox at {dropbox_path}")
+def download_from_dropbox(dropbox_path, file_path):
+    """Downloads a file from Dropbox at dropbox_path to the local file_path."""
+    try:
+        # Download the file
+        metadata, response = dbx.files_download(dropbox_path)
+        
+        # Write the file content to the local file_path
+        with open(file_path, 'wb') as f:
+            f.write(response.content)
+        
+        print(f"File successfully downloaded from Dropbox at {dropbox_path} to {file_path}")
+        logging.debug(f"File successfully downloaded from Dropbox at {dropbox_path} to {file_path}")
+    except dropbox.exceptions.ApiError as e:
+        print(f"API error occurred: {e}")
+        logging.error(f"API error occurred: {e}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        logging.error(f"An error occurred: {e}")
 
 
 
@@ -215,6 +250,8 @@ ohlc_summary_file = ''  # To be set dynamically based on the date
 required_columns = ['Ticker', 'Quantity', 'Portfolio Name', 'Buy Date', 'Buy Price', 'Sell Date', 'Sell Price', 'Current Price', 'Current Value']
 
 def main():
+    # Download the portfolio.csv from Drop Box.
+    download_from_dropbox("NSEBSEBhavcopy/Portfolio/portfolio.csv", "portfolio.csv")
     # Load portfolio from CSV
     portfolio = pd.read_csv(portfolio_file)
 
@@ -227,6 +264,9 @@ def main():
     # Save the updated portfolio to CSV
     save_portfolio(updated_portfolio, portfolio_file)
 
+    # upload the portfolio file to DropBox.
+    upload_to_dropbox(portfolio_file, "NSEBSEBhavcopy/Portfolio/portfolio.csv")
+    
     # Update portfolio with OHLC data
     portfolio_with_ohlc = update_portfolio_with_ohlc(updated_portfolio)
     #print(portfolio_with_ohlc)
