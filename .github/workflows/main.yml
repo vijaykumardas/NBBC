@@ -16,11 +16,11 @@ jobs:
     steps:
     # Step 1: Checkout the repository code
     - name: Checkout the code
-      uses: vijaykumardas/checkout@v3
+      uses: vijaykumardas/checkout@v4
 
     # Step 2: Set up Python environment
     - name: Set up Python
-      uses: vijaykumardas/setup-python@v4
+      uses: vijaykumardas/setup-python@v5
       with:
         python-version: '3.x'  # Specify your Python version
 
