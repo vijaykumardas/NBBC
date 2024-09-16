@@ -7,5 +7,5 @@ tqdm
 requests
 urllib3
 bs4
-boxsdk
 pytz
+dropbox
