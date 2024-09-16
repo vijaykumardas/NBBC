@@ -62,19 +62,27 @@ jobs:
         echo "MOST_RECENT_FILE=${{ env.MOST_RECENT_FILE }}"
 
     - name: Download most recent file from Dropbox and save with same name
-      shell: bash
       run: |
         # Extract filename from path
-        filename="${{ env.MOST_RECENT_FILE##*/}}"
+        $filename = "${{ env.MOST_RECENT_FILE }}" -replace '.*/', ''
     
         # Print filename for debugging
-        echo "Filename: $filename"
+        Write-Output "Filename: $filename"
     
-        # Download the file
-        curl -X POST https://api.dropboxapi.com/2/files/download \
-        --header "Authorization: Bearer ${{ secrets.DROPBOX_ACCESS_TOKEN }}" \
-        --header "Dropbox-API-Arg: {\"path\": \"${{ env.MOST_RECENT_FILE }}\"}" \
+        # Create the directory if it does not exist
+        if (-not (Test-Path ".")) {
+          New-Item -Path "." -ItemType Directory
+        }
+    
+        # Print the file path for debugging
+        Write-Output "File path: ${{ env.MOST_RECENT_FILE }}"
+    
+        # Download the file with verbose output for debugging
+        curl -X POST https://api.dropboxapi.com/2/files/download `
+        --header "Authorization: Bearer ${{ secrets.DROPBOX_ACCESS_TOKEN }}" `
+        --header "Dropbox-API-Arg: {\"path\": \"${{ env.MOST_RECENT_FILE }}\"}" `
         --output "./$filename"
+
 
 
 
