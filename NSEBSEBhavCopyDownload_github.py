@@ -37,7 +37,7 @@ headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/
 # Folder path on Dropbox
 DROPBOX_FOLDER_PATH = '/NSEBSEBhavCopy/ValueStocks'
 # Dropbox access token (replace with your actual token)
-DROPBOX_ACCESS_TOKEN = 'sl.B9Cw0uLNUhc4XzluiselE75zkiSyau3_l1t1V1_R_Ur_gL0yJuh7LBcBFjgzwjgABj8RClSvbW4HMmAnS12JdP8asblw4IJm_tKvHEkIvFvDVm3w6STMCyAKogPL3f2a0uigVjjvu_Gfy-vSNPm1'
+DROPBOX_ACCESS_TOKEN = os.getenv('DROPBOX_ACCESS_TOKEN')
 
 # Initialize Dropbox client
 dbx = dropbox.Dropbox(DROPBOX_ACCESS_TOKEN)
