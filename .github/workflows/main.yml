@@ -88,10 +88,10 @@ jobs:
 
 
         
-    # Step 6: Run the first Python script (NSEBSEBhavCopyDownload_V3.py)
-    #- name: Run NSEBSEBhavCopyDownload_V3.py
-    #  run: |
-    #    python NSEBSEBhavCopyDownload_V3.py
+    #Step 6: Run the first Python script (NSEBSEBhavCopyDownload_V3.py)
+    - name: Run NSEBSEBhavCopyDownload_V3.py
+      run: |
+         python NSEBSEBhavCopyDownload_V3.py
 
-      env:
-        DROPBOX_ACCESS_TOKEN: ${{ secrets.DROPBOX_ACCESS_TOKEN }} 
+    env:
+      DROPBOX_ACCESS_TOKEN: ${{ secrets.DROPBOX_ACCESS_TOKEN }} 
