@@ -26,11 +26,59 @@ import zipfile
 import logging
 import tempfile
 import PortfolioUpdate
+import dropbox
 
 logging.basicConfig(filename="NSEBSEBhavCopyDownload.Log",level=logging.DEBUG,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',datefmt='%d-%b-%y %H:%M:%S')
 
 pd.options.mode.chained_assignment = None  # default='warn'
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
+
+# Your Dropbox access token
+ACCESS_TOKEN = 'sl.B9Cw0uLNUhc4XzluiselE75zkiSyau3_l1t1V1_R_Ur_gL0yJuh7LBcBFjgzwjgABj8RClSvbW4HMmAnS12JdP8asblw4IJm_tKvHEkIvFvDVm3w6STMCyAKogPL3f2a0uigVjjvu_Gfy-vSNPm1'
+
+# Folder path on Dropbox
+DROPBOX_FOLDER_PATH = '/NSEBSEBhavCopy/ValueStocks'
+
+# Initialize Dropbox client
+dbx = dropbox.Dropbox(ACCESS_TOKEN)
+
+def GetMostRecentValueStocksDataFile():
+    try:
+        # List files in the specified folder
+        result = dbx.files_list_folder(DROPBOX_FOLDER_PATH)
+
+        # Get the most recent file by modified time
+        most_recent_file = None
+        for entry in result.entries:
+            if isinstance(entry, dropbox.files.FileMetadata):
+                if most_recent_file is None or entry.server_modified > most_recent_file.server_modified:
+                    most_recent_file = entry
+
+        if most_recent_file:
+            print(f"Most recent file: {most_recent_file.name}")
+            return most_recent_file
+        else:
+            print("No files found in the folder.")
+            return None
+
+    except Exception as e:
+        print(f"Error getting files from Dropbox: {e}")
+        return None
+
+def DownloadValueStocksDataFile(file_metadata):
+    try:
+        # File download path
+        local_path = os.path.join(os.getcwd(), file_metadata.name)
+
+        # Download the file
+        with open(local_path, "wb") as f:
+            metadata, res = dbx.files_download(path=file_metadata.path_lower)
+            f.write(res.content)
+
+        print(f"File downloaded successfully: {local_path}")
+
+    except Exception as e:
+        print(f"Error downloading file: {e}")
 
 def isUrlValid(url):
     try:
@@ -536,7 +584,14 @@ def upload_to_dropbox(file_path, dropbox_path):
     
     print(f"File {file_path} successfully uploaded to Dropbox at {dropbox_path}")
     logging.debug(f"File {file_path} successfully uploaded to Dropbox at {dropbox_path}")
-    
+
+# Download the Most Recent ValueStocks DataFile.
+# Get the most recent file
+most_recent_file = GetMostRecentValueStocksDataFile()
+
+if most_recent_file:
+    # Download the most recent file
+    DownloadValueStocksDataFile(most_recent_file)
 #dateformat MM/DD/YYYY
 #enter start and end date as per your requirement
 Session = requests.Session()
