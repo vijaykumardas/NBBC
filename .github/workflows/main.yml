@@ -74,14 +74,18 @@ jobs:
           New-Item -Path "." -ItemType Directory
         }
     
-        # URL encode the file path
-        $encoded_path = [System.Web.HttpUtility]::UrlEncode("${{ env.MOST_RECENT_FILE }}")
+        # Encode the file path
+        $encoded_path = [System.Uri]::EscapeDataString("${{ env.MOST_RECENT_FILE }}")
+    
+        # Print encoded path for debugging
+        Write-Output "Encoded path: $encoded_path"
     
         # Download the file
         curl -X POST https://api.dropboxapi.com/2/files/download `
         --header "Authorization: Bearer ${{ secrets.DROPBOX_ACCESS_TOKEN }}" `
         --header "Dropbox-API-Arg: {\"path\": \"$encoded_path\"}" `
         --output "./$filename"
+
 
         
     # Step 6: Run the first Python script (NSEBSEBhavCopyDownload_V3.py)
