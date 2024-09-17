@@ -134,8 +134,12 @@ def GetAdditionalData(NseStockCode):
             
 def GetMasterNSEData():
     try:
+        global dropBoxClient
         temp_dir = tempfile.gettempdir()
         NseMasterDataForToday=os.path.join(temp_dir, datetime.strftime(datetime.today(),'%Y%m%d-').upper()+'NSEMASTERDATA.csv')
+        NseMasterDataForTodayinDropBox=f'/nsebsebhavcopy/DailyBhavCopy/{datetime.strftime(datetime.today(),'%Y%m%d-').upper()}NSEMASTERDATA.csv'
+        if( dropBoxClient.file_exists(NseMasterDataForTodayinDropBox)):
+            dropBoxClient.download_file(NseMasterDataForTodayinDropBox,NseMasterDataForToday)
         file_exists = exists(NseMasterDataForToday)
         if(file_exists):
             logging.debug("NSE Master Data File found at :"+NseMasterDataForToday+", Hence no need to Build. Just return the Dataframe")
@@ -178,6 +182,7 @@ def GetMasterNSEData():
             df.to_csv(NseMasterDataForToday, header = True,index = False)
             logging.debug("NSE Master Data File Saved at :"+NseMasterDataForToday)
         df=pd.read_csv(NseMasterDataForToday)
+        dropBoxClient.upload_file(NseMasterDataForToday,NseMasterDataForTodayinDropBox)
         return df
     except Exception as e:
         logging.exception("ERROR: An Error Occured while Building the NSE Master Data.")
