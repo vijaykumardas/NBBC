@@ -111,7 +111,7 @@ def DownloadValueStocksDataFile(file_metadata):
 def isUrlValid(url):
     try:
         logging.debug("Checking for the Validity of the Url :"+url)
-        r=requests.get(url, timeout = 2,allow_redirects=True,headers=headers)
+        r=requests.get(url, timeout = 3,allow_redirects=True,headers=headers)
         if(r.status_code==200):
             logging.debug("GET : "+url +" Returned Status Code : 200 OK")
             return True
@@ -267,7 +267,7 @@ def DownloadNSEBhavCopy(dateRange):
                     print("NSE Delivery Data Url seems not Valid. Url : " + url_dlvry)
                     logging.debug("ERROR: NSE Delivery Data Url seems not Valid. Url : " + url_dlvry)
                     continue
-                r = requests.get(url_dlvry,timeout = 2,allow_redirects=True,headers=headers).content
+                r = requests.get(url_dlvry,timeout = 3,allow_redirects=True,headers=headers).content
                 deliveryDf = pd.read_csv(io.StringIO(r.decode('utf-8')),skiprows=3)
                 deliveryDf = deliveryDf[ deliveryDf['Name of Security'] == 'EQ']
                 deliveryDf = deliveryDf.rename(columns={"Sr No": "SYMBOL",'Deliverable Quantity(gross across client level)':'TOTTRDQTY'})
@@ -276,7 +276,7 @@ def DownloadNSEBhavCopy(dateRange):
                 
                 logging.debug("2. Download the NSE BhavCopy  from NSE for a Specific Day.")
                 
-                r = requests.get(url_bhav,timeout = 2,allow_redirects=True,headers=headers).content
+                r = requests.get(url_bhav,timeout = 3,allow_redirects=True,headers=headers).content
                 zip_file = zipfile.ZipFile(BytesIO(r))
                 file_list = zip_file.namelist()
                 with zip_file.open(file_list[0]) as file:
@@ -432,7 +432,7 @@ def GetBSEDeliveryData(date):
         #headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'}
         logging.debug(" Bse Delivery Data Url : " +  Bse_Delivery_Data_Url)
         if(isUrlValid(Bse_Delivery_Data_Url)):
-            r = requests.get(Bse_Delivery_Data_Url,timeout = 2,allow_redirects=True,headers=headers)
+            r = requests.get(Bse_Delivery_Data_Url,timeout = 3,allow_redirects=True,headers=headers)
             unzipcsvfile= zipfile.ZipFile(io.BytesIO(r.content))
             #print(BhavCopyFileNameinZIP)
             bseDeliveryDf = pd.read_csv(unzipcsvfile.open(DeliveryDataFileNameInZIP),sep='|')
@@ -457,7 +457,7 @@ def DownloadBSEBhavCopy(dateRange):
             
             if(isUrlValid(Bse_BhavCopy_Url)):
                 #print(Bse_BhavCopy_Url + " Valid Url")
-                r = requests.get(Bse_BhavCopy_Url,timeout = 2,allow_redirects=True,headers=headers).content
+                r = requests.get(Bse_BhavCopy_Url,timeout = 3,allow_redirects=True,headers=headers).content
                 bseBhavCopyDf = pd.read_csv(io.StringIO(r.decode('utf-8')))
                 
                 bseBhavCopyDf['TIMESTAMP']=timestampForDF
@@ -500,7 +500,7 @@ def DownloadNSEIndexBhavCopy(tday):
     headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'}
     #r = requests.get(NseIndexSnapShopUrl, allow_redirects=True,headers=headers,timeout=1)
     try:
-        r = requests.get(NseIndexSnapShopUrl,timeout=1)
+        r = requests.get(NseIndexSnapShopUrl,timeout=3,headers=headers)
         if r.status_code == 200:
             dfNseBhavCopy=pd.read_csv(io.StringIO(r.content.decode('utf-8')),parse_dates=["Index Date"], date_format="%d-%m-%Y")
             dfNseBhavCopy.columns=['TICKER', 'DATE_YMD1', 'OPEN', 'HIGH',
@@ -648,7 +648,7 @@ for tday in dt:
         print("NSE Stocks Bhavcopy Data : NOT OK")
     dfBSEBhavCopy=DownloadBSEBhavCopy(pd.date_range(start=tday,end=tday,periods=1))
     if(dfBSEBhavCopy is not None and dfBSEBhavCopy.shape[0] > 1):
-        print("NSE Stocks Bhavcopy Data : OK")
+        print("BSE Stocks Bhavcopy Data : OK")
         dataframestoWrite.append(dfBSEBhavCopy)
     else:
         print("BSE Stocks Bhavcopy Data : NOT OK")
