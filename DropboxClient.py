@@ -130,7 +130,11 @@ class DropboxClient:
         :param local_file_path: Path where the file will be saved locally.
         """
         self._check_access_token()
-
+        # If local_file_path is not provided, construct it using the dropbox_file_path's file name
+        if local_file_path is None:
+            local_file_name = os.path.basename(dropbox_file_path)
+            local_file_path = os.path.join(os.getcwd(), local_file_name)
+            logging.info(f"No local_file_path provided. Using default path: {local_file_path}")
         def _download():
             metadata, res = self.dbx.files_download(dropbox_file_path)
             with open(local_file_path, 'wb') as file:
