@@ -223,3 +223,71 @@ class DropboxClient:
         except Exception as e:
             logging.error(f"Unexpected error during file listing: {e}")
             raise
+
+    def remove_file(self, dropbox_path):
+        """
+        Remove a file from Dropbox with retries.
+
+        :param dropbox_path: The path of the file in Dropbox to be removed.
+        """
+        self._check_access_token()
+
+        def _remove():
+            self.dbx.files_delete_v2(dropbox_path)
+            logging.info(f"File removed from Dropbox: {dropbox_path}")
+
+        try:
+            self._retry_operation(_remove)
+        except dropbox.exceptions.ApiError as e:
+            logging.error(f"Dropbox API error during file removal: {e}")
+        except Exception as e:
+            logging.error(f"Unexpected error during file removal: {e}")
+
+
+    def rename_file(self, dropbox_path, new_name):
+        """
+        Rename a file in Dropbox with retries.
+
+        :param dropbox_path: The current path of the file.
+        :param new_name: The new name for the file (within the same folder).
+        """
+        self._check_access_token()
+
+        def _rename():
+            new_path = os.path.join(os.path.dirname(dropbox_path), new_name)
+            self.dbx.files_move_v2(dropbox_path, new_path)
+            logging.info(f"File renamed in Dropbox: {dropbox_path} to {new_path}")
+
+        try:
+            self._retry_operation(_rename)
+        except dropbox.exceptions.ApiError as e:
+            logging.error(f"Dropbox API error during file rename: {e}")
+        except Exception as e:
+            logging.error(f"Unexpected error during file rename: {e}")
+
+
+    def get_most_recent_file(self, folder_path):
+        """
+        Get the full path of the most recent file in a Dropbox folder with retries.
+
+        :param folder_path: The path of the folder in Dropbox.
+        :return: The path of the most recently modified file in the folder, or None if no files are found.
+        """
+        self._check_access_token()
+
+        def _get_recent():
+            files = self.dbx.files_list_folder(folder_path).entries
+            files = [f for f in files if isinstance(f, dropbox.files.FileMetadata)]
+            if not files:
+                return None
+            most_recent_file = max(files, key=lambda f: f.server_modified)
+            logging.info(f"Most recent file in Dropbox: {most_recent_file.path_lower}")
+            return most_recent_file.path_lower
+
+        try:
+            return self._retry_operation(_get_recent)
+        except dropbox.exceptions.ApiError as e:
+            logging.error(f"Dropbox API error during fetching the most recent file: {e}")
+        except Exception as e:
+            logging.error(f"Unexpected error during fetching the most recent file: {e}")
+            return None
