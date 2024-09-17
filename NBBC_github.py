@@ -610,3 +610,11 @@ for tday in dt:
     fileNameToDropbox = f"/NSEBSEBhavcopy/DailyBhavCopy/{filename}"  # Adjust the Dropbox folder path as needed
     dropBoxClient.upload_file(filename, fileNameToDropbox)
     print(f"Complete BhavCopy have been Uploaded to Dropbox at : {fileNameToDropbox}")
+    
+    # Explicitly flush and close the handler
+    for handler in logging.getLogger().handlers:
+        handler.flush()
+        handler.close()
+    logFileNameInDropBox=f'/NSEBSEBhavCopy/Logs/{datetime.strftime(tday,'%Y-%m-%d').upper()}-NSEBSEBhavCopyDownload.Log'
+    dropBoxClient.upload_file(NSEBSEBhavCopyDownload.Log,logFileNameInDropBox)
+    print(f'Log File have been Uploaded to {logFileNameInDropBox}.')
