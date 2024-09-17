@@ -27,6 +27,7 @@ import logging
 import tempfile
 import PortfolioUpdate
 import dropbox
+from DropboxClient import DropboxClient
 
 
 logging.basicConfig(filename="NSEBSEBhavCopyDownload.Log",level=logging.DEBUG,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',datefmt='%d-%b-%y %H:%M:%S')
@@ -37,76 +38,15 @@ headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/
 
 # Folder path on Dropbox
 DROPBOX_FOLDER_PATH = '/NSEBSEBhavCopy/ValueStocks'
-# Dropbox access token (replace with your actual token)
-DROPBOX_ACCESS_TOKEN = os.getenv('DROPBOX_ACCESS_TOKEN')
 
-# Initialize Dropbox client
-dbx = dropbox.Dropbox(DROPBOX_ACCESS_TOKEN)
-
-def upload_to_dropbox(file_path, dropbox_path):
-    """Uploads the file at file_path to Dropbox at dropbox_path."""
-    dbx = dropbox.Dropbox(DROPBOX_ACCESS_TOKEN)
-    
-    with open(file_path, 'rb') as f:
-        dbx.files_upload(f.read(), dropbox_path)
-    
-    print(f"File {file_path} successfully uploaded to Dropbox at {dropbox_path}")
-    logging.debug(f"File {file_path} successfully uploaded to Dropbox at {dropbox_path}")
-def download_from_dropbox(dropbox_path, file_path):
-    """Downloads a file from Dropbox at dropbox_path to the local file_path."""
-    try:
-        # Download the file
-        metadata, response = dbx.files_download(dropbox_path)
-        
-        # Write the file content to the local file_path
-        with open(file_path, 'wb') as f:
-            f.write(response.content)
-        
-        print(f"File successfully downloaded from Dropbox at {dropbox_path} to {file_path}")
-        logging.debug(f"File successfully downloaded from Dropbox at {dropbox_path} to {file_path}")
-    except dropbox.exceptions.ApiError as e:
-        print(f"API error occurred: {e}")
-        logging.error(f"API error occurred: {e}")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        logging.error(f"An error occurred: {e}")
 def GetMostRecentValueStocksDataFile():
     try:
-        # List files in the specified folder
-        result = dbx.files_list_folder(DROPBOX_FOLDER_PATH)
-
-        # Get the most recent file by modified time
-        most_recent_file = None
-        for entry in result.entries:
-            if isinstance(entry, dropbox.files.FileMetadata):
-                if most_recent_file is None or entry.server_modified > most_recent_file.server_modified:
-                    most_recent_file = entry
-
-        if most_recent_file:
-            print(f"Most recent file: {most_recent_file.name}")
-            return most_recent_file
-        else:
-            print("No files found in the folder.")
-            return None
-
+        global dropBoxClient
+        recentValueStockFile=dropBoxClient.get_most_recent_file('/NSEBSEBhavCopy/ValueStocks')
+        dropBoxClient.download_file(recentValueStockFile)
     except Exception as e:
-        print(f"Error getting files from Dropbox: {e}")
+        print(f"Error getting MostRecentValueStocksDataFile from Dropbox : {e}")
         return None
-
-def DownloadValueStocksDataFile(file_metadata):
-    try:
-        # File download path
-        local_path = os.path.join(os.getcwd(), file_metadata.name)
-
-        # Download the file
-        with open(local_path, "wb") as f:
-            metadata, res = dbx.files_download(path=file_metadata.path_lower)
-            f.write(res.content)
-
-        print(f"File downloaded successfully: {local_path}")
-
-    except Exception as e:
-        print(f"Error downloading file: {e}")
 
 def isUrlValid(url):
     try:
@@ -603,15 +543,13 @@ def GetBSEindexDataBhavCopy():
 
 # Download the Most Recent ValueStocks DataFile.
 # Get the most recent file
-most_recent_file = GetMostRecentValueStocksDataFile()
-
-if most_recent_file:
-    # Download the most recent file
-    DownloadValueStocksDataFile(most_recent_file)
+GetMostRecentValueStocksDataFile()
 #dateformat MM/DD/YYYY
 #enter start and end date as per your requirement
 Session = requests.Session()
 global nselive
+global dropBoxClient
+dropBoxClient=DropboxClient()
 nselive = NSELive()
 historicalDays=1#input("For How many days of Data to Fetch (Default 1): ")
 if(historicalDays == ''):
@@ -666,5 +604,6 @@ for tday in dt:
     print(datetime.strftime(tday,'%d-%b-%Y').upper() + ":   ==>  "+filename + "   [Done]")
     dataframestoWrite=[]
     # Uploading the generated CSV to Dropbox
-    dropbox_path = f"/NSEBSEBhavcopy/DailyBhavCopy/{filename}"  # Adjust the Dropbox folder path as needed
-    upload_to_dropbox(filename, dropbox_path)
+    fileNameToDropbox = f"/NSEBSEBhavcopy/DailyBhavCopy/{filename}"  # Adjust the Dropbox folder path as needed
+    dropBoxClient.upload_file(filename, fileNameToDropbox)
+    print("Complete BhavCopy have been Uploaded to Dropbox at : {fileNameToDropbox}")
