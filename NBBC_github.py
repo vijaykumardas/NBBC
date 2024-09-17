@@ -44,7 +44,7 @@ def GetMostRecentValueStocksDataFile():
         global dropBoxClient
         recentValueStockFile=dropBoxClient.get_most_recent_file('/NSEBSEBhavCopy/ValueStocks')
         dropBoxClient.download_file(recentValueStockFile)
-        print("Successfully Downloaded : {recentValueStockFile}")
+        print(f"Successfully Downloaded : {recentValueStockFile}")
     except Exception as e:
         print(f"Error getting MostRecentValueStocksDataFile from Dropbox : {e}")
         return None
