@@ -541,9 +541,7 @@ def GetBSEindexDataBhavCopy():
     except requests.exceptions.RequestException as e:
         logging.exception("Error Generating BSE BhavCopy")
 
-# Download the Most Recent ValueStocks DataFile.
-# Get the most recent file
-GetMostRecentValueStocksDataFile()
+
 #dateformat MM/DD/YYYY
 #enter start and end date as per your requirement
 Session = requests.Session()
@@ -551,6 +549,10 @@ global nselive
 global dropBoxClient
 dropBoxClient=DropboxClient()
 nselive = NSELive()
+# Download the Most Recent ValueStocks DataFile.
+# Get the most recent file
+GetMostRecentValueStocksDataFile()
+'''
 historicalDays=1#input("For How many days of Data to Fetch (Default 1): ")
 if(historicalDays == ''):
     historicalDays = 1
@@ -607,3 +609,4 @@ for tday in dt:
     fileNameToDropbox = f"/NSEBSEBhavcopy/DailyBhavCopy/{filename}"  # Adjust the Dropbox folder path as needed
     dropBoxClient.upload_file(filename, fileNameToDropbox)
     print("Complete BhavCopy have been Uploaded to Dropbox at : {fileNameToDropbox}")
+'''
