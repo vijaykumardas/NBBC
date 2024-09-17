@@ -295,3 +295,30 @@ class DropboxClient:
         except Exception as e:
             logging.error(f"Unexpected error during fetching the most recent file: {e}")
             return None
+    def file_exists(self, dropbox_path):
+        """
+        Check if a file exists in Dropbox with retries.
+
+        :param dropbox_path: The path of the file in Dropbox.
+        :return: True if the file exists, False otherwise.
+        """
+        self._check_access_token()
+
+        def _check():
+            try:
+                self.dbx.files_get_metadata(dropbox_path)
+                logging.info(f"File exists in Dropbox: {dropbox_path}")
+                return True
+            except dropbox.exceptions.ApiError as e:
+                if isinstance(e.error, dropbox.files.GetMetadataError):
+                    logging.info(f"File does not exist in Dropbox: {dropbox_path}")
+                    return False
+                else:
+                    logging.error(f"Dropbox API error during file existence check: {e}")
+                    raise e
+
+        try:
+            return self._retry_operation(_check)
+        except Exception as e:
+            logging.error(f"Unexpected error during file existence check: {e}")
+            return False
