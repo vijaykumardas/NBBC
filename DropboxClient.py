@@ -122,7 +122,7 @@ class DropboxClient:
         except Exception as e:
             logging.error(f"Unexpected error during file upload: {e}")
 
-    def download_file(self, dropbox_file_path, local_file_path):
+    def download_file(self, dropbox_file_path, local_file_path=None):
         """
         Download a file from Dropbox with retries.
 
