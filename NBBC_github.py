@@ -122,10 +122,10 @@ def GetAdditionalData(NseStockCode,retry=0):
     except requests.exceptions.ReadTimeout:
         logger.debug("Timeout Occured while fetching Stock_Quotes for SYMBOL: "+NseStockCode + " from JUGAAD-DATA")
         print(f'Timeout Occured while fetching Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA')
-        time.sleep(5)
+        del nselive
+        time.sleep(180)
         if(retry<3):
             print('Retrying to Fetch the Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - Retry Count = {retry}')
-            del nselive
             nselive = NSELive()
             return GetAdditionalData(NseStockCode,retry=retry+1)
         else:
@@ -139,11 +139,11 @@ def GetAdditionalData(NseStockCode,retry=0):
             }
     except Exception as e:
         logger.debug(f"Due to an Exception, Sleeping for 5 mins will establish the connection again and proceed with download. Exception = {str(e)}") 
-        time.sleep(300)
+        del nselive
+        time.sleep(180)
         if(retry<3):
             print(f'Retrying to Fetch the Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - Retry Count = {retry}')
             logger.debug(f'Retrying to Fetch the Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - Retry Count = {retry}')
-            del nselive
             nselive = NSELive()
             return GetAdditionalData(NseStockCode,retry=retry+1)
         else:
