@@ -51,8 +51,9 @@ def GetMostRecentValueStocksDataFile():
 
 def isUrlValid(url):
     try:
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
         logger.debug("Checking for the Validity of the Url :"+url)
-        r=requests.get(url, timeout = 3,allow_redirects=True,headers=headers)
+        r=requests.get(url, allow_redirects=True,headers=headers)
         if(r.status_code==200):
             logger.debug("GET : "+url +" Returned Status Code : 200 OK")
             return True
