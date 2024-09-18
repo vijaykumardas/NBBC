@@ -237,7 +237,7 @@ def DownloadNSEBhavCopy(dateRange):
                 
                 logger.debug("2. Download the NSE BhavCopy  from NSE for a Specific Day.")
                 
-                r = requests.get(url_bhav,timeout = 3,allow_redirects=True,headers=headers).content
+                r = requests.get(url_bhav,allow_redirects=True,headers=headers).content
                 zip_file = zipfile.ZipFile(BytesIO(r))
                 file_list = zip_file.namelist()
                 with zip_file.open(file_list[0]) as file:
@@ -461,7 +461,7 @@ def DownloadNSEIndexBhavCopy(tday):
     headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'}
     #r = requests.get(NseIndexSnapShopUrl, allow_redirects=True,headers=headers,timeout=1)
     try:
-        r = requests.get(NseIndexSnapShopUrl,timeout=3,headers=headers)
+        r = requests.get(NseIndexSnapShopUrl,headers=headers)
         if r.status_code == 200:
             dfNseBhavCopy=pd.read_csv(io.StringIO(r.content.decode('utf-8')),parse_dates=["Index Date"], date_format="%d-%m-%Y")
             dfNseBhavCopy.columns=['TICKER', 'DATE_YMD1', 'OPEN', 'HIGH',
