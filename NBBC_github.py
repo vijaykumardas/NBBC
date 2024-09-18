@@ -582,7 +582,7 @@ EndDate=datetime.today()
 dt = pd.date_range(end=EndDate, periods=int(historicalDays))
 dataframestoWrite=[]
 for tday in dt:
-    dfNseIndexBhavCopy=DownloadNSEIndexBhavCopy(tday+ timedelta(days=-1))
+    dfNseIndexBhavCopy=DownloadNSEIndexBhavCopy(tday)
     if(dfNseIndexBhavCopy is not None and dfNseIndexBhavCopy.shape[0] > 1):
         print("NSE Index Bhavcopy Data : OK")
         dataframestoWrite.append(dfNseIndexBhavCopy)
@@ -603,14 +603,14 @@ for tday in dt:
     else:
         print("NSE Sectoral Data : NOT OK")
         
-    dfNSEBhavCopy=DownloadNSEBhavCopy(pd.date_range(start=tday + timedelta(days=-1),end=tday+ timedelta(days=-1),periods=1))
+    dfNSEBhavCopy=DownloadNSEBhavCopy(pd.date_range(start=tday ,end=tday,periods=1))
     if(dfNSEBhavCopy is not None and dfNSEBhavCopy.shape[0] > 1):
         print("NSE Stocks Bhavcopy Data : OK")
         dataframestoWrite.append(dfNSEBhavCopy)
     else:
         print("NSE Stocks Bhavcopy Data : NOT OK")
         
-    dfBSEBhavCopy=DownloadBSEBhavCopy(pd.date_range(start=tday+ timedelta(days=-1),end=tday+ timedelta(days=-1),periods=1))
+    dfBSEBhavCopy=DownloadBSEBhavCopy(pd.date_range(start=tday,end=tday,periods=1))
     if(dfBSEBhavCopy is not None and dfBSEBhavCopy.shape[0] > 1):
         print("BSE Stocks Bhavcopy Data : OK")
         dataframestoWrite.append(dfBSEBhavCopy)
