@@ -7,8 +7,8 @@ import time
 import fnmatch
 
 # Configure logging
-logging.basicConfig(filename='dropbox_client.log', level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s')
+#logging.basicConfig(filename='dropbox_client.log', level=self.logger.info,
+#                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 class DropboxClient:
@@ -23,6 +23,7 @@ class DropboxClient:
         :param max_retries: Maximum number of retries for operations.
         :param retry_delay: Initial delay in seconds between retries, with exponential backoff.
         """
+        self.logger=logging.getLogger('B')
         self.refresh_token = refresh_token or os.getenv('DROPBOX_REFRESH_TOKEN')
         self.client_id = client_id or os.getenv('DROPBOX_CLIENT_ID')
         self.client_secret = client_secret or os.getenv('DROPBOX_CLIENT_SECRET')
@@ -34,16 +35,17 @@ class DropboxClient:
 
         self.access_token = self._get_access_token()
         self.dbx = dropbox.Dropbox(self.access_token)
-        logging.info("DropboxClient initialized.")
+        
+        self.logger.info("DropboxClient initialized.")
 
     def _check_access_token(self):
         """Ensure the access token is valid or refresh it if expired."""
         if not self.access_token or not self._is_access_token_valid():
-            logging.info("Access token invalid or expired. Refreshing token...")
+            self.logger.info("Access token invalid or expired. Refreshing token...")
             self._refresh_access_token()
 
         if not self._is_access_token_valid():
-            logging.error("Access token could not be refreshed. Please check credentials.")
+            self.logger.error("Access token could not be refreshed. Please check credentials.")
             raise ValueError("Access token invalid, and refresh failed.")
 
     def _is_access_token_valid(self):
@@ -52,10 +54,10 @@ class DropboxClient:
             self.dbx.users_get_current_account()
             return True
         except dropbox.exceptions.AuthError:
-            logging.info("Access token is invalid or expired.")
+            self.logger.info("Access token is invalid or expired.")
             return False
         except Exception as e:
-            logging.error(f"Unexpected error while validating token: {e}")
+            self.logger.error(f"Unexpected error while validating token: {e}")
             return False
 
     def _get_access_token(self):
@@ -70,14 +72,14 @@ class DropboxClient:
             token_data = response.json()
             return token_data.get('access_token')
         except (requests.RequestException, KeyError) as e:
-            logging.error(f"Error obtaining access token: {e}")
+            self.logger.error(f"Error obtaining access token: {e}")
             raise
 
     def _refresh_access_token(self):
         """Refresh the Dropbox access token and update the Dropbox client."""
         self.access_token = self._get_access_token()
         self.dbx = dropbox.Dropbox(self.access_token)
-        logging.info("Access token refreshed successfully.")
+        self.logger.info("Access token refreshed successfully.")
 
     def _retry_operation(self, operation, *args, **kwargs):
         """
@@ -95,7 +97,7 @@ class DropboxClient:
             except Exception as e:
                 attempt += 1
                 wait_time = self.retry_delay * (2 ** (attempt - 1))
-                logging.error(f"Attempt {attempt} failed: {e}. Retrying in {wait_time} seconds...")
+                self.logger.error(f"Attempt {attempt} failed: {e}. Retrying in {wait_time} seconds...")
                 time.sleep(wait_time)
         raise Exception(f"Operation failed after {self.max_retries} attempts.")
 
@@ -111,16 +113,19 @@ class DropboxClient:
         def _upload():
             with open(local_file_path, 'rb') as file:
                 self.dbx.files_upload(file.read(), dropbox_file_path)
-            logging.info(f"File '{local_file_path}' uploaded to '{dropbox_file_path}'.")
-
+            self.logger.info(f"File '{local_file_path}' uploaded to '{dropbox_file_path}'.")
+            print(f"File '{local_file_path}' uploaded to '{dropbox_file_path}'.")
         try:
             self._retry_operation(_upload)
         except FileNotFoundError:
-            logging.error(f"File '{local_file_path}' not found.")
+            self.logger.error(f"File '{local_file_path}' not found.")
+            print(f"File '{local_file_path}' not found.")
         except dropbox.exceptions.ApiError as e:
-            logging.error(f"Dropbox API error during upload: {e}")
+            self.logger.error(f"Dropbox API error during upload: {e}")
+            print(f"Dropbox API error during upload: {e}")
         except Exception as e:
-            logging.error(f"Unexpected error during file upload: {e}")
+            self.logger.error(f"Unexpected error during file upload: {e}")
+            print(f"Unexpected error during file upload: {e}")
 
     def download_file(self, dropbox_file_path, local_file_path=None):
         """
@@ -134,19 +139,19 @@ class DropboxClient:
         if local_file_path is None:
             local_file_name = os.path.basename(dropbox_file_path)
             local_file_path = os.path.join(os.getcwd(), local_file_name)
-            logging.info(f"No local_file_path provided. Using default path: {local_file_path}")
+            self.logger.info(f"No local_file_path provided. Using default path: {local_file_path}")
         def _download():
             metadata, res = self.dbx.files_download(dropbox_file_path)
             with open(local_file_path, 'wb') as file:
                 file.write(res.content)
-            logging.info(f"File '{dropbox_file_path}' downloaded to '{local_file_path}'.")
+            self.logger.info(f"File '{dropbox_file_path}' downloaded to '{local_file_path}'.")
 
         try:
             self._retry_operation(_download)
         except dropbox.exceptions.ApiError as e:
-            logging.error(f"Dropbox API error during download: {e}")
+            self.logger.error(f"Dropbox API error during download: {e}")
         except Exception as e:
-            logging.error(f"Unexpected error during file download: {e}")
+            self.logger.error(f"Unexpected error during file download: {e}")
 
     def upload_folder(self, local_folder_path, dropbox_folder_path, filename_pattern=None):
         """
@@ -191,12 +196,12 @@ class DropboxClient:
                 if not result.has_more:
                     break
                 result = self.dbx.files_list_folder_continue(result.cursor)
-            logging.info(f"Folder '{dropbox_folder_path}' downloaded to '{local_folder_path}'.")
+            self.logger.info(f"Folder '{dropbox_folder_path}' downloaded to '{local_folder_path}'.")
 
         except dropbox.exceptions.ApiError as e:
-            logging.error(f"Dropbox API error during folder download: {e}")
+            self.logger.error(f"Dropbox API error during folder download: {e}")
         except Exception as e:
-            logging.error(f"Unexpected error during folder download: {e}")
+            self.logger.error(f"Unexpected error during folder download: {e}")
 
     def list_files(self, folder_path, filename_pattern=None):
         """
@@ -222,10 +227,10 @@ class DropboxClient:
                 result = self.dbx.files_list_folder_continue(result.cursor)
             return files_list
         except dropbox.exceptions.ApiError as e:
-            logging.error(f"Dropbox API error during listing files: {e}")
+            self.logger.error(f"Dropbox API error during listing files: {e}")
             raise
         except Exception as e:
-            logging.error(f"Unexpected error during file listing: {e}")
+            self.logger.error(f"Unexpected error during file listing: {e}")
             raise
 
     def remove_file(self, dropbox_path):
@@ -238,14 +243,14 @@ class DropboxClient:
 
         def _remove():
             self.dbx.files_delete_v2(dropbox_path)
-            logging.info(f"File removed from Dropbox: {dropbox_path}")
+            self.logger.info(f"File removed from Dropbox: {dropbox_path}")
 
         try:
             self._retry_operation(_remove)
         except dropbox.exceptions.ApiError as e:
-            logging.error(f"Dropbox API error during file removal: {e}")
+            self.logger.error(f"Dropbox API error during file removal: {e}")
         except Exception as e:
-            logging.error(f"Unexpected error during file removal: {e}")
+            self.logger.error(f"Unexpected error during file removal: {e}")
 
 
     def rename_file(self, dropbox_path, new_name):
@@ -260,14 +265,14 @@ class DropboxClient:
         def _rename():
             new_path = os.path.join(os.path.dirname(dropbox_path), new_name)
             self.dbx.files_move_v2(dropbox_path, new_path)
-            logging.info(f"File renamed in Dropbox: {dropbox_path} to {new_path}")
+            self.logger.info(f"File renamed in Dropbox: {dropbox_path} to {new_path}")
 
         try:
             self._retry_operation(_rename)
         except dropbox.exceptions.ApiError as e:
-            logging.error(f"Dropbox API error during file rename: {e}")
+            self.logger.error(f"Dropbox API error during file rename: {e}")
         except Exception as e:
-            logging.error(f"Unexpected error during file rename: {e}")
+            self.logger.error(f"Unexpected error during file rename: {e}")
 
 
     def get_most_recent_file(self, folder_path):
@@ -285,15 +290,15 @@ class DropboxClient:
             if not files:
                 return None
             most_recent_file = max(files, key=lambda f: f.server_modified)
-            logging.info(f"Most recent file in Dropbox: {most_recent_file.path_lower}")
+            self.logger.info(f"Most recent file in Dropbox: {most_recent_file.path_lower}")
             return most_recent_file.path_lower
 
         try:
             return self._retry_operation(_get_recent)
         except dropbox.exceptions.ApiError as e:
-            logging.error(f"Dropbox API error during fetching the most recent file: {e}")
+            self.logger.error(f"Dropbox API error during fetching the most recent file: {e}")
         except Exception as e:
-            logging.error(f"Unexpected error during fetching the most recent file: {e}")
+            self.logger.error(f"Unexpected error during fetching the most recent file: {e}")
             return None
     def file_exists(self, dropbox_path):
         """
@@ -307,18 +312,18 @@ class DropboxClient:
         def _check():
             try:
                 self.dbx.files_get_metadata(dropbox_path)
-                logging.info(f"File exists in Dropbox: {dropbox_path}")
+                self.logger.info(f"File exists in Dropbox: {dropbox_path}")
                 return True
             except dropbox.exceptions.ApiError as e:
                 if isinstance(e.error, dropbox.files.GetMetadataError):
-                    logging.info(f"File does not exist in Dropbox: {dropbox_path}")
+                    self.logger.info(f"File does not exist in Dropbox: {dropbox_path}")
                     return False
                 else:
-                    logging.error(f"Dropbox API error during file existence check: {e}")
+                    self.logger.error(f"Dropbox API error during file existence check: {e}")
                     raise e
 
         try:
             return self._retry_operation(_check)
         except Exception as e:
-            logging.error(f"Unexpected error during file existence check: {e}")
+            self.logger.error(f"Unexpected error during file existence check: {e}")
             return False
