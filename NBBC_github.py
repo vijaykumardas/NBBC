@@ -634,6 +634,27 @@ for tday in dt:
     logging.shutdown()  # Flush and close the log file
     log_file_path = os.path.abspath("NSEBSEBhavCopyDownload.Log")
     print(f'Logfile is located locally at : {log_file_path}')
+    # Check if the file exists
+    if os.path.exists(log_file_path):
+        file_size = os.path.getsize(log_file_path)  # Get the file size
+        last_modified_time = time.ctime(os.path.getmtime(log_file_path))  # Last modified time
+    
+        # Log the file details
+        print(f"Log file {log_file_path} exists.")
+        print(f"Log file size: {file_size} bytes.")
+        print(f"Log file last modified: {last_modified_time}.")
+    
+        # Additional checks (optional)
+        try:
+            # Try reading the file to ensure it's readable
+            with open(log_file_path, 'r') as f:
+                f.read()
+            print("Log file is readable.")
+        except Exception as e:
+            print(f"Failed to read the log file: {e}")
+    else:
+        print(f"Logfile does not exists at : {log_file_path}")
+    
     logFileNameInDropBox=f'/NSEBSEBhavcopy/Logs/{datetime.strftime(tday,'%Y-%m-%d').upper()}-NSEBSEBhavCopyDownload.Log'
     dropBoxClient.upload_file(log_file_path,logFileNameInDropBox)
     print(f'Log File have been Uploaded to {logFileNameInDropBox}.')
