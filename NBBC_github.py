@@ -97,7 +97,7 @@ def GetNseEquityListDF():
     except Exception as e:
         logging.exception("ERROR Occured  having the details as : ")
 
-def GetAdditionalData(NseStockCode):
+def GetAdditionalData(NseStockCode,retry=0):
     try:
         logging.debug("About To FETCH  Data For SYMBOL: "+NseStockCode + " using JUGAAD-DATA")
         global nselive
@@ -120,8 +120,21 @@ def GetAdditionalData(NseStockCode):
             }
     except requests.exceptions.ReadTimeout:
         logging.debug("Timeout Occured while fetching Stock_Quotes for SYMBOL: "+NseStockCode + " from JUGAAD-DATA")
-        nselive = NSELive()
-        return GetAdditionalData(NseStockCode)
+        print(f'Timeout Occured while fetching Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA')
+        time.sleep(5)
+        if(retry<3):
+            print('Retrying to Fetch the Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - Retry Count = {retry}')
+            nselive = NSELive()
+            return GetAdditionalData(NseStockCode,retry=retry+1)
+        else:
+            print('Retruning to Empty Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - After  Retrying for {retry} times')
+            return {
+            'MACRO': '',
+            'SECTOR': '',
+            'INDUSTRY': '',
+            'ISSUEDSIZE': 0,
+            'FULLMARKETCAP': 0.00
+            }
     except Exception as e:
         logging.debug("An Exception Occured while fetching Additional Data for the Stock : "+ NseStockCode+" Details =" + str(e) + " Hence Returning Empty Results")
         return {
