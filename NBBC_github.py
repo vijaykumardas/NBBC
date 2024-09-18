@@ -226,7 +226,9 @@ def DownloadNSEBhavCopy(dateRange):
                     print("NSE Delivery Data Url seems not Valid. Url : " + url_dlvry)
                     logger.debug("ERROR: NSE Delivery Data Url seems not Valid. Url : " + url_dlvry)
                     continue
-                r = requests.get(url_dlvry,timeout = 3,allow_redirects=True,headers=headers).content
+                #r = requests.get(url_dlvry,timeout = 3,allow_redirects=True,headers=headers).content
+                headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
+                r = requests.get(url_dlvry,allow_redirects=True,headers=headers).content
                 deliveryDf = pd.read_csv(io.StringIO(r.decode('utf-8')),skiprows=3)
                 deliveryDf = deliveryDf[ deliveryDf['Name of Security'] == 'EQ']
                 deliveryDf = deliveryDf.rename(columns={"Sr No": "SYMBOL",'Deliverable Quantity(gross across client level)':'TOTTRDQTY'})
