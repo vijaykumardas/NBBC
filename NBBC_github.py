@@ -150,7 +150,7 @@ def GetMasterNSEData():
         global dropBoxClient
         temp_dir = tempfile.gettempdir()
         NseMasterDataForToday=os.path.join(temp_dir, datetime.strftime(datetime.today(),'%Y%m%d-').upper()+'NSEMASTERDATA.csv')
-        NseMasterDataForTodayinDropBox=f'/nsebsebhavcopy/DailyBhavCopy/{datetime.strftime(datetime.today(),'%Y%m%d-').upper()}NSEMASTERDATA.csv'
+        NseMasterDataForTodayinDropBox=f'/nsebsebhavcopy/DailyBhavCopy/Temp/{datetime.strftime(datetime.today(),'%Y%m%d-').upper()}NSEMASTERDATA.csv'
         if( dropBoxClient.file_exists(NseMasterDataForTodayinDropBox)):
             dropBoxClient.download_file(NseMasterDataForTodayinDropBox,NseMasterDataForToday)
         file_exists = exists(NseMasterDataForToday)
@@ -194,8 +194,8 @@ def GetMasterNSEData():
             df.columns = ['SYMBOL','FULLNAME','MACRO','SECTOR','INDUSTRY','ISSUEDSIZE','FULLMARKETCAP']
             df.to_csv(NseMasterDataForToday, header = True,index = False)
             logging.debug("NSE Master Data File Saved at :"+NseMasterDataForToday)
+            dropBoxClient.upload_file(NseMasterDataForToday,NseMasterDataForTodayinDropBox)
         df=pd.read_csv(NseMasterDataForToday)
-        dropBoxClient.upload_file(NseMasterDataForToday,NseMasterDataForTodayinDropBox)
         return df
     except Exception as e:
         logging.exception("ERROR: An Error Occured while Building the NSE Master Data.")
@@ -631,10 +631,9 @@ for tday in dt:
     dropBoxClient.upload_file(filename, fileNameToDropbox)
     print(f"Complete BhavCopy have been Uploaded to Dropbox at : {fileNameToDropbox}")
     
-    # Explicitly flush and close the handler
-    for handler in logging.getLogger().handlers:
-        handler.flush()
-        handler.close()
-    logFileNameInDropBox=f'/NSEBSEBhavCopy/Logs/{datetime.strftime(tday,'%Y-%m-%d').upper()}-NSEBSEBhavCopyDownload.Log'
-    dropBoxClient.upload_file('NSEBSEBhavCopyDownload.Log',logFileNameInDropBox)
+    logging.shutdown()  # Flush and close the log file
+    log_file_path = os.path.abspath("NSEBSEBhavCopyDownload.Log")
+
+    logFileNameInDropBox=f'/NSEBSEBhavcopy/Logs/{datetime.strftime(tday,'%Y-%m-%d').upper()}-NSEBSEBhavCopyDownload.Log'
+    dropBoxClient.upload_file(log_file_path,logFileNameInDropBox)
     print(f'Log File have been Uploaded to {logFileNameInDropBox}.')
