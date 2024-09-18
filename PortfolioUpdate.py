@@ -217,7 +217,7 @@ required_columns = ['Ticker', 'Quantity', 'Portfolio Name', 'Buy Date', 'Buy Pri
 def main():
     dropBoxClient= DropboxClient()
     # Download the portfolio.csv from Drop Box.
-    dropBoxClient.download_file("NSEBSEBhavcopy/Portfolio/portfolio.csv", "portfolio.csv")
+    dropBoxClient.download_file("/NSEBSEBhavcopy/Portfolio/portfolio.csv", "portfolio.csv")
     # Load portfolio from CSV
     portfolio = pd.read_csv(portfolio_file)
 
@@ -231,7 +231,7 @@ def main():
     save_portfolio(updated_portfolio, portfolio_file)
 
     # upload the portfolio file to DropBox.
-    dropBoxClient.upload_file(portfolio_file, "NSEBSEBhavcopy/Portfolio/portfolio.csv")
+    dropBoxClient.upload_file(portfolio_file, "/NSEBSEBhavcopy/Portfolio/portfolio.csv")
     
     # Update portfolio with OHLC data
     portfolio_with_ohlc = update_portfolio_with_ohlc(updated_portfolio)
