@@ -137,8 +137,17 @@ def GetAdditionalData(NseStockCode,retry=0):
             'FULLMARKETCAP': 0.00
             }
     except Exception as e:
-        logger.debug("An Exception Occured while fetching Additional Data for the Stock : "+ NseStockCode+" Details =" + str(e) + " Hence Returning Empty Results")
-        return {
+        logger.debug(f"Due to an Exception, Sleeping for 5 mins will establish the connection again and proceed with download. Exception = {str(e)}") 
+        time.sleep(300)
+        if(retry<3):
+            print(f'Retrying to Fetch the Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - Retry Count = {retry}')
+            logger.debug(f'Retrying to Fetch the Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - Retry Count = {retry}')
+            nselive = NSELive()
+            return GetAdditionalData(NseStockCode,retry=retry+1)
+        else:
+            print(f'Retruning to Empty Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - After  Retrying for {retry} times')
+            logger.debug(f'Retruning to Empty Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - After  Retrying for {retry} times')
+            return {
             'MACRO': '',
             'SECTOR': '',
             'INDUSTRY': '',
