@@ -121,10 +121,10 @@ class DropboxClient:
             self.logger.error(f"File '{local_file_path}' not found.")
             print(f"File '{local_file_path}' not found.")
         except dropbox.exceptions.ApiError as e:
-            self.logger.error(f"Dropbox API error during upload: {e}")
+            self.logger.error(f"Dropbox API error during upload local_file_path={local_file_path} DropBoxFilePath={dropbox_file_path}: {e}")
             print(f"Dropbox API error during upload: {e}")
         except Exception as e:
-            self.logger.error(f"Unexpected error during file upload: {e}")
+            self.logger.error(f"Unexpected error during file upload: local_file_path={local_file_path} DropBoxFilePath={dropbox_file_path} Error: {e}")
             print(f"Unexpected error during file upload: {e}")
 
     def download_file(self, dropbox_file_path, local_file_path=None):
