@@ -635,5 +635,5 @@ for tday in dt:
     log_file_path = os.path.abspath("NSEBSEBhavCopyDownload.Log")
     print(f'Logfile is located locally at : {log_file_path}')
     logFileNameInDropBox=f'/NSEBSEBhavcopy/Logs/{datetime.strftime(tday,'%Y-%m-%d').upper()}-NSEBSEBhavCopyDownload.Log'
-    dropBoxClient.upload_file(log_file_path,logFileNameInDropBox,conflict_mode="add")
+    dropBoxClient.upload_file(log_file_path,logFileNameInDropBox)
     print(f'Log File have been Uploaded to {logFileNameInDropBox}.')
