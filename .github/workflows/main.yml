@@ -1,4 +1,4 @@
-name: Run NSEBSEBhavCopyDownload and Upload to Box on Windows
+name: Execute
 
 on:
   workflow_dispatch:
