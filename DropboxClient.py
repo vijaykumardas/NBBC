@@ -112,7 +112,7 @@ class DropboxClient:
 
         def _upload():
             with open(local_file_path, 'rb') as file:
-                self.dbx.files_upload(file.read(), dropbox_file_path)
+                self.dbx.files_upload(file.read(), dropbox_file_path,mode=dropbox.files.WriteMode.overwrite)
             self.logger.info(f"File '{local_file_path}' uploaded to '{dropbox_file_path}'.")
             print(f"File '{local_file_path}' uploaded to '{dropbox_file_path}'.")
         try:
