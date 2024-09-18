@@ -160,6 +160,7 @@ def GetAdditionalData(NseStockCode,retry=0):
 def GetMasterNSEData():
     try:
         global dropBoxClient
+        global nselive
         temp_dir = tempfile.gettempdir()
         NseMasterDataForToday=os.path.join(temp_dir, datetime.strftime(datetime.today(),'%Y%m%d-').upper()+'NSEMASTERDATA.csv')
         NseMasterDataForTodayinDropBox=f'/nsebsebhavcopy/DailyBhavCopy/Temp/{datetime.strftime(datetime.today(),'%Y%m%d-').upper()}NSEMASTERDATA.csv'
@@ -203,6 +204,11 @@ def GetMasterNSEData():
                 finally:
                     progressCounter+=1
                     bar.update(progressCounter)
+                    if(progressCounter % 500 == 0):
+                        del nselive
+                        time.sleep(120)
+                        nselive = NSELive()
+                        
             df.columns = ['SYMBOL','FULLNAME','MACRO','SECTOR','INDUSTRY','ISSUEDSIZE','FULLMARKETCAP']
             df.to_csv(NseMasterDataForToday, header = True,index = False)
             logger.debug("NSE Master Data File Saved at :"+NseMasterDataForToday)
