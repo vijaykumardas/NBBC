@@ -23,7 +23,7 @@ class DropboxClient:
         :param max_retries: Maximum number of retries for operations.
         :param retry_delay: Initial delay in seconds between retries, with exponential backoff.
         """
-        self.logger=logging.getLogger('B')
+        self.logger=logging.getLogger('DropboxClient')
         self.refresh_token = refresh_token or os.getenv('DROPBOX_REFRESH_TOKEN')
         self.client_id = client_id or os.getenv('DROPBOX_CLIENT_ID')
         self.client_secret = client_secret or os.getenv('DROPBOX_CLIENT_SECRET')
@@ -101,7 +101,7 @@ class DropboxClient:
                 time.sleep(wait_time)
         raise Exception(f"Operation failed after {self.max_retries} attempts.")
 
-    def upload_file(self, local_file_path, dropbox_file_path):
+    def upload_file(self, local_file_path, dropbox_file_path, conflict_mode="overwrite"):
         """
         Upload a file to Dropbox with retries.
 
@@ -111,8 +111,10 @@ class DropboxClient:
         self._check_access_token()
 
         def _upload():
+            # Set the conflict mode (overwrite, add, update)
+            mode = dropbox.files.WriteMode(conflict_mode)
             with open(local_file_path, 'rb') as file:
-                self.dbx.files_upload(file.read(), dropbox_file_path)
+                self.dbx.files_upload(file.read(), dropbox_file_path,mode=mode)
             self.logger.info(f"File '{local_file_path}' uploaded to '{dropbox_file_path}'.")
             print(f"File '{local_file_path}' uploaded to '{dropbox_file_path}'.")
         try:
