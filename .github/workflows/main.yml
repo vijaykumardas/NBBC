@@ -1,6 +1,12 @@
 name: Run NSEBSEBhavCopyDownload and Upload to Box on Windows
 
 on:
+  workflow_dispatch:
+      inputs:
+        example_input:
+          description: 'An example input'
+          required: false
+          default: 'default_value'
   schedule:
     # Cron syntax: minute hour day(month) month day(week)
     # This example will run every day at 00:00 (midnight) UTC
