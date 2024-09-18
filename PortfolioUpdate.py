@@ -231,7 +231,8 @@ def main():
     save_portfolio(updated_portfolio, portfolio_file)
 
     # upload the portfolio file to DropBox.
-    dropBoxClient.upload_file(portfolio_file, "/NSEBSEBhavcopy/Portfolio/portfolio.csv")
+    portfolio_filepath=os.path.abspath("portfolio.csv")
+    dropBoxClient.upload_file(portfolio_filepath, "/NSEBSEBhavcopy/Portfolio/portfolio.csv")
     
     # Update portfolio with OHLC data
     portfolio_with_ohlc = update_portfolio_with_ohlc(updated_portfolio)
