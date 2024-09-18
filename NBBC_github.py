@@ -30,7 +30,7 @@ import dropbox
 from DropboxClient import DropboxClient
 
 
-logging.basicConfig(filename="NSEBSEBhavCopyDownload.Log",level=logger.debug,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',datefmt='%d-%b-%y %H:%M:%S')
+logging.basicConfig(filename="NSEBSEBhavCopyDownload.Log",level=logging.DEBUG,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',datefmt='%d-%b-%y %H:%M:%S')
 
 pd.options.mode.chained_assignment = None  # default='warn'
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
