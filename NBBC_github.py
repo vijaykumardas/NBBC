@@ -566,7 +566,7 @@ EndDate=datetime.today()
 dt = pd.date_range(end=EndDate, periods=int(historicalDays))
 dataframestoWrite=[]
 for tday in dt:
-    dfNseIndexBhavCopy=DownloadNSEIndexBhavCopy(tday)
+    dfNseIndexBhavCopy=DownloadNSEIndexBhavCopy(tday+ datetime.timedelta(days=-1))
     if(dfNseIndexBhavCopy is not None and dfNseIndexBhavCopy.shape[0] > 1):
         print("NSE Index Bhavcopy Data : OK")
         dataframestoWrite.append(dfNseIndexBhavCopy)
@@ -586,13 +586,15 @@ for tday in dt:
         dataframestoWrite.append(dfNseSectoralAndIndustryBhavCopy)
     else:
         print("NSE Sectoral Data : NOT OK")
-    dfNSEBhavCopy=DownloadNSEBhavCopy(pd.date_range(start=tday,end=tday,periods=1))
+        
+    dfNSEBhavCopy=DownloadNSEBhavCopy(pd.date_range(start=tday + datetime.timedelta(days=-1),end=tday++ datetime.timedelta(days=-1),periods=1))
     if(dfNSEBhavCopy is not None and dfNSEBhavCopy.shape[0] > 1):
         print("NSE Stocks Bhavcopy Data : OK")
         dataframestoWrite.append(dfNSEBhavCopy)
     else:
         print("NSE Stocks Bhavcopy Data : NOT OK")
-    dfBSEBhavCopy=DownloadBSEBhavCopy(pd.date_range(start=tday,end=tday,periods=1))
+        
+    dfBSEBhavCopy=DownloadBSEBhavCopy(pd.date_range(start=tday+ datetime.timedelta(days=-1),end=tday+ datetime.timedelta(days=-1),periods=1))
     if(dfBSEBhavCopy is not None and dfBSEBhavCopy.shape[0] > 1):
         print("BSE Stocks Bhavcopy Data : OK")
         dataframestoWrite.append(dfBSEBhavCopy)
@@ -621,5 +623,5 @@ for tday in dt:
         handler.flush()
         handler.close()
     logFileNameInDropBox=f'/NSEBSEBhavCopy/Logs/{datetime.strftime(tday,'%Y-%m-%d').upper()}-NSEBSEBhavCopyDownload.Log'
-    dropBoxClient.upload_file(NSEBSEBhavCopyDownload.Log,logFileNameInDropBox)
+    dropBoxClient.upload_file('NSEBSEBhavCopyDownload.Log',logFileNameInDropBox)
     print(f'Log File have been Uploaded to {logFileNameInDropBox}.')
