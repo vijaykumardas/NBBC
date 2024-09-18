@@ -125,6 +125,7 @@ def GetAdditionalData(NseStockCode,retry=0):
         time.sleep(5)
         if(retry<3):
             print('Retrying to Fetch the Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - Retry Count = {retry}')
+            del nselive
             nselive = NSELive()
             return GetAdditionalData(NseStockCode,retry=retry+1)
         else:
@@ -142,6 +143,7 @@ def GetAdditionalData(NseStockCode,retry=0):
         if(retry<3):
             print(f'Retrying to Fetch the Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - Retry Count = {retry}')
             logger.debug(f'Retrying to Fetch the Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - Retry Count = {retry}')
+            del nselive
             nselive = NSELive()
             return GetAdditionalData(NseStockCode,retry=retry+1)
         else:
