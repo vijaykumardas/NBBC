@@ -1,4 +1,4 @@
-name: Execute
+name: Execute Daily Bhavcopy Downloader
 
 on:
   workflow_dispatch:
