@@ -17,7 +17,7 @@ logging.basicConfig(
     filename='MFBhavCopyDownload.log',
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
-    mode="w"
+    filemode='w'
 )
 
 # Mutual fund codes and download preferences (from your original script)
