@@ -28,6 +28,7 @@ import tempfile
 import PortfolioUpdate
 import dropbox
 from DropboxClient import DropboxClient
+from pytz import timezone
 
 
 logging.basicConfig(filename="NSEBSEBhavCopyDownload.Log",level=logging.DEBUG,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',datefmt='%d-%b-%y %H:%M:%S')
@@ -652,8 +653,10 @@ for tday in dt:
     print(f"Complete BhavCopy have been Uploaded to Dropbox at : {fileNameToDropbox}")
     
     logging.shutdown()  # Flush and close the log file
+    # Get the current time in IST
+    ist = timezone('Asia/Kolkata')
     log_file_path = os.path.abspath("NSEBSEBhavCopyDownload.Log")
     print(f'Logfile is located locally at : {log_file_path}')
-    logFileNameInDropBox=f'/NSEBSEBhavcopy/Logs/{datetime.strftime(tday,'%Y-%m-%d').upper()}-NSEBSEBhavCopyDownload.Log'
+    logFileNameInDropBox=f'/NSEBSEBhavcopy/Logs/{datetime.strftime(datetime.now(ist),'%Y-%m-%d').upper()}-NSEBSEBhavCopyDownload.Log'
     dropBoxClient.upload_file(log_file_path,logFileNameInDropBox)
     print(f'Log File have been Uploaded to {logFileNameInDropBox}.')
