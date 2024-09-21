@@ -230,7 +230,7 @@ def fetch_nav_history(start_date, end_date, output_dir):
 # Main function
 def main():
     # Input number of historical days or use default
-    historical_days = 10 #input("For how many days of data to fetch (Default 30): ")
+    historical_days = "10" #input("For how many days of data to fetch (Default 30): ")
     if not historical_days.isdigit():
         historical_days = 30
     else:
