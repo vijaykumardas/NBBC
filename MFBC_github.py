@@ -6,7 +6,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 from pytz import timezone
 from io import StringIO
-import DropboxClient
+from DropboxClient import DropboxClient
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 # Disable InsecureRequestWarning
