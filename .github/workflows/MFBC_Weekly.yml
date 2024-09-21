@@ -1,0 +1,45 @@
+name: Execute Mutual Fund Bhavcopy Downloader For last 10 Days
+
+on:
+  workflow_dispatch:
+      inputs:
+        example_input:
+          description: 'An example input'
+          required: false
+          default: 'default_value'
+  schedule:
+    # Cron syntax: minute hour day(month) month day(week)
+    # This example will run every day at 00:00 (midnight) UTC
+    - cron: '0 1 * * 6'  # Runs Every Saturday day at 1:000 AM UTC, which is 6:30 AM IST`
+
+jobs:
+  run-script-and-upload:
+    runs-on: windows-latest  # Specify Windows environment
+
+    steps:
+    # Step 1: Checkout the repository code
+    - name: Checkout the code
+      uses: vijaykumardas/checkout@v3
+
+    # Step 2: Set up Python environment
+    - name: Set up Python
+      uses: vijaykumardas/setup-python@v4
+      with:
+        python-version: '3.x'  # Specify your Python version
+
+
+    # Step 3: Install necessary Python dependencies
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    #Step 6: Run the first Python script (NBBC_github.py)
+    - name: Run MFBC_github.py
+      run: |
+         python MFBC_github.py
+
+    env: 
+      DROPBOX_REFRESH_TOKEN: ${{ secrets.DROPBOX_REFRESH_TOKEN }}
+      DROPBOX_CLIENT_ID: ${{ secrets.DROPBOX_CLIENT_ID }}
+      DROPBOX_CLIENT_SECRET: ${{ secrets.DROPBOX_CLIENT_SECRET }}
