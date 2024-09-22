@@ -213,7 +213,9 @@ def fetch_nav_history(start_date, end_date, output_dir):
             df = df[['DATE_YMD', 'TICKER', 'FULLNAME', 'OPEN', 'HIGH', 'LOW', 'CLOSE',
                      'VOLUME', 'INDUSTRYNAME', 'SECTORNAME', 'ALIAS', 'ADDRESS',
                      'COUNTRY', 'CURRENCY', 'OPENINT', 'AUX1', 'AUX2']]
-
+            # Remove rows where CLOSE is zero
+            df = df[df['CLOSE'] != 0]
+            
             # Get the current time in IST
             ist = timezone('Asia/Kolkata')
             current_time_ist = datetime.now(ist)
