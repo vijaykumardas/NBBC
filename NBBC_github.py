@@ -100,9 +100,9 @@ def GetNseEquityListDF():
         logger.exception("ERROR Occured  having the details as : ")
 
 def GetAdditionalData(NseStockCode,retry=0):
-    global nselive
     try:
         logger.debug("About To FETCH  Data For SYMBOL: "+NseStockCode + " using JUGAAD-DATA")
+        global nselive
         quotesJson = nselive.stock_quote(NseStockCode)
         logger.debug("Retrieved Stock_Quotes for SYMBOL: "+NseStockCode + " from JUGAAD-DATA")
         logger.debug("Stock_Quotes for SYMBOL: "+NseStockCode + " : "+ str(quotesJson))
@@ -123,6 +123,7 @@ def GetAdditionalData(NseStockCode,retry=0):
     except requests.exceptions.ReadTimeout:
         logger.debug("Timeout Occured while fetching Stock_Quotes for SYMBOL: "+NseStockCode + " from JUGAAD-DATA")
         print(f'Timeout Occured while fetching Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA')
+        global nselive
         del nselive
         time.sleep(180)
         if(retry<3):
@@ -140,6 +141,7 @@ def GetAdditionalData(NseStockCode,retry=0):
             }
     except Exception as e:
         logger.debug(f"Due to an Exception, Sleeping for 5 mins will establish the connection again and proceed with download. Exception = {str(e)}") 
+        global nselive
         del nselive
         time.sleep(180)
         if(retry<3):
@@ -159,7 +161,7 @@ def GetAdditionalData(NseStockCode,retry=0):
             }
             
 def GetMasterNSEData():
-    global nselive
+    
     try:
         global dropBoxClient
         temp_dir = tempfile.gettempdir()
@@ -206,6 +208,7 @@ def GetMasterNSEData():
                     progressCounter+=1
                     bar.update(progressCounter)
                     if(progressCounter % 500 == 0):
+                        global nselive
                         del nselive
                         time.sleep(120)
                         nselive = NSELive()
