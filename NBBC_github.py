@@ -100,65 +100,40 @@ def GetNseEquityListDF():
         logger.exception("ERROR Occured  having the details as : ")
 
 def GetAdditionalData(NseStockCode,retry=0):
-    try:
-        logger.debug("About To FETCH  Data For SYMBOL: "+NseStockCode + " using JUGAAD-DATA")
-        global nselive
-        quotesJson = nselive.stock_quote(NseStockCode)
-        logger.debug("Retrieved Stock_Quotes for SYMBOL: "+NseStockCode + " from JUGAAD-DATA")
-        logger.debug("Stock_Quotes for SYMBOL: "+NseStockCode + " : "+ str(quotesJson))
-        issuedSize = quotesJson['securityInfo']['issuedSize']
-        closePrice = 0
-        if(quotesJson['priceInfo']['close']>0):
-                closePrice = quotesJson['priceInfo']['close']
-        elif(quotesJson['priceInfo']['lastPrice']>0):
-            closePrice = quotesJson['priceInfo']['lastPrice']
-                
-        return {
-            'MACRO': quotesJson['industryInfo']['macro'],
-            'SECTOR': quotesJson['industryInfo']['sector'],
-            'INDUSTRY': quotesJson['industryInfo']['basicIndustry'],
-            'ISSUEDSIZE': issuedSize,
-            'FULLMARKETCAP': int(issuedSize * closePrice)
-            }
-    except requests.exceptions.ReadTimeout:
-        logger.debug("Timeout Occured while fetching Stock_Quotes for SYMBOL: "+NseStockCode + " from JUGAAD-DATA")
-        print(f'Timeout Occured while fetching Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA')
-        global nselive
-        del nselive
-        time.sleep(180)
-        if(retry<3):
-            print('Retrying to Fetch the Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - Retry Count = {retry}')
-            nselive = NSELive()
-            return GetAdditionalData(NseStockCode,retry=retry+1)
-        else:
-            print('Retruning to Empty Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - After  Retrying for {retry} times')
+    global nselive
+    for x in range(3):
+        try:
+            logger.debug("About To FETCH  Data For SYMBOL: "+NseStockCode + " using JUGAAD-DATA")
+            quotesJson = nselive.stock_quote(NseStockCode)
+            logger.debug("Retrieved Stock_Quotes for SYMBOL: "+NseStockCode + " from JUGAAD-DATA")
+            logger.debug("Stock_Quotes for SYMBOL: "+NseStockCode + " : "+ str(quotesJson))
+            issuedSize = quotesJson['securityInfo']['issuedSize']
+            closePrice = 0
+            if(quotesJson['priceInfo']['close']>0):
+                    closePrice = quotesJson['priceInfo']['close']
+            elif(quotesJson['priceInfo']['lastPrice']>0):
+                closePrice = quotesJson['priceInfo']['lastPrice']
+                    
             return {
-            'MACRO': 'NOMACRO',
-            'SECTOR': 'NOSECTOR',
-            'INDUSTRY': 'NOINDUSTRY',
-            'ISSUEDSIZE': 0,
-            'FULLMARKETCAP': 0.00
-            }
-    except Exception as e:
-        logger.debug(f"Due to an Exception, Sleeping for 5 mins will establish the connection again and proceed with download. Exception = {str(e)}") 
-        global nselive
-        del nselive
-        time.sleep(180)
-        if(retry<3):
-            print(f'Retrying to Fetch the Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - Retry Count = {retry}')
-            logger.debug(f'Retrying to Fetch the Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - Retry Count = {retry}')
+                'MACRO': quotesJson['industryInfo']['macro'],
+                'SECTOR': quotesJson['industryInfo']['sector'],
+                'INDUSTRY': quotesJson['industryInfo']['basicIndustry'],
+                'ISSUEDSIZE': issuedSize,
+                'FULLMARKETCAP': int(issuedSize * closePrice)
+                }
+        except Exception as e:
+            logger.debug(f"Due to an Exception, Sleeping for 5 mins will establish the connection again and proceed with download. Exception = {str(e)}") 
+            del nselive
+            time.sleep(180)
             nselive = NSELive()
-            return GetAdditionalData(NseStockCode,retry=retry+1)
-        else:
-            print(f'Retruning to Empty Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - After  Retrying for {retry} times')
-            logger.debug(f'Retruning to Empty Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - After  Retrying for {retry} times')
-            return {
-            'MACRO': 'NOMACRO',
-            'SECTOR': 'NOSECTOR',
-            'INDUSTRY': 'NOINDUSTRY',
-            'ISSUEDSIZE': 0,
-            'FULLMARKETCAP': 0.00
-            }
+            if(x==3):
+                return {
+                'MACRO': 'NOMACRO',
+                'SECTOR': 'NOSECTOR',
+                'INDUSTRY': 'NOINDUSTRY',
+                'ISSUEDSIZE': 0,
+                'FULLMARKETCAP': 0.00
+                }
             
 def GetMasterNSEData():
     
