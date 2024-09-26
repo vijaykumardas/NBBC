@@ -100,9 +100,9 @@ def GetNseEquityListDF():
         logger.exception("ERROR Occured  having the details as : ")
 
 def GetAdditionalData(NseStockCode,retry=0):
+    global nselive
     try:
         logger.debug("About To FETCH  Data For SYMBOL: "+NseStockCode + " using JUGAAD-DATA")
-        global nselive
         quotesJson = nselive.stock_quote(NseStockCode)
         logger.debug("Retrieved Stock_Quotes for SYMBOL: "+NseStockCode + " from JUGAAD-DATA")
         logger.debug("Stock_Quotes for SYMBOL: "+NseStockCode + " : "+ str(quotesJson))
@@ -132,9 +132,9 @@ def GetAdditionalData(NseStockCode,retry=0):
         else:
             print('Retruning to Empty Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - After  Retrying for {retry} times')
             return {
-            'MACRO': ' ',
-            'SECTOR': ' ',
-            'INDUSTRY': ' ',
+            'MACRO': 'NOMACRO',
+            'SECTOR': 'NOSECTOR',
+            'INDUSTRY': 'NOINDUSTRY',
             'ISSUEDSIZE': 0,
             'FULLMARKETCAP': 0.00
             }
@@ -151,17 +151,17 @@ def GetAdditionalData(NseStockCode,retry=0):
             print(f'Retruning to Empty Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - After  Retrying for {retry} times')
             logger.debug(f'Retruning to Empty Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - After  Retrying for {retry} times')
             return {
-            'MACRO': ' ',
-            'SECTOR': ' ',
-            'INDUSTRY': ' ',
+            'MACRO': 'NOMACRO',
+            'SECTOR': 'NOSECTOR',
+            'INDUSTRY': 'NOINDUSTRY',
             'ISSUEDSIZE': 0,
             'FULLMARKETCAP': 0.00
             }
             
 def GetMasterNSEData():
+    global nselive
     try:
         global dropBoxClient
-        global nselive
         temp_dir = tempfile.gettempdir()
         NseMasterDataForToday=os.path.join(temp_dir, datetime.strftime(datetime.today(),'%Y%m%d-').upper()+'NSEMASTERDATA.csv')
         NseMasterDataForTodayinDropBox=f'/nsebsebhavcopy/DailyBhavCopy/Temp/{datetime.strftime(datetime.today(),'%Y%m%d-').upper()}NSEMASTERDATA.csv'
