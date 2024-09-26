@@ -123,17 +123,17 @@ def GetAdditionalData(NseStockCode,retry=0):
                 }
         except Exception as e:
             logger.debug(f"Due to an Exception, Sleeping for 5 mins will establish the connection again and proceed with download. Exception = {str(e)}") 
-            del nselive
-            time.sleep(180)
-            nselive = NSELive()
-            if(x==3):
-                return {
-                'MACRO': 'NOMACRO',
-                'SECTOR': 'NOSECTOR',
-                'INDUSTRY': 'NOINDUSTRY',
-                'ISSUEDSIZE': 0,
-                'FULLMARKETCAP': 0.00
-                }
+            #del nselive
+            #time.sleep(180)
+            #nselive = NSELive()
+    logger.debug(f"Retried for 3 times but Still Exception Occurs for Symbol {NseStockCode}. Hence Returning an Empty Data") 
+    return {
+            'MACRO': 'NOMACRO',
+            'SECTOR': 'NOSECTOR',
+            'INDUSTRY': 'NOINDUSTRY',
+            'ISSUEDSIZE': 0,
+            'FULLMARKETCAP': 0.00
+            }
             
 def GetMasterNSEData():
     
@@ -154,9 +154,9 @@ def GetMasterNSEData():
             df=df[~df['SYMBOL'].str.endswith('-RE')]
             #df=df.iloc[0:10].copy()
             #df.reset_index(drop=True,inplace=True)
-            df['MACRO'] = ''
-            df['SECTOR'] = ''
-            df['INDUSTRY'] = ''
+            df['MACRO'] = 'NOMACRO'
+            df['SECTOR'] = 'NOSECTOR'
+            df['INDUSTRY'] = 'NOINDUSTRY'
             df['ISSUEDSIZE'] = 0
             df['FULLMARKETCAP'] = 0.00
             
