@@ -132,9 +132,9 @@ def GetAdditionalData(NseStockCode,retry=0):
         else:
             print('Retruning to Empty Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - After  Retrying for {retry} times')
             return {
-            'MACRO': '',
-            'SECTOR': '',
-            'INDUSTRY': '',
+            'MACRO': ' ',
+            'SECTOR': ' ',
+            'INDUSTRY': ' ',
             'ISSUEDSIZE': 0,
             'FULLMARKETCAP': 0.00
             }
@@ -151,9 +151,9 @@ def GetAdditionalData(NseStockCode,retry=0):
             print(f'Retruning to Empty Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - After  Retrying for {retry} times')
             logger.debug(f'Retruning to Empty Stock_Quotes for SYMBOL: {NseStockCode}  from JUGAAD-DATA - After  Retrying for {retry} times')
             return {
-            'MACRO': '',
-            'SECTOR': '',
-            'INDUSTRY': '',
+            'MACRO': ' ',
+            'SECTOR': ' ',
+            'INDUSTRY': ' ',
             'ISSUEDSIZE': 0,
             'FULLMARKETCAP': 0.00
             }

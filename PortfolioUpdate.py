@@ -17,6 +17,7 @@ def fetch_latest_price(ticker):
     # Get today's date and construct the filename
     today = datetime.now().strftime('%Y-%m-%d')
     filename = f"{today}-NSE-BSE-IS-ALL-EQ.CSV"
+    
     file_path = os.path.join(price_data_dir, filename)
     
     # Check if the file exists
