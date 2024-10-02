@@ -1,6 +1,7 @@
 import csv
 import requests
 import logging
+from DropboxClient import DropboxClient
 
 # Setup logging configuration
 logging.basicConfig(
@@ -90,6 +91,12 @@ def GenerateAllWatchListForNIFTY():
     for tls_name, csv_url in tls_files_and_urls:
         logging.info(f"Generating .TLS file for {tls_name} from {csv_url}")
         GenerateWatchListForNifty(tls_name, csv_url)
+        localfileName=f"{tls_name}.tls"
+        dropBoxUploadPath=f"/NSEBSEBhavCopy/Amibroker_Watchlists/{tls_name}.tls"
+        global dropboxClient
+        dropboxClient.upload_file(localfileName, dropBoxUploadPath)
+
+    
 
 def GenerateWatchListForBse(tls_name, bse_api_url):
     try:
@@ -190,7 +197,13 @@ def GenerateAllWatchListForBse():
     for tls_name, csv_url in tls_files_and_urls:
         logging.info(f"Generating .TLS file for {tls_name} from {csv_url}")
         GenerateWatchListForBse(tls_name, csv_url)
+        localfileName=f"{tls_name}.tls"
+        dropBoxUploadPath=f"/NSEBSEBhavCopy/Amibroker_Watchlists/{tls_name}.tls"
+        global dropboxClient
+        dropboxClient.upload_file(localfileName, dropBoxUploadPath)
 
 if __name__ == "__main__":
+    global dropboxClient
+    dropboxClient=DropboxClient()
     GenerateAllWatchListForNIFTY()
     GenerateAllWatchListForBse()
