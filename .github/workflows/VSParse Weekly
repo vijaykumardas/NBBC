@@ -1,0 +1,40 @@
+name: Run Python Script on Windows
+
+on:
+  workflow_dispatch:
+        inputs:
+          example_input:
+            description: 'An example input'
+            required: false
+            default: 'default_value'
+  schedule:
+    - cron: '30 19 * * 6'  # Every Sunday at 1:00 AM IST
+
+
+jobs:
+  run-script:
+    runs-on: windows-latest  # Use Windows as the runner
+    steps:
+      # Step 1: Checkout the repository code
+      - name: Checkout the code
+        uses: vijaykumardas/checkout@v3
+
+    # Step 2: Set up Python environment
+      - name: Set up Python
+        uses: vijaykumardas/setup-python@v4
+        with:
+          python-version: '3.x'  # Specify your Python version
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Python script
+        run: |
+          #python VSParse.py  # Update this with your script name
+          python BuildNseBseWatchList.py
+env:
+    DROPBOX_REFRESH_TOKEN: ${{ secrets.DROPBOX_REFRESH_TOKEN }}
+    DROPBOX_CLIENT_ID: ${{ secrets.DROPBOX_CLIENT_ID }}
+    DROPBOX_CLIENT_SECRET: ${{ secrets.DROPBOX_CLIENT_SECRET }}
