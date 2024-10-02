@@ -419,8 +419,8 @@ def DownloadBSEBhavCopy(dateRange):
                 bseBhavCopyDf = pd.read_csv(io.StringIO(r.decode('utf-8')))
                 
                 bseBhavCopyDf['TIMESTAMP']=timestampForDF
-                bseBhavCopyDf = bseBhavCopyDf[['FinInstrmId','TIMESTAMP','OpnPric','HghPric','LwPric','ClsPric','TtlTradgVol']]
-                bseBhavCopyDf.columns = ['SYMBOL','TIMESTAMP','OPEN','HIGH','LOW','CLOSE','TOTTRDQTY']
+                bseBhavCopyDf = bseBhavCopyDf[['FinInstrmId','TIMESTAMP','OpnPric','HghPric','LwPric','ClsPric','TtlTradgVol','FinInstrmNm']]
+                bseBhavCopyDf.columns = ['SYMBOL','TIMESTAMP','OPEN','HIGH','LOW','CLOSE','TOTTRDQTY','FinInstrmNm']
                 bseDeliveryDf=GetBSEDeliveryData(tday)
 
                 bseBhavCopyDf=bseBhavCopyDf.merge(bseDeliveryDf, on='SYMBOL', how='left')
@@ -428,7 +428,7 @@ def DownloadBSEBhavCopy(dateRange):
                 bseBhavCopyDf['TOTTRDQTY_y']=bseBhavCopyDf['TOTTRDQTY_y'].fillna(bseBhavCopyDf['TOTTRDQTY_x'])
                 bseBhavCopyDf.drop(['TOTTRDQTY_x'],inplace=True, axis=1)
                 bseBhavCopyDf=bseBhavCopyDf.rename(columns={"TOTTRDQTY_y": "TOTTRDQTY"})
-                bseBhavCopyDf["FULLNAME"]=''
+                bseBhavCopyDf["FULLNAME"]= bseBhavCopyDf['FinInstrmNm'].str.title()
                 bseBhavCopyDf["SECTORNAME"]=''
                 bseBhavCopyDf["INDUSTRYNAME"]=''
                 bseBhavCopyDf["ALIAS"]=''
