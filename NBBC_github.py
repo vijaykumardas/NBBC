@@ -438,7 +438,7 @@ def DownloadBSEBhavCopy(dateRange):
                 bseBhavCopyDf["OPENINT"]=0
                 bseBhavCopyDf["AUX1"]=0
                 bseBhavCopyDf["AUX2"]=0
-                bseBhavCopyDf.columns = ['TICKER','DATE_YMD','OPEN','HIGH','LOW','CLOSE','VOLUME','FULLNAME','INDUSTRYNAME','SECTORNAME','ALIAS','ADDRESS','COUNTRY','CURRENCY','OPENINT','AUX1','AUX2']
+                bseBhavCopyDf.columns = ['TICKER','DATE_YMD','OPEN','HIGH','LOW','CLOSE','VOLUME','FinInstrmNm','FULLNAME','INDUSTRYNAME','SECTORNAME','ALIAS','ADDRESS','COUNTRY','CURRENCY','OPENINT','AUX1','AUX2']
                 column_order = ['DATE_YMD','TICKER','FULLNAME','OPEN','HIGH','LOW','CLOSE','VOLUME','INDUSTRYNAME','SECTORNAME','ALIAS','ADDRESS','COUNTRY','CURRENCY','OPENINT','AUX1','AUX2']
                 bseBhavCopyDf=bseBhavCopyDf[column_order]
                 #filename = dateForFilename + '-BSE-EQ.csv'
