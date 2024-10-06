@@ -29,6 +29,7 @@ import PortfolioUpdate
 import dropbox
 from DropboxClient import DropboxClient
 from pytz import timezone
+from BseHelper import BseHelper
 
 
 logging.basicConfig(filename="NSEBSEBhavCopyDownload.Log",level=logging.DEBUG,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',datefmt='%d-%b-%y %H:%M:%S')
@@ -566,6 +567,7 @@ Session = requests.Session()
 global nselive
 global dropBoxClient
 dropBoxClient=DropboxClient()
+bseHelper= BseHelper()
 nselive = NSELive()
 # Download the Most Recent ValueStocks DataFile.
 # Get the most recent file
@@ -575,38 +577,53 @@ historicalDays=1#input("For How many days of Data to Fetch (Default 1): ")
 if(historicalDays == ''):
     historicalDays = 1
 EndDate=datetime.today()
+EndDate = datetime.now() - timedelta(days=2) # for debugging purpose only
 dt = pd.date_range(end=EndDate, periods=int(historicalDays))
 dataframestoWrite=[]
 for tday in dt:
+    '''
+    #1. NSE Index BhavCopy 
     dfNseIndexBhavCopy=DownloadNSEIndexBhavCopy(tday)
     if(dfNseIndexBhavCopy is not None and dfNseIndexBhavCopy.shape[0] > 1):
         print("NSE Index Bhavcopy Data : OK")
         dataframestoWrite.append(dfNseIndexBhavCopy)
     else:
         print("NSE Index Bhavcopy Data : NOT OK")
-        
+
+    #2. BSE Index BhavCopy     
     dfBseindexBhavCopy=GetBSEindexDataBhavCopy()
     if(dfBseindexBhavCopy is not None and dfBseindexBhavCopy.shape[0] > 1):
         print("BSE Index Bhavcopy Data : OK")
         dataframestoWrite.append(dfBseindexBhavCopy)
     else:
         print("BSE Index Bhavcopy Data : NOT OK")
-        
+
+    #3. NSE Sector and Industry Bhavcopy     
     dfNseSectoralAndIndustryBhavCopy=BuildNseSectoralAndIndustryBhavCopy()
     if(dfNseSectoralAndIndustryBhavCopy is not None and dfNseSectoralAndIndustryBhavCopy.shape[0] > 1):
         print("NSE Sectoral Data : OK")
         dataframestoWrite.append(dfNseSectoralAndIndustryBhavCopy)
     else:
         print("NSE Sectoral Data : NOT OK")
-        
+    
+    #4. NSE Equity Bhavcopy    
     dfNSEBhavCopy=DownloadNSEBhavCopy(pd.date_range(start=tday ,end=tday,periods=1))
     if(dfNSEBhavCopy is not None and dfNSEBhavCopy.shape[0] > 1):
         print("NSE Stocks Bhavcopy Data : OK")
         dataframestoWrite.append(dfNSEBhavCopy)
     else:
         print("NSE Stocks Bhavcopy Data : NOT OK")
-        
-    dfBSEBhavCopy=DownloadBSEBhavCopy(pd.date_range(start=tday,end=tday,periods=1))
+    '''
+    #5. BSE Sector and Industry Bhavcopy
+    dfBseSectoralAndIndustryBhavCopy=bseHelper.BuildBseSectoralAndIndustryBhavCopy()
+    if(dfBseSectoralAndIndustryBhavCopy is not None and dfBseSectoralAndIndustryBhavCopy.shape[0] > 1):
+        print("BSE Sector and Industry Bhavcopy : OK")
+        dataframestoWrite.append(dfBseSectoralAndIndustryBhavCopy)
+    else:
+        print("BSE Sector and Industry Bhavcopy : NOT OK")
+
+    #6. BSE Equity Bhavcopy    
+    dfBSEBhavCopy=bseHelper.DownloadBSEBhavCopy(pd.date_range(start=tday,end=tday,periods=1))
     if(dfBSEBhavCopy is not None and dfBSEBhavCopy.shape[0] > 1):
         print("BSE Stocks Bhavcopy Data : OK")
         dataframestoWrite.append(dfBSEBhavCopy)
@@ -619,6 +636,7 @@ for tday in dt:
     filename = dateForFilename + '-NSE-BSE-IS-ALL-EQ.CSV'
     merged_df.to_csv(filename, header = True,index = False,date_format='%Y%m%d')
     
+    #7. Portfolio Bhavcopy to be added at the end. Post the availability of the data
     dfPortfolioSummary=PortfolioUpdate.main()
     print(dfPortfolioSummary)
     merged_df=pd.concat([merged_df,dfPortfolioSummary], ignore_index=True)
@@ -635,6 +653,6 @@ for tday in dt:
     ist = timezone('Asia/Kolkata')
     log_file_path = os.path.abspath("NSEBSEBhavCopyDownload.Log")
     print(f'Logfile is located locally at : {log_file_path}')
-    logFileNameInDropBox=f'/NSEBSEBhavcopy/Logs/{datetime.strftime(datetime.now(ist),'%Y-%m-%d').upper()}-NSEBSEBhavCopyDownload.Log'
+    logFileNameInDropBox=f'/NSEBSEBhavcopy/Logs/{datetime.strftime(datetime.now(ist),'%Y-%m-%d %H-%M-%S').upper()}-NSEBSEBhavCopyDownload.Log'
     dropBoxClient.upload_file(log_file_path,logFileNameInDropBox)
     print(f'Log File have been Uploaded to {logFileNameInDropBox}.')
