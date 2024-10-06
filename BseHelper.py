@@ -215,6 +215,10 @@ class BseHelper:
                 summary_sector['SECTORNAME'] = 'Macros'
                 summary_sector['INDUSTRYNAME'] = 'Sectors'
                 summary_sector = summary_sector[['TICKER', 'FULLNAME','MARKETCAP','SECTORNAME','INDUSTRYNAME']]
+                
+                # Removing the Entries where SECTOR is not present.
+                summary_sector= summary_sector[summary_sector['TICKER']!='BSE_SECTOR: None'].copy()
+                summary_sector= summary_sector[summary_sector['TICKER']!='BSE_SECTOR: '].copy()
                 self.logger.debug(summary_sector)
                 self.logger.debug("SUMMARY OF DATA by SECTOR Completed")
                 
@@ -225,6 +229,11 @@ class BseHelper:
                 summary_industry['INDUSTRYNAME'] = summary_industry['INDUSTRYNAME']
                 summary_industry['FULLNAME'] = summary_industry['INDUSTRYNAME']
                 summary_industry = summary_industry[['TICKER', 'FULLNAME','MARKETCAP','SECTORNAME','INDUSTRYNAME']]
+                
+                # Removing the Entries where INDUSTRY is not present.
+                summary_industry= summary_industry[summary_industry['TICKER']!='BSE_INDUSTRY: '].copy()
+                summary_industry= summary_industry[summary_industry['TICKER']!='BSE_INDUSTRY: None'].copy()
+                
                 self.logger.debug(summary_industry)
                 self.logger.debug("SUMMARY OF DATA by INDUSTRY Completed")
                 
