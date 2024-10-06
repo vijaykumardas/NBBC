@@ -581,7 +581,7 @@ EndDate = datetime.now() - timedelta(days=2) # for debugging purpose only
 dt = pd.date_range(end=EndDate, periods=int(historicalDays))
 dataframestoWrite=[]
 for tday in dt:
-    '''
+    
     #1. NSE Index BhavCopy 
     dfNseIndexBhavCopy=DownloadNSEIndexBhavCopy(tday)
     if(dfNseIndexBhavCopy is not None and dfNseIndexBhavCopy.shape[0] > 1):
@@ -613,7 +613,7 @@ for tday in dt:
         dataframestoWrite.append(dfNSEBhavCopy)
     else:
         print("NSE Stocks Bhavcopy Data : NOT OK")
-    '''
+    
     #5. BSE Sector and Industry Bhavcopy
     dfBseSectoralAndIndustryBhavCopy=bseHelper.BuildBseSectoralAndIndustryBhavCopy()
     if(dfBseSectoralAndIndustryBhavCopy is not None and dfBseSectoralAndIndustryBhavCopy.shape[0] > 1):
