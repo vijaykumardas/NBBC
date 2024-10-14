@@ -121,12 +121,12 @@ class BseHelper:
     def GetAllBseScrips(self):
         """Fetch combined BSE scrips from both Equity and EQT0 segments and return a filtered DataFrame with additional info."""
         url1 = "https://api.bseindia.com/BseIndiaAPI/api/ListofScripData/w?Group=&Scripcode=&industry=&segment=Equity&status=Active"
-        url2 = "https://api.bseindia.com/BseIndiaAPI/api/ListofScripData/w?Group=&Scripcode=&industry=&segment=EQT0&status=Active"
+        #url2 = "https://api.bseindia.com/BseIndiaAPI/api/ListofScripData/w?Group=&Scripcode=&industry=&segment=EQT0&status=Active"
 
         df1 = self._GetBseScripList(url1)
-        df2 = self._GetBseScripList(url2)
+        #df2 = self._GetBseScripList(url2)
 
-        combined_df = pd.concat([df1, df2], ignore_index=True)
+        combined_df = df1
 
         # Filter and rename columns
         filtered_df = combined_df[['SCRIP_CD', 'Scrip_Name', 'ISIN_NUMBER', 'INDUSTRY', 'Mktcap']]
