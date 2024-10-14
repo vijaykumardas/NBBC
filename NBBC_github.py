@@ -183,10 +183,10 @@ def GetMasterNSEData():
                 finally:
                     progressCounter+=1
                     bar.update(progressCounter)
-                    if(progressCounter % 500 == 0):
+                    if(progressCounter % 150 == 0):
                         global nselive
                         del nselive
-                        time.sleep(120)
+                        time.sleep(10)
                         nselive = NSELive()
                         
             df.columns = ['SYMBOL','FULLNAME','MACRO','SECTOR','INDUSTRY','ISSUEDSIZE','FULLMARKETCAP']
