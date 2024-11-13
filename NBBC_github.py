@@ -123,7 +123,7 @@ def GetAdditionalData(NseStockCode,retry=0):
                 'FULLMARKETCAP': int(issuedSize * closePrice)
                 }
         except Exception as e:
-            logger.debug(f"Due to an Exception, Sleeping for 5 mins will establish the connection again and proceed with download. Exception = {str(e)}") 
+            logger.debug(f"Due to an Exception, Sleeping for 5 mins will establish the connection again and proceed with download. [Exception = {str(e)}],  [quotesJson={quotesJson}]") 
             #del nselive
             #time.sleep(180)
             #nselive = NSELive()
