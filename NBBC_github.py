@@ -102,6 +102,7 @@ def GetNseEquityListDF():
 
 def GetAdditionalData(NseStockCode,retry=0):
     global nselive
+    quotesJson=''
     for x in range(3):
         try:
             logger.debug("About To FETCH  Data For SYMBOL: "+NseStockCode + " using JUGAAD-DATA")
