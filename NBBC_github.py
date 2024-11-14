@@ -164,7 +164,7 @@ def GetMasterNSEData():
             df['ISSUEDSIZE'] = 0
             df['FULLMARKETCAP'] = 0.00
 			
-            dfMerged = pd.merge(df,dfBseScripList, on='ISIN_NUMBER', how='left',suffixes=('', '_new'))
+            df_merged = pd.merge(df,dfBseScripList, on='ISIN_NUMBER', how='left',suffixes=('', '_new'))
             df_merged['INDUSTRY'] = df_merged['INDUSTRY_new'].fillna(df_merged['INDUSTRY'])
             df_merged['SECTOR'] = df_merged['SECTOR_new'].fillna(df_merged['SECTOR'])
             df_merged['FULLMARKETCAP'] = df_merged['FULLMARKETCAP_new'].fillna(df_merged['FULLMARKETCAP'])
