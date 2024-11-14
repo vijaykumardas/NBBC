@@ -136,9 +136,52 @@ def GetAdditionalData(NseStockCode,retry=0):
             'ISSUEDSIZE': 0,
             'FULLMARKETCAP': 0.00
             }
-            
 def GetMasterNSEData():
-    
+    try:
+        global dropBoxClient
+        temp_dir = tempfile.gettempdir()
+        NseMasterDataForToday=os.path.join(temp_dir, datetime.strftime(datetime.today(),'%Y%m%d-').upper()+'NSEMASTERDATA.csv')
+        NseMasterDataForTodayinDropBox=f'/nsebsebhavcopy/DailyBhavCopy/Temp/{datetime.strftime(datetime.today(),'%Y%m%d-').upper()}NSEMASTERDATA.csv'
+        if( dropBoxClient.file_exists(NseMasterDataForTodayinDropBox)):
+            dropBoxClient.download_file(NseMasterDataForTodayinDropBox,NseMasterDataForToday)
+        file_exists = exists(NseMasterDataForToday)
+        if(file_exists):
+            logger.debug("NSE Master Data File found at :"+NseMasterDataForToday+", Hence no need to Build. Just return the Dataframe")
+        else:
+			bseHelper= BseHelper() #['SYMBOL', 'FULLNAME', 'ISIN_NUMBER', 'INDUSTRYNAME', 'SECTORNAME', 'MARKETCAP']
+			dfBseScripList=bseHelper.GetAllBseScrips()
+			dfBseScripList=df.rename(columns={"INDUSTRYNAME": "INDUSTRY","SECTORNAME":"SECTOR","MARKETCAP":"FULLMARKETCAP"})
+			
+            df=GetNseEquityListDF()
+            df=df[['SYMBOL','ISIN NUMBER','NAME OF COMPANY']]
+            df=df.rename(columns={"NAME OF COMPANY": "FULLNAME","ISIN NUMBER": "ISIN_NUMBER"})
+            df=df[~df['SYMBOL'].str.endswith('-RE')]
+            #df=df.iloc[0:10].copy()
+            #df.reset_index(drop=True,inplace=True)
+            df['MACRO'] = 'NOMACRO'
+            df['SECTOR'] = 'NOSECTOR'
+            df['INDUSTRY'] = 'NOINDUSTRY'
+            df['ISSUEDSIZE'] = 0
+            df['FULLMARKETCAP'] = 0.00
+			
+			dfMerged = pd.merge(df,dfBseScripList, on='ISIN_NUMBER', how='left',suffixes=('', '_new')
+			df_merged['INDUSTRY'] = df_merged['INDUSTRY_new'].fillna(df_merged['INDUSTRY'])
+			df_merged['SECTOR'] = df_merged['SECTOR_new'].fillna(df_merged['SECTOR'])
+			df_merged['FULLMARKETCAP'] = df_merged['FULLMARKETCAP_new'].fillna(df_merged['FULLMARKETCAP'])
+			
+			df_final = df_merged.drop(columns=['INDUSTRY_new', 'SECTOR_new', 'FULLMARKETCAP_new'])
+            
+            
+            df_final.columns = ['SYMBOL','FULLNAME','MACRO','SECTOR','INDUSTRY','ISSUEDSIZE','FULLMARKETCAP']
+            df_final.to_csv(NseMasterDataForToday, header = True,index = False)
+            logger.debug("NSE Master Data File Saved at :"+NseMasterDataForToday)
+            dropBoxClient.upload_file(NseMasterDataForToday,NseMasterDataForTodayinDropBox)
+        df=pd.read_csv(NseMasterDataForToday)
+        return df
+    except Exception as e:
+        logger.exception("ERROR: An Error Occured while Building the NSE Master Data.")
+        
+def GetMasterNSEData_OLD():
     try:
         global dropBoxClient
         temp_dir = tempfile.gettempdir()
