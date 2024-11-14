@@ -150,7 +150,7 @@ def GetMasterNSEData():
         else:
             bseHelper= BseHelper() #['SYMBOL', 'FULLNAME', 'ISIN_NUMBER', 'INDUSTRYNAME', 'SECTORNAME', 'MARKETCAP']
             dfBseScripList=bseHelper.GetAllBseScrips()
-            dfBseScripList=df.rename(columns={"INDUSTRYNAME": "INDUSTRY","SECTORNAME":"SECTOR","MARKETCAP":"FULLMARKETCAP"})
+            dfBseScripList=dfBseScripList.rename(columns={"INDUSTRYNAME": "INDUSTRY","SECTORNAME":"SECTOR","MARKETCAP":"FULLMARKETCAP"})
 			
             df=GetNseEquityListDF()
             df=df[['SYMBOL','ISIN NUMBER','NAME OF COMPANY']]
