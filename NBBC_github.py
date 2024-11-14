@@ -170,7 +170,7 @@ def GetMasterNSEData():
             df_merged['FULLMARKETCAP'] = df_merged['FULLMARKETCAP_new'].fillna(df_merged['FULLMARKETCAP'])
 			
             df_final = df_merged.drop(columns=['INDUSTRY_new', 'SECTOR_new', 'FULLMARKETCAP_new'])
-            logging.debug(df_final)
+            logging.debug(df_final.columns)
             
             df_final.columns = ['SYMBOL','FULLNAME','MACRO','SECTOR','INDUSTRY','ISSUEDSIZE','FULLMARKETCAP']
             df_final.to_csv(NseMasterDataForToday, header = True,index = False)
