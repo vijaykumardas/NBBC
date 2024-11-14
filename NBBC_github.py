@@ -153,8 +153,8 @@ def GetMasterNSEData():
             dfBseScripList=dfBseScripList.rename(columns={"INDUSTRYNAME": "INDUSTRY","SECTORNAME":"SECTOR","MARKETCAP":"FULLMARKETCAP"})
 			
             df=GetNseEquityListDF()
-            df=df[['SYMBOL','ISIN NUMBER','NAME OF COMPANY']]
-            df=df.rename(columns={"NAME OF COMPANY": "FULLNAME","ISIN NUMBER": "ISIN_NUMBER"})
+            df=df[['SYMBOL',' ISIN NUMBER','NAME OF COMPANY']]
+            df=df.rename(columns={"NAME OF COMPANY": "FULLNAME"," ISIN NUMBER": "ISIN_NUMBER"})
             df=df[~df['SYMBOL'].str.endswith('-RE')]
             #df=df.iloc[0:10].copy()
             #df.reset_index(drop=True,inplace=True)
