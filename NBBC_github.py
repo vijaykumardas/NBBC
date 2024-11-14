@@ -148,9 +148,9 @@ def GetMasterNSEData():
         if(file_exists):
             logger.debug("NSE Master Data File found at :"+NseMasterDataForToday+", Hence no need to Build. Just return the Dataframe")
         else:
-			bseHelper= BseHelper() #['SYMBOL', 'FULLNAME', 'ISIN_NUMBER', 'INDUSTRYNAME', 'SECTORNAME', 'MARKETCAP']
-			dfBseScripList=bseHelper.GetAllBseScrips()
-			dfBseScripList=df.rename(columns={"INDUSTRYNAME": "INDUSTRY","SECTORNAME":"SECTOR","MARKETCAP":"FULLMARKETCAP"})
+            bseHelper= BseHelper() #['SYMBOL', 'FULLNAME', 'ISIN_NUMBER', 'INDUSTRYNAME', 'SECTORNAME', 'MARKETCAP']
+            dfBseScripList=bseHelper.GetAllBseScrips()
+            dfBseScripList=df.rename(columns={"INDUSTRYNAME": "INDUSTRY","SECTORNAME":"SECTOR","MARKETCAP":"FULLMARKETCAP"})
 			
             df=GetNseEquityListDF()
             df=df[['SYMBOL','ISIN NUMBER','NAME OF COMPANY']]
@@ -164,7 +164,7 @@ def GetMasterNSEData():
             df['ISSUEDSIZE'] = 0
             df['FULLMARKETCAP'] = 0.00
 			
-			dfMerged = pd.merge(df,dfBseScripList, on='ISIN_NUMBER', how='left',suffixes=('', '_new')
+            dfMerged = pd.merge(df,dfBseScripList, on='ISIN_NUMBER', how='left',suffixes=('', '_new')
 			df_merged['INDUSTRY'] = df_merged['INDUSTRY_new'].fillna(df_merged['INDUSTRY'])
 			df_merged['SECTOR'] = df_merged['SECTOR_new'].fillna(df_merged['SECTOR'])
 			df_merged['FULLMARKETCAP'] = df_merged['FULLMARKETCAP_new'].fillna(df_merged['FULLMARKETCAP'])
