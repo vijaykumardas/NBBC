@@ -150,7 +150,7 @@ def GetMasterNSEData():
         else:
             bseHelper= BseHelper() #['SYMBOL', 'FULLNAME', 'ISIN_NUMBER', 'INDUSTRYNAME', 'SECTORNAME', 'MARKETCAP']
             dfBseScripList=bseHelper.GetAllBseScrips()
-            dfBseScripList=dfBseScripList.rename(columns={"INDUSTRYNAME": "INDUSTRY","SECTORNAME":"SECTOR","MARKETCAP":"FULLMARKETCAP"})
+            dfBseScripList=dfBseScripList.rename(columns={"INDUSTRYNAME": "INDUSTRY","SECTORNAME":"SECTOR","MACRONAME":"MACRO","MARKETCAP":"FULLMARKETCAP"})
 			
             df=GetNseEquityListDF()
             df=df[['SYMBOL',' ISIN NUMBER','NAME OF COMPANY']]
@@ -167,9 +167,10 @@ def GetMasterNSEData():
             df_merged = pd.merge(df,dfBseScripList, on='ISIN_NUMBER', how='left',suffixes=('', '_new'))
             df_merged['INDUSTRY'] = df_merged['INDUSTRY_new'].fillna(df_merged['INDUSTRY'])
             df_merged['SECTOR'] = df_merged['SECTOR_new'].fillna(df_merged['SECTOR'])
+            df_merged['MACRO'] = df_merged['MACRO_new'].fillna(df_merged['MACRO'])
             df_merged['FULLMARKETCAP'] = df_merged['FULLMARKETCAP_new'].fillna(df_merged['FULLMARKETCAP'])
 			
-            df_final = df_merged.drop(columns=['ISIN_NUMBER','INDUSTRY_new', 'SECTOR_new', 'FULLMARKETCAP_new','SYMBOL_new','FULLNAME_new'])
+            df_final = df_merged.drop(columns=['ISIN_NUMBER','INDUSTRY_new', 'SECTOR_new', 'MACRO_new','FULLMARKETCAP_new','SYMBOL_new','FULLNAME_new'])
             logging.debug(df_final.columns)
             
             df_final.columns = ['SYMBOL','FULLNAME','MACRO','SECTOR','INDUSTRY','ISSUEDSIZE','FULLMARKETCAP']
@@ -180,6 +181,7 @@ def GetMasterNSEData():
         return df
     except Exception as e:
         logger.exception("ERROR: An Error Occured while Building the NSE Master Data.")
+
         
 def GetMasterNSEData_OLD():
     try:

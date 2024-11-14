@@ -49,7 +49,7 @@ class BseHelper:
             return pd.read_csv(file_path)
         else:
             self.logger.info("Industry and sector cache file not found. Initializing an empty cache.")
-            return pd.DataFrame(columns=["INDUSTRYNAME", "SECTORNAME"])
+            return pd.DataFrame(columns=["INDUSTRYNAME", "SECTORNAME","MACRONAME"])
 
     def _save_industry_sector_cache(self):
         """Saves the updated industry and sector cache back to the CSV file if modified."""
@@ -61,7 +61,7 @@ class BseHelper:
             # Note: _cache_modified will NOT be reset, even after saving.
             # The flag will remain True after a save, as requested.
 
-    def _update_industry_sector_cache(self, industry, sector):
+    def _update_industry_sector_cache(self, industry, sector,macros):
         """Updates the cache with new INDUSTRYNAME and SECTORNAME if not already present."""
         if pd.notnull(industry) and industry.strip() != '' and pd.notnull(sector) and sector.strip() != '':
             existing_row = self._bse_industry_sector_cache[self._bse_industry_sector_cache['INDUSTRYNAME'] == industry]
@@ -69,10 +69,11 @@ class BseHelper:
             if not existing_row.empty:
                 # Update the SECTORNAME if it exists and both values are valid
                 self._bse_industry_sector_cache.loc[existing_row.index[0], 'SECTORNAME'] = sector
-                self.logger.info(f"Updated sector for existing industry in cache: ({industry}, {sector})")
+                self._bse_industry_sector_cache.loc[existing_row.index[0], 'MACRONAME'] = macros
+                self.logger.info(f"Updated sector for existing industry in cache: ({industry}, {sector}, {macros})")
             else:
                 # Add new entry if it doesn't exist
-                new_entry = pd.DataFrame({"INDUSTRYNAME": [industry], "SECTORNAME": [sector]})
+                new_entry = pd.DataFrame({"INDUSTRYNAME": [industry], "SECTORNAME": [sector],"MACRONAME":[macros]})
                 self._bse_industry_sector_cache = pd.concat([self._bse_industry_sector_cache, new_entry], ignore_index=True)
                 self.logger.info(f"Added new industry-sector pair to cache: ({industry}, {sector})")
             
@@ -112,11 +113,21 @@ class BseHelper:
             if additional_info and 'INDUSTRYNEW' in additional_info:
                 sectorname = additional_info['INDUSTRYNEW']
                 # Update the cache with the new INDUSTRYNAME and SECTORNAME
-                self._update_industry_sector_cache(industry, sectorname)
+                self._update_industry_sector_cache(industry, sectorname,"NOMACROS")
                 return sectorname
 
             # Fallback if no sectorname is found
             return None
+    def _get_macro_name(self, industry, ticker):
+        """Fetch SECTORNAME from the cache or the API if not found."""
+        # Query cache for the SECTORNAME
+        sector_row = self._bse_industry_sector_cache[self._bse_industry_sector_cache['INDUSTRYNAME'] == industry]
+
+        if not sector_row.empty and pd.notnull(sector_row.iloc[0]['MACRONAME']) and sector_row.iloc[0]['MACRONAME'].strip() != '':
+            # Return SECTORNAME from cache
+            return sector_row.iloc[0]['MACRONAME']
+        else:
+            return ''
 
     def GetAllBseScrips(self):
         """Fetch combined BSE scrips from both Equity and EQT0 segments and return a filtered DataFrame with additional info."""
@@ -148,14 +159,22 @@ class BseHelper:
             lambda row: self._get_sector_name(row['INDUSTRYNAME'], row['SYMBOL']) if pd.notnull(row['INDUSTRYNAME']) and row['INDUSTRYNAME'].strip() != '' else None,
             axis=1)
         
+        #Add MACRONAME column
+        filtered_df=filtered_df[filtered_df['INDUSTRYNAME']!='RANDOMXYZ'].copy()
+        filtered_df.loc[:, 'MACRONAME'] = filtered_df.apply(
+            lambda row: self._get_macro_name(row['INDUSTRYNAME'], row['SYMBOL']) if pd.notnull(row['INDUSTRYNAME']) and row['INDUSTRYNAME'].strip() != '' else None,
+            axis=1)
+        
+        
         filtered_df.loc[:,'SYMBOL']=filtered_df['SYMBOL'].astype('int64')
         filtered_df.loc[:,'FULLNAME']=filtered_df['SYMBOL'].astype('str')
         filtered_df.loc[:,'ISIN_NUMBER']=filtered_df['ISIN_NUMBER'].astype('str')
         filtered_df.loc[:,'INDUSTRYNAME']=filtered_df['INDUSTRYNAME'].astype('str')
         filtered_df.loc[:,'SECTORNAME']=filtered_df['SECTORNAME'].astype('str')
-        filtered_df.loc[:, 'MARKETCAP'] = filtered_df['MARKETCAP'].astype('float64')
+        filtered_df.loc[:,'MACRONAME']=filtered_df['MACRONAME'].astype('str')
+        filtered_df.loc[:,'MARKETCAP'] = filtered_df['MARKETCAP'].astype('float64')
         # Combine the DataFrames
-        return filtered_df[['SYMBOL', 'FULLNAME', 'ISIN_NUMBER', 'INDUSTRYNAME', 'SECTORNAME', 'MARKETCAP']]
+        return filtered_df[['SYMBOL', 'FULLNAME', 'ISIN_NUMBER', 'INDUSTRYNAME', 'SECTORNAME', 'MACRONAME','MARKETCAP']]
 
     def _GetAdditionalScripInfo(self, scripcode):
         """Private method to fetch detailed stock information for a given scrip code."""
