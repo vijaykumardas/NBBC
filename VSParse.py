@@ -195,6 +195,8 @@ def GetStockAdvancedInfoFromDLevels1(row):
         #    logging.debug("Exception during Reading Valuation Data"+Argument)
         
         return {
+        "DATENUM":datetime.now().strftime('%Y%m%d'),
+        "DATE": datetime.now().strftime('%d-%b-%Y'),
         "SYMBOL":rowBackup["SYMBOL"],
         "NAME":rowBackup["NAME"],
         "SECTOR":rowBackup["SECTOR"],
@@ -240,7 +242,7 @@ def BuildAndSaveAdvancedDLevelInfo(Dlevel_Advanced_info,Dlevel_Failed_Info):
         logging.debug("DLevel Basic Info not available, Check if 02.MASTER_EQUITY_L_W_DLEVEL_INFO.CSV Exists and Contains the data")
         return
     
-    csv_columns = ["SYMBOL", "NAME", "SECTOR", "CMP", "VALUATION", "FAIRRANGE", "PE", "SECTORPE", "MARKETCAP", "MKCAPTYPE", "TREND", "FUNDAMENTAL", "MOMENTUM", "DERATIO", "PRICETOSALES", "PLEDGE", "QBS", "QBS%", "AGS", "AGS%", "VALUATION_DCF", "VALUATION_GRAHAM", "VALUATION_EARNING", "VALUATION_BOOKVALUE", "VALUATION_SALES"]
+    csv_columns = ["DATENUM","DATE", "SYMBOL", "NAME", "SECTOR", "CMP", "VALUATION", "FAIRRANGE", "PE", "SECTORPE", "MARKETCAP", "MKCAPTYPE", "TREND", "FUNDAMENTAL", "MOMENTUM", "DERATIO", "PRICETOSALES", "PLEDGE", "QBS", "QBS%", "AGS", "AGS%", "VALUATION_DCF", "VALUATION_GRAHAM", "VALUATION_EARNING", "VALUATION_BOOKVALUE", "VALUATION_SALES"]
     
     dLevelInfo = []
     dLevelInfoFailure = []
@@ -259,7 +261,7 @@ def BuildAndSaveAdvancedDLevelInfo(Dlevel_Advanced_info,Dlevel_Failed_Info):
             dLevelInfoFailure.append(row)
             logging.debug("Some Exception while fetching the Advanced Info for :" + row["SYMBOL"])
             logging.debug("Exception: " + str(Argument))
-
+    
     # Writing advanced stock info to CSV
     try:
         if len(dLevelInfo) > 0:
@@ -299,7 +301,7 @@ def GenerateAmibrokerTlsForFundamentals(file_path):
     
     # Define the column names based on the provided CSV structure
     column_names = [
-        'SYMBOL', 'NAME', 'SECTOR', 'CMP', 'VALUATION', 'FAIRRANGE', 'PE', 'SECTORPE',
+        'DATE','SYMBOL', 'NAME', 'SECTOR', 'CMP', 'VALUATION', 'FAIRRANGE', 'PE', 'SECTORPE',
         'MARKETCAP', 'MKCAPTYPE', 'TREND', 'FUNDAMENTAL', 'MOMENTUM', 'DERATIO', 
         'PRICETOSALES', 'PLEDGE', 'QBS', 'QBS%', 'AGS', 'AGS%', 'VALUATION_DCF', 
         'VALUATION_GRAHAM', 'VALUATION_EARNING', 'VALUATION_BOOKVALUE', 'VALUATION_SALES'
@@ -317,10 +319,10 @@ def GenerateAmibrokerTlsForFundamentals(file_path):
     
     # Dictionary to map FUNDAMENTAL values to output filenames
     fundamentals_to_files = {
-        "Good Fundamentals": "Good Fundamentals.tls",
-        "Great Fundamentals": "Great Fundamentals.tls",
-        "Moderate Fundamentals": "Moderate Fundamentals.tls",
-        "Poor Fundamentals": "Poor Fundamentals.tls"
+        "Good Financials": "Good Fundamentals.tls",
+        "Great Financials": "Great Fundamentals.tls",
+        "Moderate Financials": "Moderate Fundamentals.tls",
+        "Poor Financials": "Poor Fundamentals.tls"
     }
     
     # Iterate over each fundamental type and write corresponding SYMBOL column to file
@@ -343,7 +345,7 @@ def GenerateAmibrokerTlsForFundamentals(file_path):
     # Create the "Great and Good Fundamentals" file
     try:
         output_file="Great and Good Fundamentals.tls"
-        great_and_good_df = df[df['FUNDAMENTAL'].isin(['Good Fundamentals', 'Great Fundamentals'])]
+        great_and_good_df = df[df['FUNDAMENTAL'].isin(['Good Financials', 'Great Financials'])]
         great_and_good_df[['SYMBOL']].to_csv(output_file, index=False, header=False)
         print(f"Wrote {len(great_and_good_df)} symbols to {output_file}")
         logging.info(f"Wrote {len(great_and_good_df)} symbols to {output_file}")
@@ -371,4 +373,8 @@ now = datetime.datetime.now()
 Dlevel_Advanced_info = now.strftime("%Y%m%d-%H%M%S") + '-3.DLEVEL_ADVANCED_INFO.CSV'
 Dlevel_Failed_Info = now.strftime("%Y%m%d-%H%M%S") + "-3.DLEVEL_ADVANCED_INFO_FAILURE.CSV"
 BuildAndSaveAdvancedDLevelInfo(Dlevel_Advanced_info,Dlevel_Failed_Info)
+
+# Test Code Below to download the File From DropBox and Build Amibroker TLS
+#dropboxClient.download_file("/NSEBSEBhavCopy/ValueStocks/20250104-193904-3.DLEVEL_ADVANCED_INFO.CSV")
+#Dlevel_Advanced_info="20250104-193904-3.DLEVEL_ADVANCED_INFO.CSV"
 GenerateAmibrokerTlsForFundamentals(Dlevel_Advanced_info)
