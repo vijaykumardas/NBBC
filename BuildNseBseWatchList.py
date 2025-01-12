@@ -15,10 +15,11 @@ logging.basicConfig(
 
 def GenerateWatchListForNifty(tls_name, csv_url):
     try:
+        global session
         # Step 1: Download CSV data from the given URL
         logging.info(f"Downloading CSV from URL: {csv_url}")
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
-        response = requests.get(csv_url, allow_redirects=True, headers=headers)
+        response = session.get(csv_url, allow_redirects=True, headers=headers)
         response.raise_for_status()  # Raise error for bad responses (404, etc.)
         logging.info("CSV download successful")
 
@@ -100,6 +101,7 @@ def GenerateAllWatchListForNIFTY():
 
 def GenerateWatchListForBse(tls_name, bse_api_url):
     try:
+        global session
         # Step 1: Setup headers for the API request
         headers = {
             "Accept": "application/json, text/plain, */*",
@@ -120,7 +122,7 @@ def GenerateWatchListForBse(tls_name, bse_api_url):
         logging.info(f"Fetching data from BSE API: {bse_api_url}")
         
         # Step 2: Make the API call
-        response = requests.get(bse_api_url, headers=headers)
+        response = session.get(bse_api_url, headers=headers)
         response.raise_for_status()  # Raise error for bad responses
         logging.info("BSE API call successful")
 
@@ -204,6 +206,8 @@ def GenerateAllWatchListForBse():
 
 if __name__ == "__main__":
     global dropboxClient
+    global session=requests.Session()
     dropboxClient=DropboxClient()
     GenerateAllWatchListForNIFTY()
+    session=requests.Session()
     GenerateAllWatchListForBse()
