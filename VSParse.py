@@ -195,8 +195,8 @@ def GetStockAdvancedInfoFromDLevels1(row):
         #    logging.debug("Exception during Reading Valuation Data"+Argument)
         
         return {
-        "DATENUM":datetime.now().strftime('%Y%m%d'),
-        "DATE": datetime.now().strftime('%d-%b-%Y'),
+        "DATENUM":datetime.datetime.now().strftime('%Y%m%d'),
+        "DATE": datetime.datetime.now().strftime('%d-%b-%Y'),
         "SYMBOL":rowBackup["SYMBOL"],
         "NAME":rowBackup["NAME"],
         "SECTOR":rowBackup["SECTOR"],
