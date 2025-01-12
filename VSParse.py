@@ -68,7 +68,7 @@ def GetStockInfoFromDLevels(NseMasterRow):
         print("Error")
 def BuildAndSaveDLevelBasicInfo():
     nseEquityData=GetNseEquityData() 
-    #nseEquityData=nseEquityData[:20]
+    nseEquityData=nseEquityData[:20]
     logging.debug(nseEquityData)
     Master_Equity_l_w_Dlevel_info='02.MASTER_EQUITY_L_W_DLEVEL_INFO.CSV'
     file_exists = exists(Master_Equity_l_w_Dlevel_info)
@@ -225,9 +225,12 @@ def GetStockAdvancedInfoFromDLevels1(row):
         
         }
     except Exception as Argument:
+        print("ERROR: Error Fetching Advanced Info for :"+rowBackup["SYMBOL"]+" having dlevelKey:"+rowBackup["DLEVEL_KEY"])
+        print("Exception: "+str(Argument))
         logging.debug("ERROR: Error Fetching Advanced Info for :"+rowBackup["SYMBOL"]+" having dlevelKey:"+rowBackup["DLEVEL_KEY"])
         logging.debug("Exception: "+str(Argument))
     finally:
+        print("FINISHED: Fetching Advanced Info for :"+rowBackup["SYMBOL"]+" having dlevelKey:"+rowBackup["DLEVEL_KEY"])
         logging.debug("FINISHED: Fetching Advanced Info for :"+rowBackup["SYMBOL"]+" having dlevelKey:"+rowBackup["DLEVEL_KEY"])
 
 def BuildAndSaveAdvancedDLevelInfo(Dlevel_Advanced_info,Dlevel_Failed_Info):
@@ -250,15 +253,19 @@ def BuildAndSaveAdvancedDLevelInfo(Dlevel_Advanced_info,Dlevel_Failed_Info):
     # Fetch advanced stock information
     for row in nseEquityData:
         try:
+            print("Processing Advanced Data for :" + row["SYMBOL"])
             logging.debug("Processing Advanced Data for :" + row["SYMBOL"])
             dLevelInfoRow = GetStockAdvancedInfoFromDLevels1(row)
             if dLevelInfoRow != None:
                 dLevelInfo.append(dLevelInfoRow)
             else:
                 dLevelInfoFailure.append(row)
+                print("Unable to Get Advance Stock Info for Symbol:" + row["SYMBOL"])
                 logging.debug("Unable to Get Advance Stock Info for Symbol:" + row["SYMBOL"])
         except Exception as Argument:
             dLevelInfoFailure.append(row)
+            print("Some Exception while fetching the Advanced Info for :" + row["SYMBOL"])
+            print("Exception: " + str(Argument))
             logging.debug("Some Exception while fetching the Advanced Info for :" + row["SYMBOL"])
             logging.debug("Exception: " + str(Argument))
     
