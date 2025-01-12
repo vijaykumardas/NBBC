@@ -206,8 +206,9 @@ def GenerateAllWatchListForBse():
 
 if __name__ == "__main__":
     global dropboxClient
-    global session=requests.Session()
+    global session
     dropboxClient=DropboxClient()
+    session=requests.Session()
     GenerateAllWatchListForNIFTY()
     session=requests.Session()
     GenerateAllWatchListForBse()
