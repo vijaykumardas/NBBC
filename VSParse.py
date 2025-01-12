@@ -68,7 +68,7 @@ def GetStockInfoFromDLevels(NseMasterRow):
         print("Error")
 def BuildAndSaveDLevelBasicInfo():
     nseEquityData=GetNseEquityData() 
-    nseEquityData=nseEquityData[:20]
+    #nseEquityData=nseEquityData[:20]
     logging.debug(nseEquityData)
     Master_Equity_l_w_Dlevel_info='02.MASTER_EQUITY_L_W_DLEVEL_INFO.CSV'
     file_exists = exists(Master_Equity_l_w_Dlevel_info)
