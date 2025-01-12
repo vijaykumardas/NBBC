@@ -270,16 +270,20 @@ def BuildAndSaveAdvancedDLevelInfo(Dlevel_Advanced_info,Dlevel_Failed_Info):
                 writer.writeheader()
                 for data in dLevelInfo:
                     writer.writerow(data)
+            print("DLevelAdvancedInfo has been Written to: " + Dlevel_Advanced_info)
             logging.debug("DLevelAdvancedInfo has been Written to: " + Dlevel_Advanced_info)
 
             # Uploading the generated CSV to Dropbox
             dropbox_path = f"/NSEBSEBhavcopy/ValueStocks/{Dlevel_Advanced_info}"  # Adjust the Dropbox folder path as needed
             dropboxClient.upload_file(Dlevel_Advanced_info, dropbox_path)
-
+            print("DLevelAdvancedInfo : " + Dlevel_Advanced_info +" has been Uploaded to DropBox at : " + dropbox_path)
+            logging.debug("DLevelAdvancedInfo : " + Dlevel_Advanced_info +" has been Uploaded to DropBox at : " + dropbox_path)
         else:
+            print("No data to write for Advanced Info CSV")
             logging.debug("No data to write for Advanced Info CSV")
 
     except IOError:
+        print("I/O error while writing to " + Dlevel_Advanced_info)
         logging.debug("I/O error while writing to " + Dlevel_Advanced_info)
 
     # Handle failures (if any) for logging purposes
