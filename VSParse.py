@@ -235,6 +235,7 @@ def GetStockAdvancedInfoFromDLevels1(row):
 
 def BuildAndSaveAdvancedDLevelInfo(Dlevel_Advanced_info,Dlevel_Failed_Info):
     global dropboxClient
+    status_code=True
     nseEquityData = BuildAndSaveDLevelBasicInfo()
     
     if len(nseEquityData) > 0:
@@ -243,7 +244,7 @@ def BuildAndSaveAdvancedDLevelInfo(Dlevel_Advanced_info,Dlevel_Failed_Info):
     else:
         print("DLevel Basic Info not available, Check if 02.MASTER_EQUITY_L_W_DLEVEL_INFO.CSV Exists and Contains the data")
         logging.debug("DLevel Basic Info not available, Check if 02.MASTER_EQUITY_L_W_DLEVEL_INFO.CSV Exists and Contains the data")
-        return
+        return False
     
     csv_columns = ["DATENUM","DATE", "SYMBOL", "NAME", "SECTOR", "CMP", "VALUATION", "FAIRRANGE", "PE", "SECTORPE", "MARKETCAP", "MKCAPTYPE", "TREND", "FUNDAMENTAL", "MOMENTUM", "DERATIO", "PRICETOSALES", "PLEDGE", "QBS", "QBS%", "AGS", "AGS%", "VALUATION_DCF", "VALUATION_GRAHAM", "VALUATION_EARNING", "VALUATION_BOOKVALUE", "VALUATION_SALES"]
     
@@ -288,10 +289,12 @@ def BuildAndSaveAdvancedDLevelInfo(Dlevel_Advanced_info,Dlevel_Failed_Info):
         else:
             print("No data to write for Advanced Info CSV")
             logging.debug("No data to write for Advanced Info CSV")
+            status_code=False
 
     except IOError:
         print("I/O error while writing to " + Dlevel_Advanced_info)
         logging.debug("I/O error while writing to " + Dlevel_Advanced_info)
+        status_code=False
 
     # Handle failures (if any) for logging purposes
     try:
@@ -304,6 +307,7 @@ def BuildAndSaveAdvancedDLevelInfo(Dlevel_Advanced_info,Dlevel_Failed_Info):
             logging.debug("Dlevel_Failed_Info has been Written to: " + Dlevel_Failed_Info)
     except IOError:
         logging.debug("I/O error while writing to " + Dlevel_Failed_Info)
+    return status_code
 
 
 def GenerateAmibrokerTlsForFundamentals(file_path):
@@ -389,3 +393,12 @@ BuildAndSaveAdvancedDLevelInfo(Dlevel_Advanced_info,Dlevel_Failed_Info)
 #dropboxClient.download_file("/NSEBSEBhavCopy/ValueStocks/20250104-193904-3.DLEVEL_ADVANCED_INFO.CSV")
 #Dlevel_Advanced_info="20250104-193904-3.DLEVEL_ADVANCED_INFO.CSV"
 GenerateAmibrokerTlsForFundamentals(Dlevel_Advanced_info)
+
+logging.shutdown()  # Flush and close the log file
+# Get the current time in IST
+ist = timezone('Asia/Kolkata')
+log_file_path = os.path.abspath("ValueStocksProcess.Log")
+print(f'Logfile is located locally at : {log_file_path}')
+logFileNameInDropBox=f'/NSEBSEBhavcopy/Logs/{datetime.strftime(datetime.now(ist),'%Y-%m-%d %H-%M-%S').upper()}-ValueStocksProcess.Log'
+dropBoxClient.upload_file(log_file_path,logFileNameInDropBox)
+print(f'Log File have been Uploaded to {logFileNameInDropBox}.')
