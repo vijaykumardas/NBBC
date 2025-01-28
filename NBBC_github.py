@@ -466,8 +466,8 @@ def DownloadBSEBhavCopy(dateRange):
                 bseBhavCopyDf = pd.read_csv(io.StringIO(r.decode('utf-8')))
                 
                 bseBhavCopyDf['TIMESTAMP']=timestampForDF
-		print(bseBhavCopyDf)
-		print(bseBhavCopyDf.columns)
+                print(bseBhavCopyDf)
+                print(bseBhavCopyDf.columns)
                 bseBhavCopyDf = bseBhavCopyDf[['FinInstrmId','TIMESTAMP','OpnPric','HghPric','LwPric','ClsPric','TtlTradgVol','FinInstrmNm']]
                 bseBhavCopyDf.columns = ['SYMBOL','TIMESTAMP','OPEN','HIGH','LOW','CLOSE','TOTTRDQTY','FinInstrmNm']
                 bseDeliveryDf=GetBSEDeliveryData(tday)
