@@ -98,7 +98,7 @@ def update_portfolio_with_latest_prices(portfolio,portfolioDate):
     unsold_portfolio = portfolio[portfolio['Sell Date'].isna()].copy()
     
     # Add column for latest closing prices and current value
-    unsold_portfolio['Current Price'] = unsold_portfolio['Ticker'].apply(fetch_latest_price,portfolioDate)
+    unsold_portfolio['Current Price'] = unsold_portfolio['Ticker'].apply(lambda x: fetch_latest_price(x, portfolioDate))
     unsold_portfolio['Current Value'] = round(unsold_portfolio['Current Price'] * unsold_portfolio['Quantity'],2)
     
     # Update only unsold entries
