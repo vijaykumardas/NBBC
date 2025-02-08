@@ -685,7 +685,7 @@ for tday in dt:
     merged_df.to_csv(filename, header = True,index = False,date_format='%Y%m%d')
     
     #7. Portfolio Bhavcopy to be added at the end. Post the availability of the data
-    dfPortfolioSummary=PortfolioUpdate.main(dt)
+    dfPortfolioSummary=PortfolioUpdate.main(tday)
     print(dfPortfolioSummary)
     merged_df=pd.concat([merged_df,dfPortfolioSummary], ignore_index=True)
     merged_df.to_csv(filename, header = True,index = False,date_format='%Y%m%d')
