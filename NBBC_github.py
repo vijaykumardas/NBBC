@@ -621,7 +621,7 @@ nselive = NSELive()
 # Get the most recent file
 GetMostRecentValueStocksDataFile()
 
-historicalDays=1#input("For How many days of Data to Fetch (Default 1): ")
+historicalDays=2 #input("For How many days of Data to Fetch (Default 1): ")
 if(historicalDays == ''):
     historicalDays = 1
 EndDate=datetime.today()
