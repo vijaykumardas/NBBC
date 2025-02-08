@@ -621,7 +621,7 @@ nselive = NSELive()
 # Get the most recent file
 GetMostRecentValueStocksDataFile()
 
-historicalDays=1 #input("For How many days of Data to Fetch (Default 1): ")
+historicalDays=2 #input("For How many days of Data to Fetch (Default 1): ")
 if(historicalDays == ''):
     historicalDays = 1
 EndDate=datetime.today()
@@ -685,7 +685,7 @@ for tday in dt:
     merged_df.to_csv(filename, header = True,index = False,date_format='%Y%m%d')
     
     #7. Portfolio Bhavcopy to be added at the end. Post the availability of the data
-    dfPortfolioSummary=PortfolioUpdate.main()
+    dfPortfolioSummary=PortfolioUpdate.main(dt)
     print(dfPortfolioSummary)
     merged_df=pd.concat([merged_df,dfPortfolioSummary], ignore_index=True)
     merged_df.to_csv(filename, header = True,index = False,date_format='%Y%m%d')

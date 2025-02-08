@@ -12,10 +12,10 @@ def validate_portfolio_columns(portfolio):
         print(f"Error: Missing columns in portfolio CSV: {', '.join(missing_columns)}")
         sys.exit(1)  # Exit the script with an error code
 
-def fetch_latest_price(ticker):
+def fetch_latest_price(ticker,portfolioDate):
     """Fetch the latest stock price for the given ticker from a CSV file."""
     # Get today's date and construct the filename
-    today = datetime.now().strftime('%Y-%m-%d')
+    today = portfolioDate.strftime('%Y-%m-%d')
     filename = f"{today}-NSE-BSE-IS-ALL-EQ.CSV"
     
     file_path = os.path.join(price_data_dir, filename)
@@ -43,10 +43,10 @@ def fetch_latest_price(ticker):
         logging.error(f"Error fetching latest price: {e}")
         return None
 
-def fetch_ohlc_data(ticker):
+def fetch_ohlc_data(ticker,portfolioDate):
     """Fetch OHLC data for the given ticker from a CSV file."""
     # Get today's date and construct the filename
-    today = datetime.now().strftime('%Y-%m-%d')
+    today = portfolioDate.strftime('%Y-%m-%d')
     filename = f"{today}-NSE-BSE-IS-ALL-EQ.CSV"
     file_path = os.path.join(price_data_dir, filename)
     
@@ -92,13 +92,13 @@ def fetch_ohlc_data(ticker):
             'Close': None
         }
 
-def update_portfolio_with_latest_prices(portfolio):
+def update_portfolio_with_latest_prices(portfolio,portfolioDate):
     """Update portfolio with the latest prices and current value."""
     # Filter out sold entries
     unsold_portfolio = portfolio[portfolio['Sell Date'].isna()].copy()
     
     # Add column for latest closing prices and current value
-    unsold_portfolio['Current Price'] = unsold_portfolio['Ticker'].apply(fetch_latest_price)
+    unsold_portfolio['Current Price'] = unsold_portfolio['Ticker'].apply(fetch_latest_price,portfolioDate)
     unsold_portfolio['Current Value'] = round(unsold_portfolio['Current Price'] * unsold_portfolio['Quantity'],2)
     
     # Update only unsold entries
@@ -116,14 +116,14 @@ def update_portfolio_with_latest_prices(portfolio):
     
     return ordered_portfolio
 
-def update_portfolio_with_ohlc(portfolio):
+def update_portfolio_with_ohlc(portfolio,portfolioDate):
     
     """Update portfolio with OHLC data."""
     # Filter out unsold entries
     unsold_portfolio = portfolio[portfolio['Sell Date'].isna()].copy()
     
     # Fetch OHLC data for unsold entries
-    ohlc_data = [fetch_ohlc_data(ticker) for ticker in unsold_portfolio['Ticker']]
+    ohlc_data = [fetch_ohlc_data(ticker,portfolioDate) for ticker in unsold_portfolio['Ticker']]
     ohlc_df = pd.DataFrame(ohlc_data)
     
     # Ensure the DataFrame aligns with the unsold portfolio by resetting index
@@ -168,10 +168,10 @@ def calculate_ohlc_summary(portfolio):
     
     return portfolio_summary
 
-def save_ohlc_summary(summary):
+def save_ohlc_summary(summary,portfolioDate):
     """Save OHLC summary to a new CSV file with date and additional columns."""
     # Construct the filename
-    today = datetime.now().strftime('%Y-%m-%d')
+    today = portfolioDate.strftime('%Y-%m-%d')
     filename = f"{today}-PORTFOLIOSUMMARY.CSV"
     file_path = os.path.join(price_data_dir, filename)
     
@@ -185,7 +185,7 @@ def save_ohlc_summary(summary):
         summary[col] = ''
     
     # Add DATE_YMD column with today's date
-    summary['DATE_YMD'] = datetime.now().strftime('%Y%m%d')
+    summary['DATE_YMD'] = portfolioDate.strftime('%Y%m%d')
     
     # Rename 'Portfolio Name' to 'TICKER'
     summary.rename(columns={'Portfolio Name': 'TICKER',"Open":"OPEN","High":"HIGH","Low":"LOW","Close":"CLOSE"}, inplace=True)
@@ -215,7 +215,11 @@ ohlc_summary_file = ''  # To be set dynamically based on the date
 # Required columns in portfolio.csv
 required_columns = ['Ticker', 'Quantity', 'Portfolio Name', 'Buy Date', 'Buy Price', 'Sell Date', 'Sell Price', 'Current Price', 'Current Value']
 
-def main():
+def main(portfolioDate):
+
+    if (portfolioDate == ''):
+        portfolioDate=datetime.today()
+
     dropBoxClient= DropboxClient()
     # Download the portfolio.csv from Drop Box.
     dropBoxClient.download_file("/NSEBSEBhavcopy/Portfolio/portfolio.csv", "portfolio.csv")
@@ -226,7 +230,7 @@ def main():
     validate_portfolio_columns(portfolio)
 
     # Update the portfolio with the latest closing prices
-    updated_portfolio = update_portfolio_with_latest_prices(portfolio)
+    updated_portfolio = update_portfolio_with_latest_prices(portfolio,portfolioDate)
 
     # Save the updated portfolio to CSV
     save_portfolio(updated_portfolio, portfolio_file)
@@ -236,7 +240,7 @@ def main():
     dropBoxClient.upload_file(portfolio_filepath, "/NSEBSEBhavcopy/Portfolio/portfolio.csv")
     
     # Update portfolio with OHLC data
-    portfolio_with_ohlc = update_portfolio_with_ohlc(updated_portfolio)
+    portfolio_with_ohlc = update_portfolio_with_ohlc(updated_portfolio,portfolioDate)
     #print(portfolio_with_ohlc)
     # Calculate OHLC summary
     ohlc_summary = calculate_ohlc_summary(portfolio_with_ohlc)
@@ -244,7 +248,7 @@ def main():
     #print(ohlc_summary)
 
     # Save OHLC summary to a separate CSV file
-    ohlc_summary=save_ohlc_summary(ohlc_summary)
+    ohlc_summary=save_ohlc_summary(ohlc_summary,portfolioDate)
     return ohlc_summary
 
 if __name__ == "__main__":
