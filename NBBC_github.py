@@ -437,7 +437,7 @@ def GetBSEDeliveryData(date):
         #headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'}
         logger.debug(" Bse Delivery Data Url : " +  Bse_Delivery_Data_Url)
         if(isUrlValid(Bse_Delivery_Data_Url)):
-            r = requests.get(Bse_Delivery_Data_Url,timeout = 6,allow_redirects=True,headers=headers)
+            r = requests.get(Bse_Delivery_Data_Url,allow_redirects=True,headers=headers)
             unzipcsvfile= zipfile.ZipFile(io.BytesIO(r.content))
             #print(BhavCopyFileNameinZIP)
             bseDeliveryDf = pd.read_csv(unzipcsvfile.open(DeliveryDataFileNameInZIP),sep='|')
@@ -462,7 +462,7 @@ def DownloadBSEBhavCopy(dateRange):
             
             if(isUrlValid(Bse_BhavCopy_Url)):
                 #print(Bse_BhavCopy_Url + " Valid Url")
-                r = requests.get(Bse_BhavCopy_Url,timeout = 6,allow_redirects=True,headers=headers).content
+                r = requests.get(Bse_BhavCopy_Url,allow_redirects=True,headers=headers).content
                 bseBhavCopyDf = pd.read_csv(io.StringIO(r.decode('utf-8')))
                 
                 bseBhavCopyDf['TIMESTAMP']=timestampForDF
