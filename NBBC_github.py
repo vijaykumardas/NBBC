@@ -692,7 +692,10 @@ for tday in dt:
     print(datetime.strftime(tday,'%d-%b-%Y').upper() + ":   ==>  "+filename + "   [Done]")
     dataframestoWrite=[]
     # Uploading the generated CSV to Dropbox
-    fileNameToDropbox = f"/NSEBSEBhavcopy/DailyBhavCopy/{filename}"  # Adjust the Dropbox folder path as needed
+    dateForFilenameInDropBox= datetime.strftime(tday,'%Y-%m-%d-%H-%M-%S').upper()
+    filenameInDropBox = dateForFilenameInDropBox + '-NSE-BSE-IS-ALL-EQ.CSV'
+
+    fileNameToDropbox = f"/NSEBSEBhavcopy/DailyBhavCopy/{filenameInDropBox}"  # Adjust the Dropbox folder path as needed
     dropBoxClient.upload_file(filename, fileNameToDropbox)
     print(f"Complete BhavCopy have been Uploaded to Dropbox at : {fileNameToDropbox}")
     
