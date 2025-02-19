@@ -680,7 +680,7 @@ for tday in dt:
         
     
     merged_df = pd.concat(dataframestoWrite, ignore_index=True)
-    dateForFilename= datetime.strftime(tday,'%Y-%m-%d-%H-%M-%S').upper()
+    dateForFilename= datetime.strftime(tday,'%Y-%m-%d').upper()
     filename = dateForFilename + '-NSE-BSE-IS-ALL-EQ.CSV'
     merged_df.to_csv(filename, header = True,index = False,date_format='%Y%m%d')
     
