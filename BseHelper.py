@@ -306,7 +306,7 @@ class BseHelper:
             #headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'}
             self.logger.debug(" Bse Delivery Data Url : " +  Bse_Delivery_Data_Url)
         
-            r = self.session.get(Bse_Delivery_Data_Url,timeout = 3,allow_redirects=True,headers=self.headers)
+            r = self.session.get(Bse_Delivery_Data_Url,allow_redirects=True,headers=self.headers)
             unzipcsvfile= zipfile.ZipFile(io.BytesIO(r.content))
             #print(BhavCopyFileNameinZIP)
             bseDeliveryDf = pd.read_csv(unzipcsvfile.open(DeliveryDataFileNameInZIP),sep='|')
@@ -330,7 +330,7 @@ class BseHelper:
                 headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'}
                 
                 self.logger.debug("BSE Bhavcopy Url = "+ Bse_BhavCopy_Url)
-                r = requests.get(Bse_BhavCopy_Url,timeout = 3,allow_redirects=True,headers=headers).content
+                r = self.session.get(Bse_BhavCopy_Url,allow_redirects=True,headers=headers).content
                 bseBhavCopyDf = pd.read_csv(io.StringIO(r.decode('utf-8')))
                 
                 bseBhavCopyDf['TIMESTAMP']=timestampForDF
