@@ -426,6 +426,7 @@ def BuildNseSectoralAndIndustryBhavCopy():
         
             
 def GetBSEDeliveryData(date):
+    global bseWebSession
     logger.debug("Downloading the BSE Delivery Data for the date = " + str(date))
     try:    
         Bse_Delivery_Data_UrlFormat="https://www.bseindia.com/BSEDATA/gross/{year}/SCBSEALL{ddmm}.zip"
@@ -437,7 +438,7 @@ def GetBSEDeliveryData(date):
         #headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'}
         logger.debug(" Bse Delivery Data Url : " +  Bse_Delivery_Data_Url)
         if(isUrlValid(Bse_Delivery_Data_Url)):
-            r = requests.get(Bse_Delivery_Data_Url,allow_redirects=True,headers=headers)
+            r = bseWebSession.get(Bse_Delivery_Data_Url,allow_redirects=True,headers=headers)
             unzipcsvfile= zipfile.ZipFile(io.BytesIO(r.content))
             #print(BhavCopyFileNameinZIP)
             bseDeliveryDf = pd.read_csv(unzipcsvfile.open(DeliveryDataFileNameInZIP),sep='|')
@@ -450,6 +451,7 @@ def GetBSEDeliveryData(date):
         logger.debug("ERROR: An Exception Occured Details = "+str(e))
         
 def DownloadBSEBhavCopy(dateRange):
+    global bseWebSession
     logger.debug("Downloading the BSE BhavCopy for the Date Range : "+str(dateRange))
     for tday in dateRange:
         try:
@@ -462,7 +464,7 @@ def DownloadBSEBhavCopy(dateRange):
             
             if(isUrlValid(Bse_BhavCopy_Url)):
                 #print(Bse_BhavCopy_Url + " Valid Url")
-                r = requests.get(Bse_BhavCopy_Url,allow_redirects=True,headers=headers).content
+                r = bseWebSession.get(Bse_BhavCopy_Url,allow_redirects=True,headers=headers).content
                 bseBhavCopyDf = pd.read_csv(io.StringIO(r.decode('utf-8')))
                 
                 bseBhavCopyDf['TIMESTAMP']=timestampForDF
@@ -536,6 +538,7 @@ def DownloadNSEIndexBhavCopy(tday):
         logger.exception(f'Timeout occurred Probable holiday {tday}.')
         
 def GetBSEindexDataBhavCopy():
+    global bseWebSession
     # Define the CURL command headers and URL
     headers = {
         "accept": "application/json, text/plain, */*",
@@ -562,7 +565,7 @@ def GetBSEindexDataBhavCopy():
     try:
         for url in urls:
             # Send the GET request with headers
-            response = requests.get(url, headers=headers)
+            response = bseWebSession.get(url, headers=headers)
 
             # Check for successful response (status code 200)
             if response.status_code == 200:
@@ -614,6 +617,8 @@ logger=logging.getLogger("NSEBSEBhavCopyBuilder")
 Session = requests.Session()
 global nselive
 global dropBoxClient
+global bseWebSession 
+bseWebSession = requests.Session()
 dropBoxClient=DropboxClient()
 bseHelper= BseHelper()
 nselive = NSELive()
