@@ -32,7 +32,7 @@ jobs:
 
       - name: Run Python script
         run: |
-          #python VSParse.py  # Update this with your script name
+          python VSParse.py  # Update this with your script name
           python BuildNseBseWatchList.py
 env:
     DROPBOX_REFRESH_TOKEN: ${{ secrets.DROPBOX_REFRESH_TOKEN }}
