@@ -204,6 +204,56 @@ def GenerateAllWatchListForBse():
         global dropboxClient
         dropboxClient.upload_file(localfileName, dropBoxUploadPath)
 
+def GenerateNseDerivativesWatchlist():
+    # Get the current date
+    today = datetime.now()
+    # Generate URLs for the last 5 days
+    urls = []
+    for i in range(5):
+        date = today - timedelta(days=i)
+        date_str = date.strftime("%Y%m%d")  # Format as YYYYMMDD
+        url = f"https://nsearchives.nseindia.com/content/fo/BhavCopy_NSE_FO_0_0_0_{date_str}_F_0000.csv.zip"
+        urls.append(url)
+    directory=''
+    for url in urls:
+        try:
+            print(f"Checking URL: {url}")
+            # Send GET request to download the zip file
+            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
+            response = requests.get(url,allow_redirects=True,headers=headers)
+            if response.status_code == 200:
+                print(f"Downloaded: {url}")
+                # If response is valid, save the zip file in memory
+                with zipfile.ZipFile(BytesIO(response.content)) as zip_ref:
+                    zip_ref.extractall("downloaded_zip")
+                    print("ZIP file extracted")
+                directory = "downloaded_zip"
+            else:
+                print(f"Failed to download from {url}, status code {response.status_code}")
+        except requests.exceptions.RequestException as e:
+            print(f"Error downloading {url}: {e}")
+    
+    for filename in os.listdir(directory):
+        if filename.endswith(".csv"):
+            csv_path = os.path.join(directory, filename)
+            # Load CSV into DataFrame
+            df = pd.read_csv(csv_path)
+
+            # Filter the data
+            filtered_df = df[(df['StrkPric'].isna()) & (df['FinInstrmTp'] == 'STF')]
+
+            # Get unique TckrSymb values
+            unique_symbols = filtered_df['TckrSymb'].dropna().unique()
+
+            # Write to .tls file
+            with open("Derivatives.tls", "w") as tls_file:
+                for symbol in unique_symbols:
+                    tls_file.write(f"{symbol}\n")
+            print("Filtered data written to Derivatives.tls")
+            dropBoxUploadPath=f"/NSEBSEBhavCopy/Amibroker_Watchlists/Derivatives.tls"
+            global dropboxClient
+            dropboxClient.upload_file("Derivatives.tls", dropBoxUploadPath)
+
 if __name__ == "__main__":
     global dropboxClient
     global session
@@ -212,3 +262,4 @@ if __name__ == "__main__":
     GenerateAllWatchListForNIFTY()
     session=requests.Session()
     GenerateAllWatchListForBse()
+    GenerateNseDerivativesWatchlist()
