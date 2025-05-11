@@ -607,9 +607,11 @@ def GetBSEindexDataBhavCopy():
             return dfBseIndexBhavCopy
         else:
             print("No dataframes to concatenate.")
+            return None
 
     except requests.exceptions.RequestException as e:
         logger.exception("Error Generating BSE BhavCopy")
+        return None
 
 logger=logging.getLogger("NSEBSEBhavCopyBuilder")
 #dateformat MM/DD/YYYY
