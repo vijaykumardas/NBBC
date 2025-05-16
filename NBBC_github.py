@@ -627,85 +627,85 @@ nselive = NSELive()
 # Download the Most Recent ValueStocks DataFile.
 # Get the most recent file
 GetMostRecentValueStocksDataFile()
-
-historicalDays=1 #input("For How many days of Data to Fetch (Default 1): ")
-if(historicalDays == ''):
-    historicalDays = 1
-EndDate=datetime.today()
-#EndDate = datetime.now() - timedelta(days=2) # for debugging purpose only
-dt = pd.date_range(end=EndDate, periods=int(historicalDays))
-dataframestoWrite=[]
-for tday in dt:
-    
-    #1. NSE Index BhavCopy 
-    dfNseIndexBhavCopy=DownloadNSEIndexBhavCopy(tday)
-    if(dfNseIndexBhavCopy is not None and dfNseIndexBhavCopy.shape[0] > 1):
-        print("NSE Index Bhavcopy Data : OK")
-        dataframestoWrite.append(dfNseIndexBhavCopy)
-    else:
-        print("NSE Index Bhavcopy Data : NOT OK")
-
-    #2. BSE Index BhavCopy     
-    dfBseindexBhavCopy=GetBSEindexDataBhavCopy()
-    if(dfBseindexBhavCopy is not None and dfBseindexBhavCopy.shape[0] > 1):
-        print("BSE Index Bhavcopy Data : OK")
-        dataframestoWrite.append(dfBseindexBhavCopy)
-    else:
-        print("BSE Index Bhavcopy Data : NOT OK")
-
-    #3. NSE Sector and Industry Bhavcopy     
-    dfNseSectoralAndIndustryBhavCopy=BuildNseSectoralAndIndustryBhavCopy()
-    if(dfNseSectoralAndIndustryBhavCopy is not None and dfNseSectoralAndIndustryBhavCopy.shape[0] > 1):
-        print("NSE Sectoral Data : OK")
-        dataframestoWrite.append(dfNseSectoralAndIndustryBhavCopy)
-    else:
-        print("NSE Sectoral Data : NOT OK")
-    
-    #4. NSE Equity Bhavcopy    
-    dfNSEBhavCopy=DownloadNSEBhavCopy(pd.date_range(start=tday ,end=tday,periods=1))
-    if(dfNSEBhavCopy is not None and dfNSEBhavCopy.shape[0] > 1):
-        print("NSE Stocks Bhavcopy Data : OK")
-        dataframestoWrite.append(dfNSEBhavCopy)
-    else:
-        print("NSE Stocks Bhavcopy Data : NOT OK")
-    
-    #5. BSE Sector and Industry Bhavcopy
-    dfBseSectoralAndIndustryBhavCopy=bseHelper.BuildBseSectoralAndIndustryBhavCopy()
-    if(dfBseSectoralAndIndustryBhavCopy is not None and dfBseSectoralAndIndustryBhavCopy.shape[0] > 1):
-        print("BSE Sector and Industry Bhavcopy : OK")
-        dataframestoWrite.append(dfBseSectoralAndIndustryBhavCopy)
-    else:
-        print("BSE Sector and Industry Bhavcopy : NOT OK")
-
-    #6. BSE Equity Bhavcopy    
-    dfBSEBhavCopy=bseHelper.DownloadBSEBhavCopy(pd.date_range(start=tday,end=tday,periods=1))
-    if(dfBSEBhavCopy is not None and dfBSEBhavCopy.shape[0] > 1):
-        print("BSE Stocks Bhavcopy Data : OK")
-        dataframestoWrite.append(dfBSEBhavCopy)
-    else:
-        print("BSE Stocks Bhavcopy Data : NOT OK")
-        
-    
-    merged_df = pd.concat(dataframestoWrite, ignore_index=True)
-    dateForFilename= datetime.strftime(tday,'%Y-%m-%d').upper()
-    filename = dateForFilename + '-NSE-BSE-IS-ALL-EQ.CSV'
-    merged_df.to_csv(filename, header = True,index = False,date_format='%Y%m%d')
-    
-    #7. Portfolio Bhavcopy to be added at the end. Post the availability of the data
-    dfPortfolioSummary=PortfolioUpdate.main(tday)
-    print(dfPortfolioSummary)
-    merged_df=pd.concat([merged_df,dfPortfolioSummary], ignore_index=True)
-    merged_df.to_csv(filename, header = True,index = False,date_format='%Y%m%d')
-    print(datetime.strftime(tday,'%d-%b-%Y').upper() + ":   ==>  "+filename + "   [Done]")
+try:
+    historicalDays=1 #input("For How many days of Data to Fetch (Default 1): ")
+    if(historicalDays == ''):
+        historicalDays = 1
+    EndDate=datetime.today()
+    #EndDate = datetime.now() - timedelta(days=2) # for debugging purpose only
+    dt = pd.date_range(end=EndDate, periods=int(historicalDays))
     dataframestoWrite=[]
-    # Uploading the generated CSV to Dropbox
-    dateForFilenameInDropBox= datetime.strftime(tday,'%Y-%m-%d-%H-%M-%S').upper()
-    filenameInDropBox = dateForFilenameInDropBox + '-NSE-BSE-IS-ALL-EQ.CSV'
+    for tday in dt:
+        
+        #1. NSE Index BhavCopy 
+        dfNseIndexBhavCopy=DownloadNSEIndexBhavCopy(tday)
+        if(dfNseIndexBhavCopy is not None and dfNseIndexBhavCopy.shape[0] > 1):
+            print("NSE Index Bhavcopy Data : OK")
+            dataframestoWrite.append(dfNseIndexBhavCopy)
+        else:
+            print("NSE Index Bhavcopy Data : NOT OK")
 
-    fileNameToDropbox = f"/NSEBSEBhavcopy/DailyBhavCopy/{filenameInDropBox}"  # Adjust the Dropbox folder path as needed
-    dropBoxClient.upload_file(filename, fileNameToDropbox)
-    print(f"Complete BhavCopy have been Uploaded to Dropbox at : {fileNameToDropbox}")
-    
+        #2. BSE Index BhavCopy     
+        dfBseindexBhavCopy=GetBSEindexDataBhavCopy()
+        if(dfBseindexBhavCopy is not None and dfBseindexBhavCopy.shape[0] > 1):
+            print("BSE Index Bhavcopy Data : OK")
+            dataframestoWrite.append(dfBseindexBhavCopy)
+        else:
+            print("BSE Index Bhavcopy Data : NOT OK")
+
+        #3. NSE Sector and Industry Bhavcopy     
+        dfNseSectoralAndIndustryBhavCopy=BuildNseSectoralAndIndustryBhavCopy()
+        if(dfNseSectoralAndIndustryBhavCopy is not None and dfNseSectoralAndIndustryBhavCopy.shape[0] > 1):
+            print("NSE Sectoral Data : OK")
+            dataframestoWrite.append(dfNseSectoralAndIndustryBhavCopy)
+        else:
+            print("NSE Sectoral Data : NOT OK")
+        
+        #4. NSE Equity Bhavcopy    
+        dfNSEBhavCopy=DownloadNSEBhavCopy(pd.date_range(start=tday ,end=tday,periods=1))
+        if(dfNSEBhavCopy is not None and dfNSEBhavCopy.shape[0] > 1):
+            print("NSE Stocks Bhavcopy Data : OK")
+            dataframestoWrite.append(dfNSEBhavCopy)
+        else:
+            print("NSE Stocks Bhavcopy Data : NOT OK")
+        
+        #5. BSE Sector and Industry Bhavcopy
+        dfBseSectoralAndIndustryBhavCopy=bseHelper.BuildBseSectoralAndIndustryBhavCopy()
+        if(dfBseSectoralAndIndustryBhavCopy is not None and dfBseSectoralAndIndustryBhavCopy.shape[0] > 1):
+            print("BSE Sector and Industry Bhavcopy : OK")
+            dataframestoWrite.append(dfBseSectoralAndIndustryBhavCopy)
+        else:
+            print("BSE Sector and Industry Bhavcopy : NOT OK")
+
+        #6. BSE Equity Bhavcopy    
+        dfBSEBhavCopy=bseHelper.DownloadBSEBhavCopy(pd.date_range(start=tday,end=tday,periods=1))
+        if(dfBSEBhavCopy is not None and dfBSEBhavCopy.shape[0] > 1):
+            print("BSE Stocks Bhavcopy Data : OK")
+            dataframestoWrite.append(dfBSEBhavCopy)
+        else:
+            print("BSE Stocks Bhavcopy Data : NOT OK")
+            
+        
+        merged_df = pd.concat(dataframestoWrite, ignore_index=True)
+        dateForFilename= datetime.strftime(tday,'%Y-%m-%d').upper()
+        filename = dateForFilename + '-NSE-BSE-IS-ALL-EQ.CSV'
+        merged_df.to_csv(filename, header = True,index = False,date_format='%Y%m%d')
+        
+        #7. Portfolio Bhavcopy to be added at the end. Post the availability of the data
+        dfPortfolioSummary=PortfolioUpdate.main(tday)
+        print(dfPortfolioSummary)
+        merged_df=pd.concat([merged_df,dfPortfolioSummary], ignore_index=True)
+        merged_df.to_csv(filename, header = True,index = False,date_format='%Y%m%d')
+        print(datetime.strftime(tday,'%d-%b-%Y').upper() + ":   ==>  "+filename + "   [Done]")
+        dataframestoWrite=[]
+        # Uploading the generated CSV to Dropbox
+        dateForFilenameInDropBox= datetime.strftime(tday,'%Y-%m-%d-%H-%M-%S').upper()
+        filenameInDropBox = dateForFilenameInDropBox + '-NSE-BSE-IS-ALL-EQ.CSV'
+
+        fileNameToDropbox = f"/NSEBSEBhavcopy/DailyBhavCopy/{filenameInDropBox}"  # Adjust the Dropbox folder path as needed
+        dropBoxClient.upload_file(filename, fileNameToDropbox)
+        print(f"Complete BhavCopy have been Uploaded to Dropbox at : {fileNameToDropbox}")
+finally:    
     logging.shutdown()  # Flush and close the log file
     # Get the current time in IST
     ist = timezone('Asia/Kolkata')
