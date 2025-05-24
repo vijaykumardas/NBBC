@@ -43,13 +43,17 @@ def GenerateWatchListForNifty(tls_name, csv_url):
                 if symbol:  # Ensure Symbol column exists and isn't empty
                     tls_file.write(symbol + "\n")
         logging.info(f"{tls_filename} file created successfully!")
+        return 1
 
     except requests.exceptions.RequestException as e:
         logging.error(f"Failed to download the CSV. Error: {e}")
+        return 0
     except KeyError:
         logging.error("The CSV does not have a 'Symbol' column.")
+        return 0
     except Exception as e:
         logging.error(f"An unexpected error occurred: {e}")
+        return 0
 
 def GenerateAllWatchListForNIFTY():
     # Hardcode the TLS file names and their respective CSV URLs
@@ -93,25 +97,28 @@ def GenerateAllWatchListForNIFTY():
         ("NIFTY TRANSPORTATION AND LOGISTICS", "https://www.niftyindices.com/IndexConstituent/ind_niftytransportationandlogistics%20_list.csv"),
         # Add more tuples as needed
     ]
-
+    
     for tls_name, csv_url in tls_files_and_urls:
         logging.info(f"Generating .TLS file for {tls_name} from {csv_url}")
-        GenerateWatchListForNifty(tls_name, csv_url)
-        localfileName=f"{tls_name}.tls"
-        dropBoxUploadPath=f"/NSEBSEBhavCopy/Amibroker_Watchlists/{tls_name}.tls"
-        global dropboxClient
-        dropboxClient.upload_file(localfileName, dropBoxUploadPath)
+        status_Code=GenerateWatchListForNifty(tls_name, csv_url)
+        if(status_Code==1):
+            localfileName=f"{tls_name}.tls"
+            dropBoxUploadPath=f"/NSEBSEBhavCopy/Amibroker_Watchlists/{tls_name}.tls"
+            global dropboxClient
+            dropboxClient.upload_file(localfileName, dropBoxUploadPath)
+            logging.info(f"Uploaded to Dropbox for  {tls_name} from {csv_url} at : {dropBoxUploadPath} ")
+        else:
+            logging.info(f"No Files to Upload to Dropbox for  {tls_name} from {csv_url}")
 
 def GenerateWatchListForBse(tls_name, bse_api_url):
     try:
         global session
         # Step 1: Setup headers for the API request
-        '''
+        
         headers = {
             "Accept": "application/json, text/plain, */*",
             "Accept-Language": "en-US,en;q=0.6",
             "Connection": "keep-alive",
-            "Cookie": "ext_name=ojplmecpdpgccookcobabopnaifgidhf",
             "Referer": "https://www.asiaindex.co.in/indices/code/16/",
             "Sec-Fetch-Dest": "empty",
             "Sec-Fetch-Mode": "cors",
@@ -122,8 +129,8 @@ def GenerateWatchListForBse(tls_name, bse_api_url):
             "sec-ch-ua-mobile": "?0",
             "sec-ch-ua-platform": "\"Windows\""
         }
-        '''
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
+        
+        #headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
         
         logging.info(f"Fetching data from BSE API: {bse_api_url}")
         
@@ -147,13 +154,16 @@ def GenerateWatchListForBse(tls_name, bse_api_url):
                     tls_file.write(symbol + "\n")
         
         logging.info(f"{tls_filename} file created successfully!")
-
+        return 1
     except requests.exceptions.RequestException as e:
         logging.error(f"Failed to fetch data from the BSE API. Error: {e}")
+        return 0
     except KeyError:
         logging.error("The JSON response does not have a 'Table' key.")
+        return 0
     except Exception as e:
         logging.error(f"An unexpected error occurred: {e}")
+        return 0
 
 def GenerateAllWatchListForBse():
     # Hardcode the TLS file names and their respective CSV URLs
@@ -204,11 +214,15 @@ def GenerateAllWatchListForBse():
 
     for tls_name, csv_url in tls_files_and_urls:
         logging.info(f"Generating .TLS file for {tls_name} from {csv_url}")
-        GenerateWatchListForBse(tls_name, csv_url)
-        localfileName=f"{tls_name}.tls"
-        dropBoxUploadPath=f"/NSEBSEBhavCopy/Amibroker_Watchlists/{tls_name}.tls"
-        global dropboxClient
-        dropboxClient.upload_file(localfileName, dropBoxUploadPath)
+        status_Code=GenerateWatchListForBse(tls_name, csv_url)
+        if(status_Code==1):
+            localfileName=f"{tls_name}.tls"
+            dropBoxUploadPath=f"/NSEBSEBhavCopy/Amibroker_Watchlists/{tls_name}.tls"
+            global dropboxClient
+            dropboxClient.upload_file(localfileName, dropBoxUploadPath)
+            logging.info(f"Uploaded to Dropbox for  {tls_name} from {csv_url} at : {dropBoxUploadPath} ")
+        else:
+            logging.info(f"No Files to Upload to Dropbox for  {tls_name} from {csv_url}")
 
 def GenerateNseDerivativesWatchlist():
     # Get the current date
