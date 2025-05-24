@@ -102,12 +102,11 @@ def GenerateAllWatchListForNIFTY():
         global dropboxClient
         dropboxClient.upload_file(localfileName, dropBoxUploadPath)
 
-    
-
 def GenerateWatchListForBse(tls_name, bse_api_url):
     try:
         global session
         # Step 1: Setup headers for the API request
+        '''
         headers = {
             "Accept": "application/json, text/plain, */*",
             "Accept-Language": "en-US,en;q=0.6",
@@ -123,6 +122,8 @@ def GenerateWatchListForBse(tls_name, bse_api_url):
             "sec-ch-ua-mobile": "?0",
             "sec-ch-ua-platform": "\"Windows\""
         }
+        '''
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
         
         logging.info(f"Fetching data from BSE API: {bse_api_url}")
         
