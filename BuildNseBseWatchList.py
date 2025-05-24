@@ -135,7 +135,7 @@ def GenerateWatchListForBse(tls_name, bse_api_url):
         logging.info(f"Fetching data from BSE API: {bse_api_url}")
         
         # Step 2: Make the API call
-        response = session.get(bse_api_url, headers=headers)
+        response = session.get(bse_api_url, headers=headers,timeout=10)
         response.raise_for_status()  # Raise error for bad responses
         logging.info("BSE API call successful")
 
