@@ -13,7 +13,7 @@ logging.basicConfig(
     level=logging.INFO,  # Log all INFO and above (INFO, WARNING, ERROR, CRITICAL)
     format='%(asctime)s - %(levelname)s - %(message)s',  # Format for logging
     handlers=[
-        logging.FileHandler("tls_generator.log"),  # Log output to file
+        logging.FileHandler("BuildNseBseWatchList.Log"),  # Log output to file
         logging.StreamHandler()  # Also log to the console
     ]
 )
@@ -262,9 +262,19 @@ def GenerateNseDerivativesWatchlist():
 if __name__ == "__main__":
     global dropboxClient
     global session
-    dropboxClient=DropboxClient()
-    session=requests.Session()
-    GenerateAllWatchListForNIFTY()
-    session=requests.Session()
-    GenerateAllWatchListForBse()
-    GenerateNseDerivativesWatchlist()
+    try:
+        dropboxClient=DropboxClient()
+        session=requests.Session()
+        GenerateAllWatchListForNIFTY()
+        session=requests.Session()
+        GenerateAllWatchListForBse()
+        GenerateNseDerivativesWatchlist()
+    finally:
+        logging.shutdown()  # Flush and close the log file
+        # Get the current time in IST
+        ist = timezone('Asia/Kolkata')
+        log_file_path = os.path.abspath("BuildNseBseWatchList.Log")
+        print(f'Logfile is located locally at : {log_file_path}')
+        logFileNameInDropBox=f'/NSEBSEBhavcopy/Logs/{datetime.strftime(datetime.now(ist),'%Y-%m-%d %H-%M-%S').upper()}-BuildNseBseWatchList.Log'
+        dropBoxClient.upload_file(log_file_path,logFileNameInDropBox)
+        print(f'Log File have been Uploaded to {logFileNameInDropBox}.')
