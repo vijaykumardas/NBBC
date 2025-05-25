@@ -9,3 +9,4 @@ urllib3
 bs4
 pytz
 dropbox
+dotenv
