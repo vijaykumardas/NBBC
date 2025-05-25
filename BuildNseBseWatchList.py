@@ -7,7 +7,7 @@ import os
 import pandas as pd
 from io import BytesIO
 from datetime import datetime, timedelta
-
+from dotenv import load_dotenv
 # Setup logging configuration
 logging.basicConfig(
     level=logging.INFO,  # Log all INFO and above (INFO, WARNING, ERROR, CRITICAL)
@@ -275,9 +275,14 @@ def GenerateNseDerivativesWatchlist():
             dropboxClient.upload_file("Derivatives.tls", dropBoxUploadPath)
 
 if __name__ == "__main__":
+    load_dotenv()
     global dropboxClient
     global session
     try:
+        print(os.getenv('DROPBOX_CLIENT_ID'))
+        print(os.getenv('DROPBOX_CLIENT_SECRET'))
+        print(os.getenv('DROPBOX_REFRESH_TOKEN'))
+        
         dropboxClient=DropboxClient()
         session=requests.Session()
         GenerateAllWatchListForNIFTY()
