@@ -24,12 +24,12 @@ def clean_untracked_files(folder_to_clean=None):
 
     # Convert tracked files to absolute paths
     tracked_abs_paths = {os.path.abspath(os.path.join(folder_to_clean, f)) for f in tracked_files}
-
+    print(tracked_abs_paths)
     for root, dirs, files in os.walk(folder_to_clean, topdown=False):
         for name in files:
             full_path = os.path.abspath(os.path.join(root, name))
             if full_path not in tracked_abs_paths:
-                os.remove(full_path)
+                #os.remove(full_path)
                 print(f"Deleted file: {full_path}")
 
         for name in dirs:
@@ -42,7 +42,7 @@ def clean_untracked_files(folder_to_clean=None):
                 print('skipping .github')
                 continue
             if not os.listdir(dir_path):
-                shutil.rmtree(dir_path)
+                #shutil.rmtree(dir_path)
                 print(f"Deleted empty folder: {dir_path}")
 
 if __name__ == "__main__":
