@@ -39,7 +39,7 @@ def clean_untracked_files(folder_to_clean=None):
                 print('Skipping .git')
                 continue
             if name == '.github':
-                print('skipping .github'
+                print('skipping .github')
                 continue
             if not os.listdir(dir_path):
                 shutil.rmtree(dir_path)
