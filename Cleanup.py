@@ -27,6 +27,7 @@ def clean_untracked_files(folder_to_clean=None):
     print(tracked_abs_paths)
     for root, dirs, files in os.walk(folder_to_clean, topdown=False):
         for name in files:
+            print(root+ " " +name)
             full_path = os.path.abspath(os.path.join(root, name))
             if full_path not in tracked_abs_paths:
                 #os.remove(full_path)

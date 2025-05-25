@@ -253,27 +253,27 @@ def GenerateNseDerivativesWatchlist():
                 print(f"Failed to download from {url}, status code {response.status_code}")
         except requests.exceptions.RequestException as e:
             print(f"Error downloading {url}: {e}")
-    
-    for filename in os.listdir(directory):
-        if filename.endswith(".csv"):
-            csv_path = os.path.join(directory, filename)
-            # Load CSV into DataFrame
-            df = pd.read_csv(csv_path)
+    if(directory != ''):
+        for filename in os.listdir(directory):
+            if filename.endswith(".csv"):
+                csv_path = os.path.join(directory, filename)
+                # Load CSV into DataFrame
+                df = pd.read_csv(csv_path)
 
-            # Filter the data
-            filtered_df = df[(df['StrkPric'].isna()) & (df['FinInstrmTp'] == 'STF')]
+                # Filter the data
+                filtered_df = df[(df['StrkPric'].isna()) & (df['FinInstrmTp'] == 'STF')]
 
-            # Get unique TckrSymb values
-            unique_symbols = filtered_df['TckrSymb'].dropna().unique()
+                # Get unique TckrSymb values
+                unique_symbols = filtered_df['TckrSymb'].dropna().unique()
 
-            # Write to .tls file
-            with open("Derivatives.tls", "w") as tls_file:
-                for symbol in unique_symbols:
-                    tls_file.write(f"{symbol}\n")
-            print("Filtered data written to Derivatives.tls")
-            dropBoxUploadPath=f"/NSEBSEBhavCopy/Amibroker_Watchlists/Derivatives.tls"
-            global dropboxClient
-            dropboxClient.upload_file("Derivatives.tls", dropBoxUploadPath)
+                # Write to .tls file
+                with open("Derivatives.tls", "w") as tls_file:
+                    for symbol in unique_symbols:
+                        tls_file.write(f"{symbol}\n")
+                print("Filtered data written to Derivatives.tls")
+                dropBoxUploadPath=f"/NSEBSEBhavCopy/Amibroker_Watchlists/Derivatives.tls"
+                global dropboxClient
+                dropboxClient.upload_file("Derivatives.tls", dropBoxUploadPath)
 
 if __name__ == "__main__":
     load_dotenv()
