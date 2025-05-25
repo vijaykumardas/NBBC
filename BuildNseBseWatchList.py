@@ -279,9 +279,9 @@ if __name__ == "__main__":
     global dropboxClient
     global session
     try:
-        print(os.getenv('DROPBOX_CLIENT_ID'))
-        print(os.getenv('DROPBOX_CLIENT_SECRET'))
-        print(os.getenv('DROPBOX_REFRESH_TOKEN'))
+        logging.info("CID:"+os.getenv('DROPBOX_CLIENT_ID'))
+        logging.info("DCS:"+os.getenv('DROPBOX_CLIENT_SECRET'))
+        logging.info("DRT:"+os.getenv('DROPBOX_REFRESH_TOKEN'))
         
         dropboxClient=DropboxClient()
         session=requests.Session()
