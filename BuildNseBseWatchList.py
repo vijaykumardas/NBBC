@@ -297,5 +297,5 @@ if __name__ == "__main__":
         log_file_path = os.path.abspath("BuildNseBseWatchList.Log")
         print(f'Logfile is located locally at : {log_file_path}')
         logFileNameInDropBox=f'/NSEBSEBhavcopy/Logs/{datetime.strftime(datetime.now(ist),'%Y-%m-%d %H-%M-%S').upper()}-BuildNseBseWatchList.Log'
-        dropBoxClient.upload_file(log_file_path,logFileNameInDropBox)
+        dropboxClient.upload_file(log_file_path,logFileNameInDropBox)
         print(f'Log File have been Uploaded to {logFileNameInDropBox}.')
