@@ -287,7 +287,7 @@ if __name__ == "__main__":
         session=requests.Session()
         GenerateAllWatchListForNIFTY()
         session=requests.Session()
-        GenerateAllWatchListForBse()
+        #GenerateAllWatchListForBse()
         GenerateNseDerivativesWatchlist()
     finally:
         logging.shutdown()  # Flush and close the log file
