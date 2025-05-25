@@ -280,15 +280,11 @@ if __name__ == "__main__":
     global dropboxClient
     global session
     try:
-        logging.info("CID:"+os.getenv('DROPBOX_CLIENT_ID'))
-        logging.info("DCS:"+os.getenv('DROPBOX_CLIENT_SECRET'))
-        logging.info("DRT:"+os.getenv('DROPBOX_REFRESH_TOKEN'))
-        
         dropboxClient=DropboxClient()
         session=requests.Session()
         GenerateAllWatchListForNIFTY()
         session=requests.Session()
-        #GenerateAllWatchListForBse()
+        GenerateAllWatchListForBse()
         GenerateNseDerivativesWatchlist()
     finally:
         logging.shutdown()  # Flush and close the log file
