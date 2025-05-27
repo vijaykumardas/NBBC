@@ -30,6 +30,7 @@ import dropbox
 from DropboxClient import DropboxClient
 from pytz import timezone
 from BseHelper import BseHelper
+from dotenv import load_dotenv
 
 
 logging.basicConfig(filename="NSEBSEBhavCopyDownload.Log",level=logging.DEBUG,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',datefmt='%d-%b-%y %H:%M:%S')
@@ -617,6 +618,7 @@ logger=logging.getLogger("NSEBSEBhavCopyBuilder")
 #dateformat MM/DD/YYYY
 #enter start and end date as per your requirement
 Session = requests.Session()
+load_dotenv()
 global nselive
 global dropBoxClient
 global bseWebSession 

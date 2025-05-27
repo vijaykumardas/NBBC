@@ -238,21 +238,23 @@ def GenerateNseDerivativesWatchlist():
     directory=''
     for url in urls:
         try:
-            print(f"Checking URL: {url}")
+            logging.info(f"Checking URL: {url}")
             # Send GET request to download the zip file
             headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
             response = requests.get(url,allow_redirects=True,headers=headers)
             if response.status_code == 200:
-                print(f"Downloaded: {url}")
+                logging.info(f"Downloaded: {url}")
                 # If response is valid, save the zip file in memory
                 with zipfile.ZipFile(BytesIO(response.content)) as zip_ref:
                     zip_ref.extractall("downloaded_zip")
-                    print("ZIP file extracted")
+                    logging.info("ZIP file extracted")
                 directory = "downloaded_zip"
+                break
             else:
-                print(f"Failed to download from {url}, status code {response.status_code}")
+                logging.info(f"Failed to download from {url}, status code {response.status_code}")
         except requests.exceptions.RequestException as e:
-            print(f"Error downloading {url}: {e}")
+            logging.info(f"Error downloading {url}: {e}")
+            
     if(directory != ''):
         for filename in os.listdir(directory):
             if filename.endswith(".csv"):
@@ -270,10 +272,11 @@ def GenerateNseDerivativesWatchlist():
                 with open("Derivatives.tls", "w") as tls_file:
                     for symbol in unique_symbols:
                         tls_file.write(f"{symbol}\n")
-                print("Filtered data written to Derivatives.tls")
+                logging.info("Filtered data written to Derivatives.tls")
                 dropBoxUploadPath=f"/NSEBSEBhavCopy/Amibroker_Watchlists/Derivatives.tls"
                 global dropboxClient
                 dropboxClient.upload_file("Derivatives.tls", dropBoxUploadPath)
+                logging.info("Derivatives.tls Uploaded to {dropBoxUploadPath}")
 
 if __name__ == "__main__":
     load_dotenv()
