@@ -44,7 +44,7 @@ def GetNseEquityData():
 
 def GetStockInfoFromDLevels(NseMasterRow):
     # some JSON:
-    urlFormat='https://ws.dlevels.com/get-autosearch-stock?term={NseCode}&pageName='
+    urlFormat="https://ws.dlevels.com/get-autosearch-stock?term={NseCode}&pageName="
     url=urlFormat.format(NseCode=NseMasterRow["SYMBOL"])
     #print(url)
     response = session.get(url)
@@ -162,7 +162,7 @@ def GetStockAdvancedInfoFromDLevels1(row):
     # some JSON:
     try:
         #1. Get Info from the Web Service Call.
-        urlFormat='https://ws.dlevels.com/vs-api?platform=web&action=Fundamental%20Report&param_list={dLevel_Key}'
+        urlFormat="https://ws.dlevels.com/vs-api?platform=web&action=Fundamental%20Report&param_list={dLevel_Key}"
         url=urlFormat.format(dLevel_Key=rowBackup["DLEVEL_KEY"].replace("_","%20"))
         logging.debug("Fetching Advanced Info using url:"+url)
         response = session.get(url)
@@ -599,8 +599,8 @@ logging.shutdown()  # Flush and close the log file
 # Get the current time in IST
 ist = timezone('Asia/Kolkata')
 log_file_path = os.path.abspath("ValueStocksProcess.Log")
-print(f'Logfile is located locally at : {log_file_path}')
+print(f"Logfile is located locally at : {log_file_path}")
 logFileNameInDropBox=f"/NSEBSEBhavcopy/Logs/{datetime.strftime(datetime.now(ist),'%Y-%m-%d %H-%M-%S').upper()}-ValueStocksProcess.Log"
 dropBoxClient.upload_file(log_file_path,logFileNameInDropBox)
-print(f'Log File have been Uploaded to {logFileNameInDropBox}.')
+print(f"Log File have been Uploaded to {logFileNameInDropBox}.")
 
