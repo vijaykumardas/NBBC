@@ -5,7 +5,7 @@ from os.path import exists
 import csv
 import logging
 import progressbar
-import datetime
+from datetime import datetime
 from lxml import html
 import copy
 import time
