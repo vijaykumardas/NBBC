@@ -572,38 +572,37 @@ def ImportValueStocksToSqlLiteDB(csv_file_path,db_file_path):
 
 
     
-    
-#row={"SYMBOL":"LTIM","NAME":"LTIMindtree Limited","DLEVEL_KEY":"lti_is_equity"}
-#GetStockAdvancedInfoFromDLevels1(row)
-global dropboxClient
-dropboxClient=DropboxClient()
-session = requests.Session()
-#BuildAndSaveDLevelBasicInfo()
-'''
-now = datetime.datetime.now()
-Dlevel_Advanced_info = now.strftime("%Y%m%d-%H%M%S") + '-3.DLEVEL_ADVANCED_INFO.CSV'
-Dlevel_Failed_Info = now.strftime("%Y%m%d-%H%M%S") + "-3.DLEVEL_ADVANCED_INFO_FAILURE.CSV"
-BuildAndSaveAdvancedDLevelInfo(Dlevel_Advanced_info,Dlevel_Failed_Info)
+if __name__ == "__main__":
+    #row={"SYMBOL":"LTIM","NAME":"LTIMindtree Limited","DLEVEL_KEY":"lti_is_equity"}
+    #GetStockAdvancedInfoFromDLevels1(row)
+    global dropboxClient
+    dropboxClient=DropboxClient()
+    session = requests.Session()
+    #BuildAndSaveDLevelBasicInfo()
+    try:
+        now = datetime.datetime.now()
+        Dlevel_Advanced_info = now.strftime("%Y%m%d-%H%M%S") + '-3.DLEVEL_ADVANCED_INFO.CSV'
+        Dlevel_Failed_Info = now.strftime("%Y%m%d-%H%M%S") + "-3.DLEVEL_ADVANCED_INFO_FAILURE.CSV"
+        BuildAndSaveAdvancedDLevelInfo(Dlevel_Advanced_info,Dlevel_Failed_Info)
 
-# Test Code Below to download the File From DropBox and Build Amibroker TLS
-#dropboxClient.download_file("/NSEBSEBhavCopy/ValueStocks/20250118-193932-3.DLEVEL_ADVANCED_INFO.CSV")
-#Dlevel_Advanced_info="20250118-193932-3.DLEVEL_ADVANCED_INFO.CSV"
-GenerateAmibrokerTlsForFundamentals(Dlevel_Advanced_info)
+        # Test Code Below to download the File From DropBox and Build Amibroker TLS
+        #dropboxClient.download_file("/NSEBSEBhavCopy/ValueStocks/20250118-193932-3.DLEVEL_ADVANCED_INFO.CSV")
+        #Dlevel_Advanced_info="20250118-193932-3.DLEVEL_ADVANCED_INFO.CSV"
+        GenerateAmibrokerTlsForFundamentals(Dlevel_Advanced_info)
 
-# Update the SQL Lite DB with the Information
-print("About to Update the SQL Lite DB with the ValueStocks Info")
-dropboxClient.download_file("/NSEBSEBhavcopy/ValueStocks/SQLLiteDB/ValueStocksDB.db","ValueStocksDB.db");
-ImportValueStocksToSqlLiteDB(Dlevel_Advanced_info,"ValueStocksDB.db")
-dropboxClient.upload_file("ValueStocksDB.db","/NSEBSEBhavcopy/ValueStocks/SQLLiteDB/ValueStocksDB.db");
-print("SQLLite DB Uploaded to /NSEBSEBhavcopy/ValueStocks/SQLLiteDB/ValueStocksDB.db")
-'''
-logging.info(f"Everything is Good")
-logging.shutdown()  # Flush and close the log file
-# Get the current time in IST
-current_ist_time = datetime.now(ZoneInfo('Asia/Kolkata'))
-log_file_path = os.path.abspath("ValueStocksProcess.Log")
-print(f"Logfile is located locally at : {log_file_path}")
-logFileNameInDropBox=f"/NSEBSEBhavcopy/Logs/{datetime.strftime(current_ist_time,'%Y-%m-%d %H-%M-%S').upper()}-ValueStocksProcess.Log"
-dropboxClient.upload_file(log_file_path,logFileNameInDropBox)
-print(f"Log File have been Uploaded to {logFileNameInDropBox}.")
+        # Update the SQL Lite DB with the Information
+        print("About to Update the SQL Lite DB with the ValueStocks Info")
+        dropboxClient.download_file("/NSEBSEBhavcopy/ValueStocks/SQLLiteDB/ValueStocksDB.db","ValueStocksDB.db");
+        ImportValueStocksToSqlLiteDB(Dlevel_Advanced_info,"ValueStocksDB.db")
+        dropboxClient.upload_file("ValueStocksDB.db","/NSEBSEBhavcopy/ValueStocks/SQLLiteDB/ValueStocksDB.db");
+        print("SQLLite DB Uploaded to /NSEBSEBhavcopy/ValueStocks/SQLLiteDB/ValueStocksDB.db")
+    except:
+        logging.shutdown()  # Flush and close the log file
+        # Get the current time in IST
+        current_ist_time = datetime.now(ZoneInfo('Asia/Kolkata'))
+        log_file_path = os.path.abspath("ValueStocksProcess.Log")
+        print(f"Logfile is located locally at : {log_file_path}")
+        logFileNameInDropBox=f"/NSEBSEBhavcopy/Logs/{datetime.strftime(current_ist_time,'%Y-%m-%d %H-%M-%S').upper()}-ValueStocksProcess.Log"
+        dropboxClient.upload_file(log_file_path,logFileNameInDropBox)
+        print(f"Log File have been Uploaded to {logFileNameInDropBox}.")
 
