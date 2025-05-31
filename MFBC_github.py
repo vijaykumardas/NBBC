@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from pytz import timezone
 from io import StringIO
 from DropboxClient import DropboxClient
+from zoneinfo import ZoneInfo  # Only available in Python 3.9+
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 # Disable InsecureRequestWarning
@@ -217,8 +218,7 @@ def fetch_nav_history(start_date, end_date, output_dir):
             df = df[df['CLOSE'] != 0]
             
             # Get the current time in IST
-            ist = timezone('Asia/Kolkata')
-            current_time_ist = datetime.now(ist)
+            current_time_ist = datetime.now(ZoneInfo('Asia/Kolkata'))
             filename = f"{current_time_ist.strftime('%Y-%m-%d')}-MF-BHAVCOPY.CSV"
             file_path = os.path.join(output_dir, filename)
 
@@ -232,38 +232,39 @@ def fetch_nav_history(start_date, end_date, output_dir):
 # Main function
 def main():
     # Input number of historical days or use default
-    historical_days = "10" #input("For how many days of data to fetch (Default 30): ")
-    if not historical_days.isdigit():
-        historical_days = 30
-    else:
-        historical_days = int(historical_days)
-    
-    # Get the current time in IST
-    ist = timezone('Asia/Kolkata')
-    end_date = datetime.now(ist).date()
-    start_date = end_date - timedelta(days=historical_days)
-    
-    # Format dates for the URL
-    formatted_start_date = start_date.strftime("%d-%b-%Y").upper()
-    formatted_end_date = end_date.strftime("%d-%b-%Y").upper()
-    
-    logging.info(f"Fetching data from {formatted_start_date} to {formatted_end_date}")
-    
-    # Set output directory
-    output_dir = 'MF_NAV_History'
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    try:
+        historical_days = "10" #input("For how many days of data to fetch (Default 30): ")
+        if not historical_days.isdigit():
+            historical_days = 30
+        else:
+            historical_days = int(historical_days)
+        
+        # Get the current time in IST
+        end_date = datetime.now(ZoneInfo('Asia/Kolkata')).date()
+        start_date = end_date - timedelta(days=historical_days)
+        
+        # Format dates for the URL
+        formatted_start_date = start_date.strftime("%d-%b-%Y").upper()
+        formatted_end_date = end_date.strftime("%d-%b-%Y").upper()
+        
+        logging.info(f"Fetching data from {formatted_start_date} to {formatted_end_date}")
+        
+        # Set output directory
+        output_dir = 'MF_NAV_History'
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
 
-    # Fetch NAV history for specified mutual funds
-    fetch_nav_history(formatted_start_date, formatted_end_date, output_dir)
-
-    logging.info("Mutual Fund NAV History Download Completed.")
-    logging.shutdown()  # Flush and close the log file
-    log_file_path = os.path.abspath("MFBhavCopyDownload.Log")
-    print(f'Logfile is located locally at : {log_file_path}')
-    logFileNameInDropBox=f'/NSEBSEBhavcopy/Logs/{datetime.strftime(datetime.now(ist),'%Y-%m-%d-%H%M%S').upper()}-MFBhavCopyDownload.log'
-    dropBoxClient.upload_file(log_file_path,logFileNameInDropBox)
-    print(f'Log File have been Uploaded to {logFileNameInDropBox}.')
+        # Fetch NAV history for specified mutual funds
+        fetch_nav_history(formatted_start_date, formatted_end_date, output_dir)
+    except:
+        logging.info("Mutual Fund NAV History Download Completed.")
+        current_ist_time = datetime.now(ZoneInfo('Asia/Kolkata'))
+        logging.shutdown()  # Flush and close the log file
+        log_file_path = os.path.abspath("MFBhavCopyDownload.Log")
+        print(f'Logfile is located locally at : {log_file_path}')
+        logFileNameInDropBox=f"/NSEBSEBhavcopy/Logs/{datetime.strftime(current_ist_time,'%Y-%m-%d %H-%M-%S').upper()}-MFBhavCopyDownload.log'
+        dropBoxClient.upload_file(log_file_path,logFileNameInDropBox)
+        print(f"Log File have been Uploaded to {logFileNameInDropBox}.")
 
 dropBoxClient=DropboxClient()
 if __name__ == "__main__":
