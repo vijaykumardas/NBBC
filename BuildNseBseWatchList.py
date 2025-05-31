@@ -9,6 +9,8 @@ from io import BytesIO
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from pytz import timezone
+from zoneinfo import ZoneInfo  # Only available in Python 3.9+
+
 # Setup logging configuration
 logging.basicConfig(
     level=logging.INFO,  # Log all INFO and above (INFO, WARNING, ERROR, CRITICAL)
@@ -292,9 +294,9 @@ if __name__ == "__main__":
     finally:
         logging.shutdown()  # Flush and close the log file
         # Get the current time in IST
-        ist = timezone('Asia/Kolkata')
+        current_ist_time = datetime.now(ZoneInfo('Asia/Kolkata'))
         log_file_path = os.path.abspath("BuildNseBseWatchList.Log")
         print(f"Logfile is located locally at : {log_file_path}")
-        logFileNameInDropBox=f"/NSEBSEBhavcopy/Logs/{datetime.strftime(datetime.now(ist),'%Y-%m-%d %H-%M-%S').upper()}-BuildNseBseWatchList.Log"
+        logFileNameInDropBox=f"/NSEBSEBhavcopy/Logs/{datetime.strftime(current_ist_time,'%Y-%m-%d %H-%M-%S').upper()}-BuildNseBseWatchList.Log"
         dropboxClient.upload_file(log_file_path,logFileNameInDropBox)
         print(f"Log File have been Uploaded to {logFileNameInDropBox}.")
