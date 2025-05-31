@@ -28,13 +28,13 @@ jobs:
           
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          python3 -m pip install --upgrade pip
+          pip3 install -r requirements.txt
 
       - name: Run Python script
         run: |
-          python VSParse.py  # Update this with your script name
-          python BuildNseBseWatchList.py
+          python3 VSParse.py  # Update this with your script name
+          python3 BuildNseBseWatchList.py
 env:
     DROPBOX_REFRESH_TOKEN: ${{ secrets.DROPBOX_REFRESH_TOKEN }}
     DROPBOX_CLIENT_ID: ${{ secrets.DROPBOX_CLIENT_ID }}
