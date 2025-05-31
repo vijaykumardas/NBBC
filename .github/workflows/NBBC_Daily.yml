@@ -7,15 +7,15 @@ on:
           description: 'An example input'
           required: false
           default: 'default_value'
-  #schedule:
+  schedule:
     # Cron syntax: minute hour day(month) month day(week)
     # This example will run every day at 00:00 (midnight) UTC
     #- cron: '00 12 * * 1-5'  # Runs every day at 12:000 PM UTC, which is 5:30 PM IST`
     
-    #- cron: '00 14 * * 1-5'  # Runs every day at 15:000 PM UTC, which is 7:30 PM IST`
-    #- cron: '00 15 * * 1-5'  # Runs every day at 15:000 PM UTC, which is 8:30 PM IST`
-    #- cron: '00 16 * * 1-5'  # Runs every day at 15:000 PM UTC, which is 09:30 PM IST`
-    #- cron: '00 17 * * 1-5'  # Runs every day at 15:000 PM UTC, which is 10:30 PM IST`
+    - cron: '00 14 * * 1-5'  # Runs every day at 15:000 PM UTC, which is 7:30 PM IST`
+    - cron: '00 15 * * 1-5'  # Runs every day at 15:000 PM UTC, which is 8:30 PM IST`
+    - cron: '00 16 * * 1-5'  # Runs every day at 15:000 PM UTC, which is 09:30 PM IST`
+    - cron: '00 17 * * 1-5'  # Runs every day at 15:000 PM UTC, which is 10:30 PM IST`
     
     #- cron: '30 17 * * 1-5'  # Runs every day at 15:000 PM UTC, which is 11:00 PM IST`
     #- cron: '30 18 * * 1-5'  # Runs every day at 15:000 PM UTC, which is 11:30 PM IST`
@@ -26,7 +26,7 @@ on:
 
 jobs:
   run-script-and-upload:
-    runs-on: windows-latest  # Specify Windows environment
+    runs-on: self-hosted  # Specify Windows environment
 
     steps:
     # Step 1: Checkout the repository code
@@ -34,22 +34,25 @@ jobs:
       uses: vijaykumardas/checkout@v3
 
     # Step 2: Set up Python environment
-    - name: Set up Python
-      uses: vijaykumardas/setup-python@v4
-      with:
-        python-version: '3.x'  # Specify your Python version
+    #- name: Set up Python
+    #  uses: vijaykumardas/setup-python@v4
+    #  with:
+    #    python-version: '3.x'  # Specify your Python version
 
 
     # Step 3: Install necessary Python dependencies
-    - name: Install dependencies
+    - name: Set up Python virtual environment and Install dependencies
       run: |
+        python3 -m venv venv
+        source venv/bin/activate
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
     #Step 6: Run the first Python script (NBBC_github.py)
-    - name: Run NBBC_github.py
+    - name: Run Daily Bhavcopy Downloader using NBBC_github.py
       run: |
-         python NBBC_github.py
+         source venv/bin/activate
+         python3 NBBC_github.py
 
     env: 
       DROPBOX_REFRESH_TOKEN: ${{ secrets.DROPBOX_REFRESH_TOKEN }}
