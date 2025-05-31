@@ -21,10 +21,10 @@ jobs:
         uses: vijaykumardas/checkout@v3
 
     # Step 2: Set up Python environment
-      - name: Set up Python
-        uses: vijaykumardas/setup-python@v4
-        with:
-          python-version: '3.x'  # Specify your Python version
+      #- name: Set up Python
+      #  uses: vijaykumardas/setup-python@v4
+      #  with:
+      #    python-version: '3.x'  # Specify your Python version
           
       - name: Install dependencies
         run: |
@@ -33,7 +33,7 @@ jobs:
 
       - name: Run Python script
         run: |
-          #python VSParse.py  # Update this with your script name
+          python VSParse.py  # Update this with your script name
           python BuildNseBseWatchList.py
 env:
     DROPBOX_REFRESH_TOKEN: ${{ secrets.DROPBOX_REFRESH_TOKEN }}
