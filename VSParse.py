@@ -17,6 +17,7 @@ import sqlite3
 import math
 from pytz import timezone
 import os
+from zoneinfo import ZoneInfo  # Only available in Python 3.9+
 logging.basicConfig(filename="ValueStocksProcess.Log",level=logging.DEBUG,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',datefmt='%d-%b-%y %H:%M:%S')
 
 
@@ -597,10 +598,10 @@ print("SQLLite DB Uploaded to /NSEBSEBhavcopy/ValueStocks/SQLLiteDB/ValueStocksD
 
 logging.shutdown()  # Flush and close the log file
 # Get the current time in IST
-ist = timezone('Asia/Kolkata')
+current_ist_time = datetime.now(ZoneInfo('Asia/Kolkata'))
 log_file_path = os.path.abspath("ValueStocksProcess.Log")
 print(f"Logfile is located locally at : {log_file_path}")
-logFileNameInDropBox=f"/NSEBSEBhavcopy/Logs/{datetime.strftime(datetime.now(ist),'%Y-%m-%d %H-%M-%S').upper()}-ValueStocksProcess.Log"
+logFileNameInDropBox=f"/NSEBSEBhavcopy/Logs/{datetime.strftime(current_ist_time,'%Y-%m-%d %H-%M-%S').upper()}-ValueStocksProcess.Log"
 dropBoxClient.upload_file(log_file_path,logFileNameInDropBox)
 print(f"Log File have been Uploaded to {logFileNameInDropBox}.")
 
