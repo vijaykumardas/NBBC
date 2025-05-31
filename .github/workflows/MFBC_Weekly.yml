@@ -37,6 +37,7 @@ jobs:
     #Step 6: Run the first Python script (NBBC_github.py)
     - name: Run MFBC_github.py
       run: |
+         source venv/bin/activate
          python3 MFBC_github.py
 
     env: 
