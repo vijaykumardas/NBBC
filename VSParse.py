@@ -579,6 +579,7 @@ global dropboxClient
 dropboxClient=DropboxClient()
 session = requests.Session()
 #BuildAndSaveDLevelBasicInfo()
+'''
 now = datetime.datetime.now()
 Dlevel_Advanced_info = now.strftime("%Y%m%d-%H%M%S") + '-3.DLEVEL_ADVANCED_INFO.CSV'
 Dlevel_Failed_Info = now.strftime("%Y%m%d-%H%M%S") + "-3.DLEVEL_ADVANCED_INFO_FAILURE.CSV"
@@ -595,7 +596,8 @@ dropboxClient.download_file("/NSEBSEBhavcopy/ValueStocks/SQLLiteDB/ValueStocksDB
 ImportValueStocksToSqlLiteDB(Dlevel_Advanced_info,"ValueStocksDB.db")
 dropboxClient.upload_file("ValueStocksDB.db","/NSEBSEBhavcopy/ValueStocks/SQLLiteDB/ValueStocksDB.db");
 print("SQLLite DB Uploaded to /NSEBSEBhavcopy/ValueStocks/SQLLiteDB/ValueStocksDB.db")
-
+'''
+logging.info(f"Everything is Good")
 logging.shutdown()  # Flush and close the log file
 # Get the current time in IST
 current_ist_time = datetime.now(ZoneInfo('Asia/Kolkata'))
