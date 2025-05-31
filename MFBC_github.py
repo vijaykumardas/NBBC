@@ -262,7 +262,7 @@ def main():
         logging.shutdown()  # Flush and close the log file
         log_file_path = os.path.abspath("MFBhavCopyDownload.Log")
         print(f'Logfile is located locally at : {log_file_path}')
-        logFileNameInDropBox=f"/NSEBSEBhavcopy/Logs/{datetime.strftime(current_ist_time,'%Y-%m-%d %H-%M-%S').upper()}-MFBhavCopyDownload.log'
+        logFileNameInDropBox=f"/NSEBSEBhavcopy/Logs/{datetime.strftime(current_ist_time,'%Y-%m-%d %H-%M-%S').upper()}-MFBhavCopyDownload.log"
         dropBoxClient.upload_file(log_file_path,logFileNameInDropBox)
         print(f"Log File have been Uploaded to {logFileNameInDropBox}.")
 
