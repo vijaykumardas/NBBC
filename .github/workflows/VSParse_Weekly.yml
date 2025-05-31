@@ -25,13 +25,16 @@ jobs:
       #  uses: vijaykumardas/setup-python@v4
       #  with:
       #    python-version: '3.x'  # Specify your Python version
-          
-      - name: Install dependencies
+      - name: Set up Python virtual environment
         run: |
-          pip3 install -r requirements.txt
-
+          python3 -m venv venv
+          source venv/bin/activate
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
       - name: Run Python script
         run: |
+          source venv/bin/activate
           python3 VSParse.py  # Update this with your script name
           python3 BuildNseBseWatchList.py
 env:
