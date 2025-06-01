@@ -143,7 +143,7 @@ def GetMasterNSEData():
         global dropBoxClient
         temp_dir = tempfile.gettempdir()
         NseMasterDataForToday=os.path.join(temp_dir, datetime.strftime(datetime.today(),'%Y%m%d-').upper()+'NSEMASTERDATA.csv')
-        NseMasterDataForTodayinDropBox=f'/nsebsebhavcopy/DailyBhavCopy/Temp/{datetime.strftime(datetime.today(),'%Y%m%d-').upper()}NSEMASTERDATA.csv'
+        NseMasterDataForTodayinDropBox=f"/nsebsebhavcopy/DailyBhavCopy/Temp/{datetime.strftime(datetime.today(),'%Y%m%d-').upper()}NSEMASTERDATA.csv"
         if( dropBoxClient.file_exists(NseMasterDataForTodayinDropBox)):
             dropBoxClient.download_file(NseMasterDataForTodayinDropBox,NseMasterDataForToday)
         file_exists = exists(NseMasterDataForToday)
@@ -190,7 +190,7 @@ def GetMasterNSEData_OLD():
         global dropBoxClient
         temp_dir = tempfile.gettempdir()
         NseMasterDataForToday=os.path.join(temp_dir, datetime.strftime(datetime.today(),'%Y%m%d-').upper()+'NSEMASTERDATA.csv')
-        NseMasterDataForTodayinDropBox=f'/nsebsebhavcopy/DailyBhavCopy/Temp/{datetime.strftime(datetime.today(),'%Y%m%d-').upper()}NSEMASTERDATA.csv'
+        NseMasterDataForTodayinDropBox=f"/nsebsebhavcopy/DailyBhavCopy/Temp/{datetime.strftime(datetime.today(),'%Y%m%d-').upper()}NSEMASTERDATA.csv"
         if( dropBoxClient.file_exists(NseMasterDataForTodayinDropBox)):
             dropBoxClient.download_file(NseMasterDataForTodayinDropBox,NseMasterDataForToday)
         file_exists = exists(NseMasterDataForToday)
