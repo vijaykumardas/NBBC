@@ -71,15 +71,25 @@ def isUrlValid(url):
     else:
         return True
 
-def GetValueStockInputFile():
-    #StockDDataPath="C:\\VijayDas\\SamsungT5\\Finance\\BhavCopyArchive\\StockD\\"
-    #InputFilesList=dir_list = glob.glob(StockDDataPath+'ALL_*.txt')
-    #ValueStocksDataPath="C:\\VijayDas\\SamsungT5\\Finance\\Scripts\\ValueStocks\\"
-    ValueStocksDataFiles=glob.glob('*3.DLEVEL_ADVANCED_INFO.CSV')
-    ValueStocksDataFiles.sort(reverse=True)
-    ValueStocksDataFile=ValueStocksDataFiles[0]
-    logger.debug("Returned ValueStock Input File : " + ValueStocksDataFile)
-    return ValueStocksDataFile
+def GetValueStockInputFile() -> str | None:
+    """
+    Returns the latest value stock input file matching '*3.DLEVEL_ADVANCED_INFO.CSV' (case-insensitive).
+    Works on both Windows and Unix systems.
+    """
+    pattern = '*3.DLEVEL_ADVANCED_INFO.CSV'
+    files = os.listdir('.')  # List files in current directory
+    matched_files = [f for f in files if fnmatch.fnmatch(f.lower(), pattern.lower())]
+
+    logger.debug(f"Matched files (case-insensitive): {matched_files}")
+
+    if not matched_files:
+        logger.warning("No ValueStock input files found.")
+        return None
+
+    matched_files.sort(reverse=True)
+    selected_file = matched_files[0]
+    logger.debug(f"Returned ValueStock Input File: {selected_file}")
+    return selected_file
 
 def GetNseEquityListDF():
     try:    
