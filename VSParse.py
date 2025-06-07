@@ -201,8 +201,8 @@ def GetStockAdvancedInfoFromDLevels1(row):
         #    logging.debug("Exception during Reading Valuation Data"+Argument)
         
         return {
-        "DATENUM":datetime.datetime.now().strftime('%Y%m%d'),
-        "DATE": datetime.datetime.now().strftime('%d-%b-%Y'),
+        "DATENUM":datetime.now().strftime('%Y%m%d'),
+        "DATE": datetime.now().strftime('%d-%b-%Y'),
         "SYMBOL":rowBackup["SYMBOL"],
         "NAME":rowBackup["NAME"],
         "SECTOR":rowBackup["SECTOR"],
@@ -582,7 +582,7 @@ if __name__ == "__main__":
     session = requests.Session()
     #BuildAndSaveDLevelBasicInfo()
     try:
-        now = datetime.datetime.now()
+        now = datetime.now()
         Dlevel_Advanced_info = now.strftime("%Y%m%d-%H%M%S") + '-3.DLEVEL_ADVANCED_INFO.CSV'
         Dlevel_Failed_Info = now.strftime("%Y%m%d-%H%M%S") + "-3.DLEVEL_ADVANCED_INFO_FAILURE.CSV"
         BuildAndSaveAdvancedDLevelInfo(Dlevel_Advanced_info,Dlevel_Failed_Info)
