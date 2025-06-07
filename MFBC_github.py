@@ -9,6 +9,7 @@ from io import StringIO
 from DropboxClient import DropboxClient
 from zoneinfo import ZoneInfo  # Only available in Python 3.9+
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from dotenv import load_dotenv
 
 # Disable InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -233,6 +234,7 @@ def fetch_nav_history(start_date, end_date, output_dir):
 def main():
     # Input number of historical days or use default
     try:
+        load_dotenv()
         historical_days = "10" #input("For how many days of data to fetch (Default 30): ")
         if not historical_days.isdigit():
             historical_days = 30
