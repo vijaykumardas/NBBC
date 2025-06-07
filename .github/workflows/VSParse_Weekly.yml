@@ -34,7 +34,6 @@ jobs:
           
       - name: Run Python script
         run: |
-          # source venv/bin/activate
           python3 VSParse.py  # Update this with your script name
           python3 BuildNseBseWatchList.py
 env:
