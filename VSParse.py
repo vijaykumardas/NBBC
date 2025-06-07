@@ -86,7 +86,7 @@ def BuildAndSaveDLevelBasicInfo():
         dLevelInfo=[]
         widgets = [' [',progressbar.Timer(format= 'Building DLevel Stock Info: %(elapsed)s'),'] ', progressbar.Bar('*'),' (',progressbar.Counter(format='%(value)02d/%(max_value)d'), ') ',]
  
-        bar = progressbar.ProgressBar(max_value=len(nseEquityData),widgets=widgets).start()
+        bar = progressbar.ProgressBar(len(nseEquityData),widgets=widgets).start()
         logging.debug("Total Symbols to Process : "+str(len(nseEquityData)))
         progressCounter=0
         for row in nseEquityData:
