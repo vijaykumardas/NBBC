@@ -524,7 +524,9 @@ def DownloadNSEIndexBhavCopy(tday):
     try:
         r = requests.get(NseIndexSnapShopUrl,headers=headers)
         if r.status_code == 200:
-            dfNseBhavCopy=pd.read_csv(io.StringIO(r.content.decode('utf-8')),parse_dates=["Index Date"], date_format="%d-%m-%Y")
+            #dfNseBhavCopy=pd.read_csv(io.StringIO(r.content.decode('utf-8')),parse_dates=["Index Date"], date_format="%d-%m-%Y")
+            dfNseBhavCopy = pd.read_csv(io.StringIO(r.content.decode('utf-8')),parse_dates=["Index Date"],date_parser=lambda x: pd.to_datetime(x, format="%d-%m-%Y"))
+
             dfNseBhavCopy.columns=['TICKER', 'DATE_YMD1', 'OPEN', 'HIGH',
             'LOW', 'CLOSE', 'Points Change', 'Change(%)',
             'VOLUME', 'Turnover (Rs. Cr.)', 'P/E', 'P/B', 'Div Yield']
