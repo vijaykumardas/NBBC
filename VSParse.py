@@ -598,7 +598,9 @@ if __name__ == "__main__":
         ImportValueStocksToSqlLiteDB(Dlevel_Advanced_info,"ValueStocksDB.db")
         dropboxClient.upload_file("ValueStocksDB.db","/NSEBSEBhavcopy/ValueStocks/SQLLiteDB/ValueStocksDB.db");
         print("SQLLite DB Uploaded to /NSEBSEBhavcopy/ValueStocks/SQLLiteDB/ValueStocksDB.db")
-    except:
+    except Exception as Argument:
+        logging.debug("Exception : "+str(Argument))
+    finally:
         logging.shutdown()  # Flush and close the log file
         # Get the current time in IST
         current_ist_time = datetime.now(ZoneInfo('Asia/Kolkata'))
