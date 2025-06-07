@@ -9,3 +9,5 @@ bs4
 pytz
 dropbox
 dotenv
+click
+appdirs
