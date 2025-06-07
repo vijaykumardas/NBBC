@@ -84,11 +84,11 @@ def BuildAndSaveDLevelBasicInfo():
     else:
         print("DLevelBasicInfo File : "+Master_Equity_l_w_Dlevel_info + " Not Found. Hence Building...")
         dLevelInfo=[]
-        widgets = [' [',progressbar.Timer(format= 'Building DLevel Stock Info: %(elapsed)s'),'] ', progressbar.Bar('*'),' (',progressbar.Counter(format='%(value)02d/%(max_value)d'), ') ',]
+        #widgets = [' [',progressbar.Timer(format= 'Building DLevel Stock Info: %(elapsed)s'),'] ', progressbar.Bar('*'),' (',progressbar.Counter(format='%(value)02d/%(max_value)d'), ') ',]
  
-        bar = progressbar.ProgressBar(max_value=len(nseEquityData),widgets=widgets).start()
+        #bar = progressbar.ProgressBar(max_value=len(nseEquityData),widgets=widgets).start()
         logging.debug("Total Symbols to Process : "+str(len(nseEquityData)))
-        progressCounter=0
+        #progressCounter=0
         for row in nseEquityData:
             try:
                 #print(row)
@@ -102,8 +102,8 @@ def BuildAndSaveDLevelBasicInfo():
             except Exception as Argument:
                 logging.debug("Exception While getting StockInfo from DLevel for "+str(row["SYMBOL"])+". Exception="+str(Argument))
             finally:
-                progressCounter+=1
-                bar.update(progressCounter)
+                #progressCounter+=1
+                #bar.update(progressCounter)
                 time.sleep(1/50)
                 logging.debug("Symbols Processed : "+str(progressCounter))
         try:
