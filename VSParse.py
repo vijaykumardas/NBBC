@@ -18,6 +18,7 @@ import math
 from pytz import timezone
 import os
 from zoneinfo import ZoneInfo  # Only available in Python 3.9+
+from dotenv import load_dotenv
 logging.basicConfig(filename="ValueStocksProcess.Log",level=logging.DEBUG,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',datefmt='%d-%b-%y %H:%M:%S')
 
 
@@ -576,6 +577,7 @@ if __name__ == "__main__":
     #row={"SYMBOL":"LTIM","NAME":"LTIMindtree Limited","DLEVEL_KEY":"lti_is_equity"}
     #GetStockAdvancedInfoFromDLevels1(row)
     global dropboxClient
+    load_dotenv()
     dropboxClient=DropboxClient()
     session = requests.Session()
     #BuildAndSaveDLevelBasicInfo()
