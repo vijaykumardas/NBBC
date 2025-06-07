@@ -27,17 +27,17 @@ jobs:
     #  with:
     #    python-version: '3.x'  # Specify your Python version
 
-    - name: Set up Python virtual environment
-      run: |
-          python3 -m venv venv
-          source venv/bin/activate
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+    #- name: Set up Python virtual environment
+    #  run: |
+    #      python3 -m venv venv
+    #      source venv/bin/activate
+    #      python -m pip install --upgrade pip
+    #      pip install -r requirements.txt
 
     #Step 6: Run the first Python script (NBBC_github.py)
     - name: Run MFBC_github.py
       run: |
-         source venv/bin/activate
+         #source venv/bin/activate
          python3 MFBC_github.py
 
     env: 
