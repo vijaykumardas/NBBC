@@ -41,17 +41,16 @@ jobs:
 
 
     # Step 3: Install necessary Python dependencies
-    - name: Set up Python virtual environment and Install dependencies
-      run: |
-        python3 -m venv venv
-        source venv/bin/activate
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+    # - name: Set up Python virtual environment and Install dependencies
+    #  run: |
+    #    python3 -m venv venv
+    #    source venv/bin/activate
+    #    python -m pip install --upgrade pip
+    #    pip install -r requirements.txt
 
     #Step 6: Run the first Python script (NBBC_github.py)
     - name: Run Daily Bhavcopy Downloader using NBBC_github.py
       run: |
-         source venv/bin/activate
          python3 NBBC_github.py
 
     env: 
