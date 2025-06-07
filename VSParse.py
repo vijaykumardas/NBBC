@@ -88,7 +88,7 @@ def BuildAndSaveDLevelBasicInfo():
  
         #bar = progressbar.ProgressBar(max_value=len(nseEquityData),widgets=widgets).start()
         logging.debug("Total Symbols to Process : "+str(len(nseEquityData)))
-        #progressCounter=0
+        progressCounter=0
         for row in nseEquityData:
             try:
                 #print(row)
@@ -102,7 +102,7 @@ def BuildAndSaveDLevelBasicInfo():
             except Exception as Argument:
                 logging.debug("Exception While getting StockInfo from DLevel for "+str(row["SYMBOL"])+". Exception="+str(Argument))
             finally:
-                #progressCounter+=1
+                progressCounter+=1
                 #bar.update(progressCounter)
                 time.sleep(1/50)
                 logging.debug("Symbols Processed : "+str(progressCounter))
