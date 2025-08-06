@@ -94,7 +94,7 @@ def GetValueStockInputFile() -> str | None:
 
 def GetNseEquityListDF():
     try:    
-        NSE_Equity_List_csv_url="https://archives.nseindia.com/content/equities/EQUITY_L.csv"
+        NSE_Equity_List_csv_url="https://nsearchives.nseindia.com/content/equities/EQUITY_L.csv"
         temp_dir = tempfile.gettempdir()
         nse_Master_Equity_List_File=os.path.join(temp_dir, datetime.strftime(datetime.today(),'%Y%m%d-').upper()+'NSE_EQUITY_L.csv')
         file_exists = exists(nse_Master_Equity_List_File)
