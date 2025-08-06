@@ -102,7 +102,8 @@ def GetNseEquityListDF():
             logger.debug("NSE Equity List File found at :"+nse_Master_Equity_List_File)
         else:
             logger.debug("NSE Equity List File not found at :"+nse_Master_Equity_List_File+". Hence Downloading")
-            req = requests.get(NSE_Equity_List_csv_url)
+            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
+            req = requests.get(NSE_Equity_List_csv_url,headers=headers)
             url_content = req.content
             csv_file = open(nse_Master_Equity_List_File, 'wb')
             csv_file.write(url_content)
