@@ -518,7 +518,7 @@ def DownloadBSEBhavCopy(dateRange):
 
 def DownloadNSEIndexBhavCopy(tday):
     NseIndexfileName="ind_close_all_{0}.csv".format(tday.strftime("%d%m%Y"))
-    NseIndexSnapShopUrl="https://archives.nseindia.com/content/indices/{0}".format(NseIndexfileName)
+    NseIndexSnapShopUrl="https://nsearchives.nseindia.com/content/indices/{0}".format(NseIndexfileName)
     headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'}
     #r = requests.get(NseIndexSnapShopUrl, allow_redirects=True,headers=headers,timeout=1)
     try:
