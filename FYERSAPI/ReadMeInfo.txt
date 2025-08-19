@@ -1,0 +1,2 @@
+To Download Latest Symbol Information in Fyers
+Visit : https://myapi.fyers.in/docsv3#tag/Broker-Config/paths/~1Broker%20Config/put
