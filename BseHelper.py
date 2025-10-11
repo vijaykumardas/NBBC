@@ -131,17 +131,37 @@ class BseHelper:
 
     def GetAllBseScrips(self):
         """Fetch combined BSE scrips from both Equity and EQT0 segments and return a filtered DataFrame with additional info."""
-        url1 = "https://api.bseindia.com/BseIndiaAPI/api/ListofScripData/w?Group=&Scripcode=&industry=&segment=Equity&status=Active"
-        #url2 = "https://api.bseindia.com/BseIndiaAPI/api/ListofScripData/w?Group=&Scripcode=&industry=&segment=EQT0&status=Active"
-
-        df1 = self._GetBseScripList(url1)
-        #df2 = self._GetBseScripList(url2)
-
-        combined_df = df1
+        """ Incase of any issue to diagnose the API Please visit https://www.bseindia.com/corporates/List_Scrips.html"""
+        
+        url1_T_Plus_0 =  "https://api.bseindia.com/BseIndiaAPI/api/ListofScripData/w?Group=&Scripcode=&segment=EQT0&status=Active"
+        url2_T_Plus_1 =  "https://api.bseindia.com/BseIndiaAPI/api/ListofScripData/w?Group=&Scripcode=&segment=Equity&status=Active"
+        
+        df1_T_Plus_0 = self._GetBseScripList(url1_T_Plus_0)
+        df2_T_Plus_1 = self._GetBseScripList(url2_T_Plus_1)
+        combined_df = pd.concat([df1_T_Plus_0, df2_T_Plus_1], ignore_index=True)
 
         # Filter and rename columns
         filtered_df = combined_df[['SCRIP_CD', 'Scrip_Name', 'ISIN_NUMBER', 'INDUSTRY', 'Mktcap']]
         filtered_df.columns = ['SYMBOL', 'FULLNAME', 'ISIN_NUMBER', 'INDUSTRYNAME', 'MARKETCAP']  # Rename columns
+        
+        other_data_file="2025-10-08-22-43-21-NSE-BSE-IS-ALL-EQ.CSV"
+        self.dropboxClient.download_file(f"/nsebsebhavcopy/DailyBhavCopy/{other_data_file}",other_data_file)
+        # Load the external CSV file for filling missing INDUSTRYNAME values
+        other_data_df = pd.read_csv(other_data_file, usecols=['TICKER', 'INDUSTRYNAME'])
+
+        # Create a dictionary from TICKER to INDUSTRYNAME for lookup
+        ticker_to_industry = dict(zip(other_data_df['TICKER'], other_data_df['INDUSTRYNAME']))
+
+        # Define a function to fill missing INDUSTRYNAME using the dictionary
+        def fill_industry(row):
+            if pd.isna(row['INDUSTRYNAME']) or row['INDUSTRYNAME'].strip() == '':
+                return ticker_to_industry.get(row['SYMBOL'], row['INDUSTRYNAME'])
+            else:
+                return row['INDUSTRYNAME']
+
+        # Apply the function to fill missing INDUSTRYNAME values
+        filtered_df['INDUSTRYNAME'] = filtered_df.apply(fill_industry, axis=1)
+
         
         # Fix INDUSTRYNAME based on BSEIndustryNameFix.csv mapping
         industry_name_fix_dict = dict(zip(self.industry_name_fix_df['BSE_INDUSTRYNAME'], self.industry_name_fix_df['BSE_INDUSTRYNAME_FIXED']))
@@ -173,6 +193,7 @@ class BseHelper:
         filtered_df.loc[:,'SECTORNAME']=filtered_df['SECTORNAME'].astype('str')
         filtered_df.loc[:,'MACRONAME']=filtered_df['MACRONAME'].astype('str')
         filtered_df.loc[:,'MARKETCAP'] = filtered_df['MARKETCAP'].astype('float64')
+        filtered_df.to_csv("BseAllScrips.csv", index=False)
         # Combine the DataFrames
         return filtered_df[['SYMBOL', 'FULLNAME', 'ISIN_NUMBER', 'INDUSTRYNAME', 'SECTORNAME', 'MACRONAME','MARKETCAP']]
 
