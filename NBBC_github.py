@@ -651,7 +651,7 @@ if __name__ == "__main__":
         if(historicalDays == ''):
             historicalDays = 1
         EndDate=datetime.today()
-        #EndDate = datetime.now() - timedelta(days=1) # for debugging purpose only
+        EndDate = datetime.now() - timedelta(days=1) # for debugging purpose only
         dt = pd.date_range(end=EndDate, periods=int(historicalDays))
         dataframestoWrite=[]
         for tday in dt:
