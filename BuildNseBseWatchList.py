@@ -45,6 +45,8 @@ def GenerateWatchListForNifty(tls_name, csv_url):
                 symbol = row.get('Symbol')  # Extract the Symbol column
                 if symbol:  # Ensure Symbol column exists and isn't empty
                     tls_file.write(symbol + "\n")
+            # At the End Add the index Name into the Watch List
+            tls_file.write(tls_name + "\n")
         logging.info(f"{tls_filename} file created successfully!")
         return 1
 
@@ -155,6 +157,8 @@ def GenerateWatchListForBse(tls_name, bse_api_url):
             for symbol in symbols:
                 if symbol:  # Ensure symbol is not empty
                     tls_file.write(symbol + "\n")
+            # At the End Add the index Name into the Watch List
+            tls_file.write(tls_name + "\n")
         
         logging.info(f"{tls_filename} file created successfully!")
         return 1
