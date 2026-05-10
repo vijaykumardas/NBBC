@@ -318,7 +318,7 @@ class BseHelper:
     def GetBSEDeliveryData(self, date):
         self.logger.debug("Downloading the BSE Delivery Data for the date = " + str(date))
         try:    
-            Bse_Delivery_Data_UrlFormat="https://www.bseindia.com/BSEDATA/gross/{year}/SCBSEALL{ddmm}.zip"
+            Bse_Delivery_Data_UrlFormat="https://www.bseindia.com/bsedata/gross/{year}/scbseall{ddmm}.zip"
                                        # https://www.bseindia.com/BSEDATA/gross/2023/SCBSEALL0509.zip
             Bse_Delivery_Data_Url=Bse_Delivery_Data_UrlFormat.format(year=datetime.strftime(date,'%Y'),ddmm=datetime.strftime(date,'%d%m'))
             DeliveryDataFileName_Format="SCBSEALL{ddmm}.TXT"
