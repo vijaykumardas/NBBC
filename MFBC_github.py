@@ -225,6 +225,7 @@ def fetch_nav_history(start_date, end_date, output_dir):
 
             # Write DataFrame to CSV
             df.to_csv(file_path, index=False, encoding='utf-8')
+            global dropboxClient
             dropBoxClient.upload_file(file_path,f'/NSEBSEBhavcopy/DailyBhavcopy/{filename}')
             logging.info(f"All data written to {file_path}")
         except Exception as e:
@@ -233,8 +234,8 @@ def fetch_nav_history(start_date, end_date, output_dir):
 # Main function
 def main():
     # Input number of historical days or use default
+    global dropboxClient
     try:
-        load_dotenv()
         historical_days = "10" #input("For how many days of data to fetch (Default 30): ")
         if not historical_days.isdigit():
             historical_days = 30
@@ -268,6 +269,8 @@ def main():
         dropBoxClient.upload_file(log_file_path,logFileNameInDropBox)
         print(f"Log File have been Uploaded to {logFileNameInDropBox}.")
 
-dropBoxClient=DropboxClient()
+dropBoxClient=0
 if __name__ == "__main__":
+    load_dotenv()
+    dropBoxClient=DropboxClient()
     main()
