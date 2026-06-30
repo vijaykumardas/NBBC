@@ -184,8 +184,10 @@ def GetMasterNSEData():
             df_merged['INDUSTRY'] = df_merged['INDUSTRY_new'].fillna(df_merged['INDUSTRY'])
             df_merged['SECTOR'] = df_merged['SECTOR_new'].fillna(df_merged['SECTOR'])
             df_merged['MACRO'] = df_merged['MACRO_new'].fillna(df_merged['MACRO'])
-            df_merged['FULLMARKETCAP'] = df_merged['FULLMARKETCAP_new'].fillna(df_merged['FULLMARKETCAP'])
-			
+            #df_merged['FULLMARKETCAP'] = df_merged['FULLMARKETCAP_new'].fillna(df_merged['FULLMARKETCAP'])
+            #df_merged['FULLMARKETCAP'] = df_merged['FULLMARKETCAP_new'].fillna(df_merged['FULLMARKETCAP']).infer_objects(copy=False)
+            df_merged["FULLMARKETCAP"] = pd.to_numeric(df_merged["FULLMARKETCAP_new"].fillna(df_merged["FULLMARKETCAP"]),errors="coerce")
+            
             df_final = df_merged.drop(columns=['ISIN_NUMBER','INDUSTRY_new', 'SECTOR_new', 'MACRO_new','FULLMARKETCAP_new','SYMBOL_new','FULLNAME_new'])
             logging.debug(df_final.columns)
             
@@ -528,7 +530,9 @@ def DownloadNSEIndexBhavCopy(tday):
         r = requests.get(NseIndexSnapShopUrl,headers=headers)
         if r.status_code == 200:
             #dfNseBhavCopy=pd.read_csv(io.StringIO(r.content.decode('utf-8')),parse_dates=["Index Date"], date_format="%d-%m-%Y")
-            dfNseBhavCopy = pd.read_csv(io.StringIO(r.content.decode('utf-8')),parse_dates=["Index Date"],date_parser=lambda x: pd.to_datetime(x, format="%d-%m-%Y"))
+            #dfNseBhavCopy = pd.read_csv(io.StringIO(r.content.decode('utf-8')),parse_dates=["Index Date"],date_parser=lambda x: pd.to_datetime(x, format="%d-%m-%Y"))
+            dfNseBhavCopy = pd.read_csv(io.StringIO(r.content.decode("utf-8")))
+            dfNseBhavCopy["Index Date"] = pd.to_datetime(dfNseBhavCopy["Index Date"], format="%d-%m-%Y")
 
             dfNseBhavCopy.columns=['TICKER', 'DATE_YMD1', 'OPEN', 'HIGH',
             'LOW', 'CLOSE', 'Points Change', 'Change(%)',
