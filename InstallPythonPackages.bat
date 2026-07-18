@@ -1,0 +1,13 @@
+pip install pandas
+pip install progressbar2
+pip install lxml
+pip install beautifulsoup4
+pip install tqdm
+pip install requests
+pip install urllib3
+pip install bs4
+pip install pytz
+pip install dropbox
+pip install dotenv
+pip install click
+pip install appdirs
