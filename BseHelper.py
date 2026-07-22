@@ -15,7 +15,7 @@ class BseHelper:
         self.base_url_header = "https://api.bseindia.com/BseIndiaAPI/api/ComHeadernew/w?quotetype=EQ&scripcode={scripcode}&seriesid="
         self.base_url_trading = "https://api.bseindia.com/BseIndiaAPI/api/StockTrading/w?flag=&quotetype=EQ&scripcode={scripcode}"
         self.headers = {
-            "accept": "application/json, text/plain, */*",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "origin": "https://www.bseindia.com",
             "referer": "https://www.bseindia.com/",
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
@@ -162,13 +162,13 @@ class BseHelper:
         # Apply the function to fill missing INDUSTRYNAME values
         filtered_df['INDUSTRYNAME'] = filtered_df.apply(fill_industry, axis=1)
 
-        
         # Fix INDUSTRYNAME based on BSEIndustryNameFix.csv mapping
         industry_name_fix_dict = dict(zip(self.industry_name_fix_df['BSE_INDUSTRYNAME'], self.industry_name_fix_df['BSE_INDUSTRYNAME_FIXED']))
         filtered_df.loc[:,'INDUSTRYNAME'] = filtered_df['INDUSTRYNAME'].replace(industry_name_fix_dict)
         
         # Convert MARKETCAP to numeric, handle errors and set invalid parsing to NaN
-        filtered_df.loc[:,'MARKETCAP'] = pd.to_numeric(filtered_df['MARKETCAP'], errors='coerce')
+        filtered_df['MARKETCAP'] = pd.to_numeric(filtered_df['MARKETCAP'], errors='coerce')
+        #filtered_df.loc[:,'MARKETCAP'] = pd.to_numeric(filtered_df['MARKETCAP'], errors='coerce')
         
         # Adjust the MARKETCAP column
         filtered_df.loc[:,'MARKETCAP'] = filtered_df['MARKETCAP'].apply(lambda x: round(x * 10000000, 2))  # Divide by 100 and round to 2 decimal places
@@ -186,13 +186,14 @@ class BseHelper:
             axis=1)
         
         
-        filtered_df.loc[:,'SYMBOL']=filtered_df['SYMBOL'].astype('int64')
-        filtered_df.loc[:,'FULLNAME']=filtered_df['SYMBOL'].astype('str')
-        filtered_df.loc[:,'ISIN_NUMBER']=filtered_df['ISIN_NUMBER'].astype('str')
-        filtered_df.loc[:,'INDUSTRYNAME']=filtered_df['INDUSTRYNAME'].astype('str')
-        filtered_df.loc[:,'SECTORNAME']=filtered_df['SECTORNAME'].astype('str')
-        filtered_df.loc[:,'MACRONAME']=filtered_df['MACRONAME'].astype('str')
-        filtered_df.loc[:,'MARKETCAP'] = filtered_df['MARKETCAP'].astype('float64')
+        filtered_df['SYMBOL'] = pd.to_numeric(filtered_df['SYMBOL'], errors='coerce').astype('Int64')
+        filtered_df['FULLNAME'] = filtered_df['FULLNAME'].astype('string')
+        filtered_df['ISIN_NUMBER'] = filtered_df['ISIN_NUMBER'].astype('string')
+        filtered_df['INDUSTRYNAME'] = filtered_df['INDUSTRYNAME'].astype('string')
+        filtered_df['SECTORNAME'] = filtered_df['SECTORNAME'].astype('string')
+        filtered_df['MACRONAME'] = filtered_df['MACRONAME'].astype('string')
+        filtered_df['MARKETCAP'] = filtered_df['MARKETCAP'].astype('float64')
+
         filtered_df.to_csv("BseAllScrips.csv", index=False)
         # Combine the DataFrames
         return filtered_df[['SYMBOL', 'FULLNAME', 'ISIN_NUMBER', 'INDUSTRYNAME', 'SECTORNAME', 'MACRONAME','MARKETCAP']]
@@ -314,7 +315,7 @@ class BseHelper:
             #df=pd.read_csv(output_csv_file_path)
             #return df
         except Exception as e:
-            self.logger.exception("ERROR: Error Occured during Building BSE_SECTOR_IND_BHAVCOPY")
+            self.logger.exception("ERROR: Error Occured during Building BSE_SECTOR_IND_BHAVCOPY" + str(e))
     def GetBSEDeliveryData(self, date):
         self.logger.debug("Downloading the BSE Delivery Data for the date = " + str(date))
         try:    

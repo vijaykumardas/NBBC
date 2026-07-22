@@ -23,14 +23,23 @@ logging.basicConfig(filename="ValueStocksProcess.Log",level=logging.DEBUG,format
 
 
 def GetNseEquityData():
-    NSE_Equity_List_csv_url="https://archives.nseindia.com/content/equities/EQUITY_L.csv"
+    headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                  "AppleWebKit/537.36 (KHTML, like Gecko) "
+                  "Chrome/114.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Referer": "https://www.nseindia.com/"
+    }
+    #NSE_Equity_List_csv_url="https://archives.nseindia.com/content/equities/EQUITY_L.csv"
+    NSE_Equity_List_csv_url="https://nsearchives.nseindia.com/content/equities/EQUITY_L.csv"
     nse_Master_Equity_List_File='01.MASTER_EQUITY_L.CSV'
     file_exists = exists(nse_Master_Equity_List_File)
     if(file_exists):
         print(nse_Master_Equity_List_File + " Found.")
     else:
         print(nse_Master_Equity_List_File + " not Found. Hence Downloading")
-        req = requests.get(NSE_Equity_List_csv_url)
+        req = requests.get(NSE_Equity_List_csv_url, headers=headers,timeout=10)
+        req.raise_for_status()  # safer: raises error if download fails
         url_content = req.content
         csv_file = open(nse_Master_Equity_List_File, 'wb')
         csv_file.write(url_content)
