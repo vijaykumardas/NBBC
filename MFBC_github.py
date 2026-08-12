@@ -24,75 +24,82 @@ logging.basicConfig(
 
 # Mutual fund codes and download preferences (from your original script)
 dictMFCodes=(
-                (62,'360 ONE Mutual Fund (Formerly Known as IIFL Mutual Fund)',False),
-                (39,'ABN  AMRO Mutual Fund',False),
+                (62,'360 ONE Mutual Fund',True),
+                (85,'Abakkus Mutual Fund',True),
+                (39,'ABN AMRO Mutual Fund',True),
                 (3,'Aditya Birla Sun Life Mutual Fund',True),
-                (50,'AEGON Mutual Fund',False),
-                (1,'Alliance Capital Mutual Fund',False),
+                (50,'AEGON Mutual Fund',True),
+                (1,'Alliance Capital Mutual Fund',True),
+                (80,'Angel One Mutual Fund',True),
                 (53,'Axis Mutual Fund',True),
-                (75,'Bajaj Finserv Mutual Fund',False),
+                (75,'Bajaj Finserv Mutual Fund',True),
                 (48,'Bandhan Mutual Fund',True),
-                (46,'Bank of India Mutual Fund',False),
+                (46,'Bank of India Mutual Fund',True),
                 (4,'Baroda BNP Paribas Mutual Fund',True),
-                (36,'Benchmark Mutual Fund',False),
-                (59,'BNP Paribas Mutual Fund',False),
+                (36,'Benchmark Mutual Fund',True),
+                (59,'BNP Paribas Mutual Fund',True),
                 (32,'Canara Robeco Mutual Fund',True),
-                (60,'Daiwa Mutual Fund',False),
-                (31,'DBS Chola Mutual Fund',False),
-                (38,'Deutsche Mutual Fund',False),
+                (81,'Capitalmind Mutual Fund',True),
+                (84,'Choice Mutual Fund',True),
+                (60,'Daiwa Mutual Fund',True),
+                (31,'DBS Chola Mutual Fund',True),
+                (38,'Deutsche Mutual Fund',True),
                 (6,'DSP Mutual Fund',True),
                 (47,'Edelweiss Mutual Fund',True),
-                (40,'Fidelity Mutual Fund',False),
-                (51,'Fortis Mutual Fund',False),
+                (40,'Fidelity Mutual Fund',True),
+                (51,'Fortis Mutual Fund',True),
                 (27,'Franklin Templeton Mutual Fund',True),
-                (8,'GIC Mutual Fund',False),
-                (49,'Goldman Sachs Mutual Fund',False),
+                (8,'GIC Mutual Fund',True),
+                (49,'Goldman Sachs Mutual Fund',True),
                 (63,'Groww Mutual Fund',True),
                 (9,'HDFC Mutual Fund',True),
-                (76,'Helios Mutual Fund',False),
+                (76,'Helios Mutual Fund',True),
                 (37,'HSBC Mutual Fund',True),
                 (20,'ICICI Prudential Mutual Fund',True),
-                (57,'IDBI Mutual Fund',False),
-                (11,'IL&S Mutual Fund',False),
-                (65,'IL&FS Mutual Fund (IDF)',False),
-                (14,'ING Mutual Fund',False),
+                (57,'IDBI Mutual Fund',True),
+                (11,'IL&FS Mutual Fund',True),
+                (65,'IL&FS Mutual Fund (IDF)',True),
+                (14,'ING Mutual Fund',True),
                 (42,'Invesco Mutual Fund',True),
-                (70,'ITI Mutual Fund',False),
+                (70,'ITI Mutual Fund',True),
+                (82,'Jio BlackRock Mutual Fund',True),
                 (16,'JM Financial Mutual Fund',True),
-                (43,'JPMorgan Mutual Fund',False),
+                (43,'JPMorgan Mutual Fund',True),
                 (17,'Kotak Mahindra Mutual Fund',True),
-                (56,'L&T Mutual Fund',False),
+                (56,'L&T Mutual Fund',True),
                 (18,'LIC Mutual Fund',True),
                 (69,'Mahindra Manulife Mutual Fund',True),
                 (45,'Mirae Asset Mutual Fund',True),
-                (19,'Morgan Stanley Mutual Fund',False),
+                (19,'Morgan Stanley Mutual Fund',True),
                 (55,'Motilal Oswal Mutual Fund',True),
                 (54,'Navi Mutual Fund',True),
                 (21,'Nippon India Mutual Fund',True),
-                (73,'NJ Mutual Fund',False),
-                (78,'Old Bridge Mutual Fund',False),
-                (58,'PGIM India Mutual Fund',False),
-                (44,'PineBridge Mutual Fund',False),
-                (34,'PNB Mutual Fund',False),
+                (73,'NJ Mutual Fund',True),
+                (78,'Old Bridge Mutual Fund',True),
+                (58,'PGIM India Mutual Fund',True),
+                (44,'PineBridge Mutual Fund',True),
+                (34,'PNB Mutual Fund',True),
                 (64,'PPFAS Mutual Fund',True),
-                (10,'Principal Mutual Fund',False),
+                (10,'Principal Mutual Fund',True),
                 (13,'quant Mutual Fund',True),
                 (41,'Quantum Mutual Fund',True),
-                (74,'Samco Mutual Fund',False),
+                (74,'Samco Mutual Fund',True),
                 (22,'SBI Mutual Fund',True),
-                (52,'Shinsei Mutual Fund',False),
+                (52,'Shinsei Mutual Fund',True),
                 (67,'Shriram Mutual Fund',True),
-                (2,'Standard Chartered Mutual Fund',False),
-                (24,'SUN F&amp;C Mutual Fund',False),
+                (2,'Standard Chartered Mutual Fund',True),
+                (24,'SUN F&C Mutual Fund',True),
                 (33,'Sundaram Mutual Fund',True),
                 (25,'Tata Mutual Fund',True),
                 (26,'Taurus Mutual Fund',True),
-                (72,'Trust Mutual Fund',False),
+                (83,'The Wealth Company Mutual Fund',True),
+                (72,'Trust Mutual Fund',True),
+                (79,'Unifi Mutual Fund',True),
                 (61,'Union Mutual Fund',True),
                 (28,'UTI Mutual Fund',True),
-                (71,'WhiteOak Capital Mutual Fund',False),
-                (77,'Zerodha Mutual Fund',False),
-                (29,'Zurich India Mutual Fund',False)
+                (71,'WhiteOak Capital Mutual Fund',True),
+                (77,'Zerodha Mutual Fund',True),
+                (29,'Zurich India Mutual Fund',True)
 )
 listOfStringsToStrip=[  'Open Ended Schemes ( Balanced )',
                     'Open Ended Schemes ( ELSS )',
@@ -148,12 +155,16 @@ def is_valid_row(row):
 def fetch_nav_history(start_date, end_date, output_dir):
     amfi_url_format = 'https://portal.amfiindia.com/DownloadNAVHistoryReport_Po.aspx?mf={0}&tp=1&frmdt={1}&todt={2}'
     combined_data = ""  # To store all the mutual fund data in a single string
+    # Format dates for the URL
+    formatted_start_date = start_date.strftime("%d-%b-%Y").upper()
+    formatted_end_date = end_date.strftime("%d-%b-%Y").upper()
     
+    logging.info(f"Fetching data from {formatted_start_date} to {formatted_end_date}")
     for mf_code, mf_name, should_download in dictMFCodes:
         if should_download:
             try:
                 
-                final_download_url = amfi_url_format.format(mf_code, start_date, end_date)
+                final_download_url = amfi_url_format.format(mf_code, formatted_start_date, formatted_end_date)
                 logging.info(f"Downloading NAV history for {mf_name} (MF Code: {mf_code})... Url : {final_download_url}")
                 response = requests.get(final_download_url, verify=False)
                 response.raise_for_status()
@@ -218,9 +229,16 @@ def fetch_nav_history(start_date, end_date, output_dir):
             # Remove rows where CLOSE is zero
             df = df[df['CLOSE'] != 0]
             
+            # Keep rows where FULLNAME contains "Direct"
+            # AND drop rows containing IDCW, IDWC, Income Distribution, or Dividend
+            additionalRemoveFilters = "IDCW|IDWC|Income Distribution|Dividend|Bonus|Payout"
+            df = df[
+                df['FULLNAME'].str.contains("Direct", case=False, na=False) &
+                ~df['FULLNAME'].str.contains(additionalRemoveFilters, case=False, na=False)
+]
             # Get the current time in IST
             current_time_ist = datetime.now(ZoneInfo('Asia/Kolkata'))
-            filename = f"{current_time_ist.strftime('%Y-%m-%d')}-MF-BHAVCOPY.CSV"
+            filename = f"{end_date.strftime('%Y-%m-%d')}-MF-BHAVCOPY.CSV"
             file_path = os.path.join(output_dir, filename)
 
             # Write DataFrame to CSV
@@ -236,29 +254,29 @@ def main():
     # Input number of historical days or use default
     global dropboxClient
     try:
-        historical_days = "10" #input("For how many days of data to fetch (Default 30): ")
-        if not historical_days.isdigit():
-            historical_days = 30
-        else:
-            historical_days = int(historical_days)
+        historical_days = 90
         
         # Get the current time in IST
         end_date = datetime.now(ZoneInfo('Asia/Kolkata')).date()
         start_date = end_date - timedelta(days=historical_days)
-        
-        # Format dates for the URL
-        formatted_start_date = start_date.strftime("%d-%b-%Y").upper()
-        formatted_end_date = end_date.strftime("%d-%b-%Y").upper()
-        
-        logging.info(f"Fetching data from {formatted_start_date} to {formatted_end_date}")
         
         # Set output directory
         output_dir = 'MF_NAV_History'
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
+        # Break into 90-day chunks
+        chunk_size = 90
+        current_start = start_date
+
+        while current_start < end_date:
+            current_end = min(current_start + timedelta(days=chunk_size), end_date)
+            print(f"Fetching NAV history from {current_start} to {current_end}...")
+            fetch_nav_history(current_start, current_end, output_dir)
+            current_start = current_end  # move to next chunk
+            
         # Fetch NAV history for specified mutual funds
-        fetch_nav_history(formatted_start_date, formatted_end_date, output_dir)
+        #fetch_nav_history(start_date, end_date, output_dir)
     except:
         logging.info("Mutual Fund NAV History Download Completed.")
         current_ist_time = datetime.now(ZoneInfo('Asia/Kolkata'))
