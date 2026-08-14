@@ -1,0 +1,13 @@
+[Unit]
+Description=Run NBBC Script Mon-Fri at 20:00, 21:00, 22:00, 23:00
+
+[Timer]
+# Multiple times in one day
+OnCalendar=Mon..Fri *-*-* 20:00:00
+OnCalendar=Mon..Fri *-*-* 21:00:00
+OnCalendar=Mon..Fri *-*-* 22:00:00
+OnCalendar=Mon..Fri *-*-* 23:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

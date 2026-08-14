@@ -1,0 +1,9 @@
+[Unit]
+Description=Run vsparse Script every Every Sunday at 1:00 AM IST
+
+[Timer]
+OnCalendar=Sun *-*-* 01:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -254,7 +254,7 @@ def main():
     # Input number of historical days or use default
     global dropboxClient
     try:
-        historical_days = 90
+        historical_days = 15
         
         # Get the current time in IST
         end_date = datetime.now(ZoneInfo('Asia/Kolkata')).date()

@@ -1,0 +1,8 @@
+[Unit]
+Description=Run vsparse Script to Download ValueStocks Data and Build NSE BSE Watchlists with GitHub sync and cleanup
+
+[Service]
+WorkingDirectory=/home/vijay/NBBC
+ExecStart=/bin/bash -c "git fetch origin main && git reset --hard origin/main && git clean -fd && /usr/bin/python3 VSParse.py && && /usr/bin/python3 BuildNseBseWatchList.py"
+StandardOutput=append:/home/pi/vsparse.log
+StandardError=append:/home/pi/vsparse.log
