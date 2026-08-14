@@ -13,8 +13,8 @@ echo "✅ Reloaded the Daemon Services."
 
 # Enable and start all timers
 for timer in ./*.timer; do
-    sudo systemctl enable "$(basename "$timer")"
-    sudo systemctl start "$(basename "$timer")"
+    unit=$(basename "$timer")
+    sudo systemctl enable --now "$unit"
 done
 
 echo "✅ All services and timers deployed successfully."
