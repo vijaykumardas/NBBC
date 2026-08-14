@@ -2,6 +2,7 @@
 Description=Run Mutual Fund Bhavcopy Downloading using MFBC Script with Cleanup
 
 [Service]
+User=vijay
 WorkingDirectory=/home/vijay/NBBC
 ExecStart=/bin/bash -c "git fetch origin main && git reset --hard origin/main && git clean -fd && /usr/bin/python3 MFBC_github.py"
 StandardOutput=append:/home/vijay/NBBC/mfbc.log

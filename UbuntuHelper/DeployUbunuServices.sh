@@ -18,3 +18,7 @@ for timer in ./*.timer; do
 done
 
 echo "✅ All services and timers deployed successfully."
+# to Check if the Services have been deployed and listed correctly use follows.
+# systemctl list-timers | grep mfbc
+# systemctl list-timers | grep nbbc
+# systemctl list-timers | grep vsparse
