@@ -3,6 +3,16 @@
 
 set -e  # Exit on error
 
+LOG_DIR="$HOME/NBBCService_logs"
+
+if [ ! -d "$LOG_DIR" ]; then
+    mkdir -p "$LOG_DIR"
+    echo "✅ Created folder: $LOG_DIR"
+else
+    echo "ℹ️ Folder already exists: $LOG_DIR"
+fi
+
+
 # Copy service and timer files to systemd directory
 sudo cp *.service /etc/systemd/system/
 sudo cp *.timer /etc/systemd/system/
