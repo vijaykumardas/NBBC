@@ -195,12 +195,34 @@ def fetch_nav_history(start_date, end_date, output_dir):
             # Create DataFrame from combined_data using StringIO
             data = StringIO(combined_data)
             df = pd.read_csv(data, delimiter=';', header=None,
-                             names=['Scheme Code', 'Scheme Name', 'ISIN Div Payout/ISIN Growth',
-                                    'ISIN Div Reinvestment', 'Net Asset Value', 'Repurchase Price',
-                                    'Sale Price', 'Date'])
-            logging.info(df)
+                             names=['Scheme Code', 'NAV Name', 'Plan','Option','ISIN Div Payout/ISIN Growth',
+                                    'ISIN Div Reinvestment', 'Net Asset Value', 'Date'])
+            raw_file_path = os.path.join(output_dir, "MFBhavcopyRaw.csv")
+            df.to_csv(raw_file_path, index=False, encoding='utf-8')
+            logging.info("\n%s", df.head(40).to_string(index=False))
+           # Define valid (Plan, Option) pairs
+            valid_combos = [
+                ("Regular", "Direct"),
+                ("Direct Plan", "(Growth)"),
+                ("Direct Plan", "Cumulative"),
+                ("Direct Plan", "Direct Growth"),
+                ("Direct Plan", "Growth"),
+                ("Direct Plan", "GROWTH Option"),
+                ("Direct Plan", "Growth Option Option"),
+                ("Direct Plan", "Growth Option"),
+                ("Direct Plan", "Growth ")
+            ]
+
+            # Filter DataFrame by matching tuples
+            df = df[df[['Plan', 'Option']].apply(tuple, axis=1).isin(valid_combos)]
+
+            # Log neatly formatted table
+            logging.info("\n%s", df.head(10).to_string(index=False))
+
+
+
             # Keep only required columns and rename them
-            df = df[['Scheme Code', 'Scheme Name', 'Net Asset Value', 'Date']]
+            df = df[['Scheme Code', 'NAV Name', 'Net Asset Value', 'Date']]
             df.columns = ['TICKER', 'FULLNAME', 'CLOSE', 'DATE_YMD']
 
             # Convert DATE_YMD to YYYYMMDD format
@@ -231,11 +253,11 @@ def fetch_nav_history(start_date, end_date, output_dir):
             
             # Keep rows where FULLNAME contains "Direct"
             # AND drop rows containing IDCW, IDWC, Income Distribution, or Dividend
-            additionalRemoveFilters = "IDCW|IDWC|Income Distribution|Dividend|Bonus|Payout"
-            df = df[
-                df['FULLNAME'].str.contains("Direct", case=False, na=False) &
-                ~df['FULLNAME'].str.contains(additionalRemoveFilters, case=False, na=False)
-]
+            #additionalRemoveFilters = "IDCW|IDWC|Income Distribution|Dividend|Bonus|Payout"
+            #df = df[
+            #    df['FULLNAME'].str.contains("Direct", case=False, na=False) &
+            #    ~df['FULLNAME'].str.contains(additionalRemoveFilters, case=False, na=False)
+            #    ]
             # Get the current time in IST
             current_time_ist = datetime.now(ZoneInfo('Asia/Kolkata'))
             filename = f"{end_date.strftime('%Y-%m-%d')}-MF-BHAVCOPY.CSV"
@@ -291,4 +313,8 @@ dropBoxClient=0
 if __name__ == "__main__":
     load_dotenv()
     dropBoxClient=DropboxClient()
+    # Configure pandas display so columns don't get cut off
+    pd.set_option('display.max_columns', None)   # show all columns
+    pd.set_option('display.width', None)        # auto-fit width
+    pd.set_option('display.colheader_justify', 'center')  # center headers
     main()
