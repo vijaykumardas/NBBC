@@ -206,6 +206,7 @@ def fetch_nav_history(start_date, end_date, output_dir):
                 ("Direct Plan", "(Growth)"),
                 ("Direct Plan", "Cumulative"),
                 ("Direct Plan", "Direct Growth"),
+                ("Direct Plan", "GROWTH"),
                 ("Direct Plan", "Growth"),
                 ("Direct Plan", "GROWTH Option"),
                 ("Direct Plan", "Growth Option Option"),
