@@ -9,6 +9,8 @@ from io import StringIO
 import zipfile
 from datetime import datetime, timedelta
 from DropboxClient import DropboxClient
+import numpy as np
+import json
 class BseHelper:
     def __init__(self):
         self.session = requests.Session()
@@ -17,7 +19,7 @@ class BseHelper:
         self.headers = {
             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "origin": "https://www.bseindia.com",
-            "referer": "https://www.bseindia.com/",
+            "referer": "https://api.bseindia.com/BseIndiaAPI/api/ListofScripData_new/w?Group=&Scripcode=&segment=EQT0&status=Active&scripName=",
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
         }
         self.logger = logging.getLogger(__name__)
@@ -132,18 +134,45 @@ class BseHelper:
     def GetAllBseScrips(self):
         """Fetch combined BSE scrips from both Equity and EQT0 segments and return a filtered DataFrame with additional info."""
         """ Incase of any issue to diagnose the API Please visit https://www.bseindia.com/corporates/List_Scrips.html"""
+        mode="json" #csv | json | api
+        self.logger.info("Using Mode = " + mode + " For GetAllBseScrips")
+        if mode == "csv":
+            df1_T_Plus_0 = pd.read_csv("EQT0.csv",usecols=["Security Code", "Issuer Name", "Security Id", "Security Name", "Status", "Group", "Face Value", "ISIN No", "Instrument"])
+            df2_T_Plus_1 = pd.read_csv("Equity.csv",usecols=["Security Code", "Issuer Name", "Security Id", "Security Name", "Status", "Group", "Face Value", "ISIN No", "Instrument"])
+            self.logger.info(df1_T_Plus_0.columns)
+            self.logger.info(df2_T_Plus_1.columns)
+            df1_T_Plus_0.columns = ['SCRIP_CD','Issuer_Name','scrip_id','Scrip_Name','Status','Group','FACE_VALUE','ISIN_NUMBER','Segment']
+            df2_T_Plus_1.columns = ['SCRIP_CD','Issuer_Name','scrip_id','Scrip_Name','Status','Group','FACE_VALUE','ISIN_NUMBER','Segment']
+            df1_T_Plus_0['Mktcap'] = 0
+            df2_T_Plus_1['Mktcap'] = 0
+            df1_T_Plus_0['INDUSTRY'] = np.nan
+            df2_T_Plus_1['INDUSTRY'] = np.nan
+        elif mode == "json":
+            # Load from local JSON files
+            with open("EQT0.json", "r") as f1:
+                data1 = json.load(f1)
+            with open("Equity.json", "r") as f2:
+                data2 = json.load(f2)
+            
+
+            # Convert JSON → DataFrame
+            df1_T_Plus_0 = pd.DataFrame(data1)
+            df2_T_Plus_1 = pd.DataFrame(data2)
+        else:
+            #https://api.bseindia.com/BseIndiaAPI/api/ListofScripData/w?Group=&Scripcode=&segment=Equity&status=Active
+            url1_T_Plus_0 =  "https://api.bseindia.com/BseIndiaAPI/api/ListofScripData_new/w?Group=&Scripcode=&segment=EQT0&status=Active&scripName="
+            url2_T_Plus_1 =  "https://api.bseindia.com/BseIndiaAPI/api/ListofScripData_new/w?Group=&Scripcode=&segment=Equity&status=Active&scripName="
         
-        url1_T_Plus_0 =  "https://api.bseindia.com/BseIndiaAPI/api/ListofScripData/w?Group=&Scripcode=&segment=EQT0&status=Active"
-        url2_T_Plus_1 =  "https://api.bseindia.com/BseIndiaAPI/api/ListofScripData/w?Group=&Scripcode=&segment=Equity&status=Active"
+            df1_T_Plus_0 = self._GetBseScripList(url1_T_Plus_0)
+            df2_T_Plus_1 = self._GetBseScripList(url2_T_Plus_1)
         
-        df1_T_Plus_0 = self._GetBseScripList(url1_T_Plus_0)
-        df2_T_Plus_1 = self._GetBseScripList(url2_T_Plus_1)
+        
         combined_df = pd.concat([df1_T_Plus_0, df2_T_Plus_1], ignore_index=True)
 
         # Filter and rename columns
         filtered_df = combined_df[['SCRIP_CD', 'Scrip_Name', 'ISIN_NUMBER', 'INDUSTRY', 'Mktcap']]
         filtered_df.columns = ['SYMBOL', 'FULLNAME', 'ISIN_NUMBER', 'INDUSTRYNAME', 'MARKETCAP']  # Rename columns
-        
+        filtered_df.to_csv("BseAllScrips_Stage1.csv", index=False)
         other_data_file="2025-10-08-22-43-21-NSE-BSE-IS-ALL-EQ.CSV"
         self.dropboxClient.download_file(f"/nsebsebhavcopy/DailyBhavCopy/{other_data_file}",other_data_file)
         # Load the external CSV file for filling missing INDUSTRYNAME values
