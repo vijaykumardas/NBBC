@@ -91,7 +91,22 @@ class BseHelper:
         """Private method to fetch BSE scrip list from the given URL."""
         try:
             self.logger.info(f"Fetching data from {url}")
-            response = self.session.get(url, headers=self.headers)
+            headers = {
+              'accept': 'application/json, text/plain, */*',
+              'accept-language': 'en-US,en;q=0.6',
+              'origin': 'https://www.bseindia.com',
+              'priority': 'u=1, i',
+              'referer': 'https://www.bseindia.com/',
+              'sec-ch-ua': '"Brave";v="153", "Not_A Brand";v="8", "Chromium";v="153"',
+              'sec-ch-ua-mobile': '?0',
+              'sec-ch-ua-platform': '"Windows"',
+              'sec-fetch-dest': 'empty',
+              'sec-fetch-mode': 'cors',
+              'sec-fetch-site': 'same-site',
+              'sec-gpc': '1',
+              'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36'
+            }
+            response = self.session.get(url, headers=headers)
             response.raise_for_status()  # Raise an exception for any HTTP errors
             data = response.json()
 
@@ -134,7 +149,7 @@ class BseHelper:
     def GetAllBseScrips(self):
         """Fetch combined BSE scrips from both Equity and EQT0 segments and return a filtered DataFrame with additional info."""
         """ Incase of any issue to diagnose the API Please visit https://www.bseindia.com/corporates/List_Scrips.html"""
-        mode="json" #csv | json | api
+        mode="api" #csv | json | api
         self.logger.info("Using Mode = " + mode + " For GetAllBseScrips")
         if mode == "csv":
             df1_T_Plus_0 = pd.read_csv("EQT0.csv",usecols=["Security Code", "Issuer Name", "Security Id", "Security Name", "Status", "Group", "Face Value", "ISIN No", "Instrument"])
