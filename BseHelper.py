@@ -399,6 +399,9 @@ class BseHelper:
                 r = self.session.get(Bse_BhavCopy_Url,allow_redirects=True,headers=headers).content
                 bseBhavCopyDf = pd.read_csv(io.StringIO(r.decode('utf-8')))
                 
+                # Filter rows based on SERIES column -- SctySrs
+                bseBhavCopyDf = bseBhavCopyDf[bseBhavCopyDf['SctySrs'].isin(["A", "B","E", "IF","M","MS","MT","P","R","T","TS","W","X","XT","Z","ZP"])]
+                
                 bseBhavCopyDf['TIMESTAMP']=timestampForDF
                 bseBhavCopyDf = bseBhavCopyDf[['FinInstrmId','TIMESTAMP','OpnPric','HghPric','LwPric','ClsPric','TtlTradgVol','FinInstrmNm']]
                 bseBhavCopyDf.columns = ['SYMBOL','TIMESTAMP','OPEN','HIGH','LOW','CLOSE','TOTTRDQTY','FinInstrmNm']
@@ -429,6 +432,8 @@ class BseHelper:
                 self.logger.debug(bseBhavCopyDf.columns)
                 bseBhavCopyDf.columns = ['TICKER','DATE_YMD','OPEN','HIGH','LOW','CLOSE','FinInstrmNm','VOLUME','INDUSTRYNAME','SECTORNAME','AUX2','FULLNAME','ALIAS','ADDRESS','COUNTRY','CURRENCY','OPENINT','AUX1']
                 column_order = ['DATE_YMD','TICKER','FULLNAME','OPEN','HIGH','LOW','CLOSE','VOLUME','INDUSTRYNAME','SECTORNAME','ALIAS','ADDRESS','COUNTRY','CURRENCY','OPENINT','AUX1','AUX2']
+                
+                
                 bseBhavCopyDf=bseBhavCopyDf[column_order]
                 return bseBhavCopyDf
             except Exception as e:

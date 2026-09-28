@@ -200,68 +200,6 @@ def GetMasterNSEData():
     except Exception as e:
         logger.exception("ERROR: An Error Occured while Building the NSE Master Data.")
 
-        
-def GetMasterNSEData_OLD():
-    try:
-        global dropBoxClient
-        temp_dir = tempfile.gettempdir()
-        NseMasterDataForToday=os.path.join(temp_dir, datetime.strftime(datetime.today(),'%Y%m%d-').upper()+'NSEMASTERDATA.csv')
-        NseMasterDataForTodayinDropBox=f"/nsebsebhavcopy/DailyBhavCopy/Temp/{datetime.strftime(datetime.today(),'%Y%m%d-').upper()}NSEMASTERDATA.csv"
-        if( dropBoxClient.file_exists(NseMasterDataForTodayinDropBox)):
-            dropBoxClient.download_file(NseMasterDataForTodayinDropBox,NseMasterDataForToday)
-        file_exists = exists(NseMasterDataForToday)
-        if(file_exists):
-            logger.debug("NSE Master Data File found at :"+NseMasterDataForToday+", Hence no need to Build. Just return the Dataframe")
-        else:
-            df=GetNseEquityListDF()
-            df=df[['SYMBOL','NAME OF COMPANY']]
-            df=df.rename(columns={"NAME OF COMPANY": "FULLNAME"})
-            df=df[~df['SYMBOL'].str.endswith('-RE')]
-            #df=df.iloc[0:10].copy()
-            #df.reset_index(drop=True,inplace=True)
-            df['MACRO'] = 'NOMACRO'
-            df['SECTOR'] = 'NOSECTOR'
-            df['INDUSTRY'] = 'NOINDUSTRY'
-            df['ISSUEDSIZE'] = 0
-            df['FULLMARKETCAP'] = 0.00
-            
-            # Initialize tqdm progress bar
-            #tqdm.pandas(desc="Building NSE Master Data for Stocks")
-            widgets = [' [',progressbar.Timer(format= 'Building NSE Master Data for Stocks: %(elapsed)s'),'] ', progressbar.Bar('*'),' (',progressbar.Counter(format='%(value)02d/%(max_value)d'), ') ',]
-            bar = progressbar.ProgressBar(max_value=len(df),widgets=widgets).start()
-            progressCounter=0
-            # Process each symbol and update DataFrame
-            for index, row in df.iterrows():
-                try:
-                    symbol=row['SYMBOL']
-                    logger.debug("About To Process  SEQ: "+str(progressCounter) + " SYMBOL: "+symbol)
-                    stock_data = GetAdditionalData(symbol)
-                    logger.debug("Retrieved Additional Data for SEQ:  "+str(progressCounter) + " SYMBOL: "+symbol + " Additional Data= " + str(stock_data))
-                    df.at[index, 'MACRO'] = stock_data['MACRO']
-                    df.at[index, 'SECTOR'] = stock_data['SECTOR']
-                    df.at[index, 'INDUSTRY'] = stock_data['INDUSTRY']
-                    df.at[index, 'ISSUEDSIZE'] = stock_data['ISSUEDSIZE']
-                    df.at[index, 'FULLMARKETCAP'] = stock_data['FULLMARKETCAP']
-                    logger.debug("Updated the Additional Data for SEQ: "+str(progressCounter) + " SYMBOL: "+symbol)
-                    logger.debug("Updated Row is : " + str(df.loc[index]))
-                finally:
-                    progressCounter+=1
-                    bar.update(progressCounter)
-                    if(progressCounter % 150 == 0):
-                        global nselive
-                        del nselive
-                        time.sleep(10)
-                        nselive = NSELive()
-                        
-            df.columns = ['SYMBOL','FULLNAME','MACRO','SECTOR','INDUSTRY','ISSUEDSIZE','FULLMARKETCAP']
-            df.to_csv(NseMasterDataForToday, header = True,index = False)
-            logger.debug("NSE Master Data File Saved at :"+NseMasterDataForToday)
-            dropBoxClient.upload_file(NseMasterDataForToday,NseMasterDataForTodayinDropBox)
-        df=pd.read_csv(NseMasterDataForToday)
-        return df
-    except Exception as e:
-        logger.exception("ERROR: An Error Occured while Building the NSE Master Data.")
-
 def DownloadNSEBhavCopy(dateRange):
     for tday in dateRange:
         try:
@@ -304,7 +242,7 @@ def DownloadNSEBhavCopy(dateRange):
                 file_list = zip_file.namelist()
                 with zip_file.open(file_list[0]) as file:
                     nseBhavCopyDf = pd.read_csv(file,parse_dates=['TradDt'])
-                nseBhavCopyDf= nseBhavCopyDf[nseBhavCopyDf.SctySrs.isin(["EQ","BE"])]
+                nseBhavCopyDf= nseBhavCopyDf[nseBhavCopyDf.SctySrs.isin(["EQ","BE","BL","BZ","IV","RR"])]
                 timestampForDF=datetime.strftime(tday,'%Y%m%d')
                 nseBhavCopyDf['TIMESTAMP']=timestampForDF
                 nseBhavCopyDf = nseBhavCopyDf[['TckrSymb','TIMESTAMP','OpnPric','HghPric','LwPric','ClsPric','TtlTradgVol']]
@@ -443,84 +381,6 @@ def BuildNseSectoralAndIndustryBhavCopy():
         logger.exception("ERROR: Error Occured during Building NSE_SECTOR_IND_BHAVCOPY")
         
             
-def GetBSEDeliveryData(date):
-    global bseWebSession
-    logger.debug("Downloading the BSE Delivery Data for the date = " + str(date))
-    try:    
-        Bse_Delivery_Data_UrlFormat="https://www.bseindia.com/BSEDATA/gross/{year}/SCBSEALL{ddmm}.zip"
-                                   # https://www.bseindia.com/BSEDATA/gross/2023/SCBSEALL0509.zip
-        Bse_Delivery_Data_Url=Bse_Delivery_Data_UrlFormat.format(year=datetime.strftime(date,'%Y'),ddmm=datetime.strftime(date,'%d%m'))
-        DeliveryDataFileName_Format="SCBSEALL{ddmm}.TXT"
-        DeliveryDataFileNameInZIP=DeliveryDataFileName_Format.format(ddmm=datetime.strftime(date,'%d%m'))
-        #print(Bse_Delivery_Data_Url)
-        #headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'}
-        logger.debug(" Bse Delivery Data Url : " +  Bse_Delivery_Data_Url)
-        if(isUrlValid(Bse_Delivery_Data_Url)):
-            r = bseWebSession.get(Bse_Delivery_Data_Url,allow_redirects=True,headers=headers)
-            unzipcsvfile= zipfile.ZipFile(io.BytesIO(r.content))
-            #print(BhavCopyFileNameinZIP)
-            bseDeliveryDf = pd.read_csv(unzipcsvfile.open(DeliveryDataFileNameInZIP),sep='|')
-            bseDeliveryDf.columns = bseDeliveryDf.columns.str.replace('`', '\'')
-            bseDeliveryDf=bseDeliveryDf.rename(columns={"DATE": "TIMESTAMP",'SCRIP CODE':'SYMBOL','DELIVERY QTY':'TOTTRDQTY','DELIVERY VAL':'DELIVERY_VAL','DAY\'S VOLUME':'DAYSVOLUME','DAY\'S TURNOVER':'DAYSTURNOVER','DELV. PER.':'DELVPER'})
-            bseDeliveryDf.drop(['TIMESTAMP','DELIVERY_VAL','DAYSVOLUME','DAYSTURNOVER','DELVPER'],inplace=True, axis=1)
-            logger.debug("Downloading the BSE Delivery Data for the date = " + str(date)+ " has been Successful and returned the Result.")
-            return bseDeliveryDf
-    except Exception as e:
-        logger.debug("ERROR: An Exception Occured Details = "+str(e))
-        
-def DownloadBSEBhavCopy(dateRange):
-    global bseWebSession
-    logger.debug("Downloading the BSE BhavCopy for the Date Range : "+str(dateRange))
-    for tday in dateRange:
-        try:
-            dateForFilename= datetime.strftime(tday,'%Y-%m-%d').upper()
-            Bse_BhavCopy_Url_Format="https://www.bseindia.com/download/BhavCopy/Equity/BhavCopy_BSE_CM_0_0_0_{YYYYMMDD}_F_0000.CSV"
-            YYYYMMDD=datetime.strftime(tday,'%Y%m%d')
-            timestampForDF=datetime.strftime(tday,'%Y%m%d')
-            Bse_BhavCopy_Url=Bse_BhavCopy_Url_Format.format(YYYYMMDD=YYYYMMDD)
-            headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'}
-            
-            if(isUrlValid(Bse_BhavCopy_Url)):
-                #print(Bse_BhavCopy_Url + " Valid Url")
-                r = bseWebSession.get(Bse_BhavCopy_Url,allow_redirects=True,headers=headers).content
-                bseBhavCopyDf = pd.read_csv(io.StringIO(r.decode('utf-8')))
-                
-                bseBhavCopyDf['TIMESTAMP']=timestampForDF
-                print(bseBhavCopyDf)
-                print(bseBhavCopyDf.columns)
-                bseBhavCopyDf = bseBhavCopyDf[['FinInstrmId','TIMESTAMP','OpnPric','HghPric','LwPric','ClsPric','TtlTradgVol','FinInstrmNm']]
-                bseBhavCopyDf.columns = ['SYMBOL','TIMESTAMP','OPEN','HIGH','LOW','CLOSE','TOTTRDQTY','FinInstrmNm']
-                bseDeliveryDf=GetBSEDeliveryData(tday)
-
-                bseBhavCopyDf=bseBhavCopyDf.merge(bseDeliveryDf, on='SYMBOL', how='left')
-                #print(bseBhavCopyDf.columns)
-                bseBhavCopyDf['TOTTRDQTY_y']=bseBhavCopyDf['TOTTRDQTY_y'].fillna(bseBhavCopyDf['TOTTRDQTY_x'])
-                bseBhavCopyDf.drop(['TOTTRDQTY_x'],inplace=True, axis=1)
-                bseBhavCopyDf=bseBhavCopyDf.rename(columns={"TOTTRDQTY_y": "TOTTRDQTY"})
-                bseBhavCopyDf["FULLNAME"]= bseBhavCopyDf['FinInstrmNm'].str.title()
-                bseBhavCopyDf["SECTORNAME"]=''
-                bseBhavCopyDf["INDUSTRYNAME"]=''
-                bseBhavCopyDf["ALIAS"]=''
-                bseBhavCopyDf["ADDRESS"]=''
-                bseBhavCopyDf["COUNTRY"]=''
-                bseBhavCopyDf["CURRENCY"]=''
-                bseBhavCopyDf["OPENINT"]=0
-                bseBhavCopyDf["AUX1"]=0
-                bseBhavCopyDf["AUX2"]=0
-                bseBhavCopyDf.columns = ['TICKER','DATE_YMD','OPEN','HIGH','LOW','CLOSE','VOLUME','FinInstrmNm','FULLNAME','INDUSTRYNAME','SECTORNAME','ALIAS','ADDRESS','COUNTRY','CURRENCY','OPENINT','AUX1','AUX2']
-                column_order = ['DATE_YMD','TICKER','FULLNAME','OPEN','HIGH','LOW','CLOSE','VOLUME','INDUSTRYNAME','SECTORNAME','ALIAS','ADDRESS','COUNTRY','CURRENCY','OPENINT','AUX1','AUX2']
-                bseBhavCopyDf=bseBhavCopyDf[column_order]
-                #filename = dateForFilename + '-BSE-EQ.csv'
-                #bseBhavCopyDf.to_csv(filename, header = True,index = False,date_format='%Y%m%d')
-                #print(datetime.strftime(tday,'%d-%b-%Y').upper() + ":   ==>  "+filename + "   [Done]")
-                #logger.debug("BSE BHAVCOPY for " + datetime.strftime(tday,'%d-%b-%Y').upper() + ":   ==>  "+filename + "   [Done]")
-                return bseBhavCopyDf
-            else:
-                logger.debug("BSE BHAVCOPY for " + datetime.strftime(tday,'%d-%b-%Y').upper() + ":   ==>  No Data. Non-Trading Day " + Bse_BhavCopy_Url)
-                print(datetime.strftime(tday,'%d-%b-%Y').upper() + ":   ==>  No Data. Non-Trading Day " + Bse_BhavCopy_Url)
-        except Exception as e:
-            logger.exception("ERROR: An Exception Occured ")
-
 def DownloadNSEIndexBhavCopy(tday):
     NseIndexfileName="ind_close_all_{0}.csv".format(tday.strftime("%d%m%Y"))
     NseIndexSnapShopUrl="https://nsearchives.nseindia.com/content/indices/{0}".format(NseIndexfileName)
