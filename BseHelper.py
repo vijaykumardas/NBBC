@@ -14,13 +14,15 @@ import json
 class BseHelper:
     def __init__(self):
         self.session = requests.Session()
-        self.base_url_header = "https://api.bseindia.com/BseIndiaAPI/api/ComHeadernew/w?quotetype=EQ&scripcode={scripcode}&seriesid="
+        self.base_url_header = "https://api.bseindia.com/BseIndiaAPI/api/ComHeadernew_par/w?quotetype=&scripcode={scripcode}&seriesid="
         self.base_url_trading = "https://api.bseindia.com/BseIndiaAPI/api/StockTrading/w?flag=&quotetype=EQ&scripcode={scripcode}"
         self.headers = {
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "origin": "https://www.bseindia.com",
-            "referer": "https://api.bseindia.com/BseIndiaAPI/api/ListofScripData_new/w?Group=&Scripcode=&segment=EQT0&status=Active&scripName=",
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
+          'sec-ch-ua-platform': '"Windows"',
+          'Referer': 'https://www.bseindia.com/',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36',
+          'Accept': 'application/json, text/plain, */*',
+          'sec-ch-ua': '"Chromium";v="154", "Brave";v="154", "Not A(Brand";v="99"',
+          'sec-ch-ua-mobile': '?0'
         }
         self.logger = logging.getLogger(__name__)
         self.dropboxClient=DropboxClient()
