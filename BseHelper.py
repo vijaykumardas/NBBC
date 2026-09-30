@@ -164,6 +164,8 @@ class BseHelper:
             df2_T_Plus_1['Mktcap'] = 0
             df1_T_Plus_0['INDUSTRY'] = np.nan
             df2_T_Plus_1['INDUSTRY'] = np.nan
+            df3_Mf_Etf = pd.DataFrame() # To be Handled in future
+            df4_Hybrid = pd.DataFrame() # To be Handled in future
         elif mode == "json":
             # Load from local JSON files
             with open("EQT0.json", "r") as f1:
@@ -175,16 +177,22 @@ class BseHelper:
             # Convert JSON → DataFrame
             df1_T_Plus_0 = pd.DataFrame(data1)
             df2_T_Plus_1 = pd.DataFrame(data2)
+            df3_Mf_Etf = pd.DataFrame() # To be Handled in future
+            df4_Hybrid = pd.DataFrame() # To be Handled in future
         else:
             #https://api.bseindia.com/BseIndiaAPI/api/ListofScripData/w?Group=&Scripcode=&segment=Equity&status=Active
             url1_T_Plus_0 =  "https://api.bseindia.com/BseIndiaAPI/api/ListofScripData_new/w?Group=&Scripcode=&segment=EQT0&status=Active&scripName="
             url2_T_Plus_1 =  "https://api.bseindia.com/BseIndiaAPI/api/ListofScripData_new/w?Group=&Scripcode=&segment=Equity&status=Active&scripName="
+            url3_Mf_Etf   =  "https://api.bseindia.com/BseIndiaAPI/api/ListofScripData_new/w?Group=&Scripcode=&segment=MF&status=Active&scripName="
+            url4_Hybrid   =  "https://api.bseindia.com/BseIndiaAPI/api/ListofScripData_new/w?Group=&Scripcode=&segment=HS&status=Active&scripName="
         
             df1_T_Plus_0 = self._GetBseScripList(url1_T_Plus_0)
             df2_T_Plus_1 = self._GetBseScripList(url2_T_Plus_1)
+            df3_Mf_Etf   = self._GetBseScripList(url3_Mf_Etf)
+            df4_Hybrid   = self._GetBseScripList(url4_Hybrid)
         
         
-        combined_df = pd.concat([df1_T_Plus_0, df2_T_Plus_1], ignore_index=True)
+        combined_df = pd.concat([df1_T_Plus_0, df2_T_Plus_1, df3_Mf_Etf, df4_Hybrid], ignore_index=True)
 
         # Filter and rename columns
         filtered_df = combined_df[['SCRIP_CD', 'Scrip_Name', 'ISIN_NUMBER', 'INDUSTRY', 'Mktcap']]

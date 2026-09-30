@@ -95,24 +95,58 @@ def GetValueStockInputFile() -> str | None:
 def GetNseEquityListDF():
     try:    
         NSE_Equity_List_csv_url="https://nsearchives.nseindia.com/content/equities/EQUITY_L.csv"
+        NSE_ETF_List_csv_url = "https://nsearchives.nseindia.com/content/equities/eq_etfseclist.csv"
+        NSE_INVIT_List_csv_url = "https://nsearchives.nseindia.com/content/equities/INVITS_L.csv"
+        NSE_REIT_List_csv_url = "https://nsearchives.nseindia.com/content/equities/REITS_L.csv"
         temp_dir = tempfile.gettempdir()
         nse_Master_Equity_List_File=os.path.join(temp_dir, datetime.strftime(datetime.today(),'%Y%m%d-').upper()+'NSE_EQUITY_L.csv')
-        file_exists = exists(nse_Master_Equity_List_File)
-        if(file_exists):
-            logger.debug("NSE Equity List File found at :"+nse_Master_Equity_List_File)
-            df=pd.read_csv(nse_Master_Equity_List_File)
-            return df
-        else:
-            logger.debug("NSE Equity List File not found at :"+nse_Master_Equity_List_File+". Hence Downloading")
-            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
-            req = requests.get(NSE_Equity_List_csv_url,headers=headers)
-            url_content = req.content
-            csv_file = open(nse_Master_Equity_List_File, 'wb')
-            csv_file.write(url_content)
-            csv_file.close()
-            logger.debug("NSE Equity List File Saved at :"+nse_Master_Equity_List_File)
-            df=pd.read_csv(nse_Master_Equity_List_File)
-            return df
+        nse_Master_Etf_List_File=os.path.join(temp_dir, datetime.strftime(datetime.today(),'%Y%m%d-').upper()+'NSE_eq_etfseclist.csv')
+        nse_Master_Invit_List_File=os.path.join(temp_dir, datetime.strftime(datetime.today(),'%Y%m%d-').upper()+'NSE_INVITS_L.csv')
+        nse_Master_Reit_List_File=os.path.join(temp_dir, datetime.strftime(datetime.today(),'%Y%m%d-').upper()+'NSE_REITS_L.csv')
+
+        logger.debug("NSE Equity List File not found at :"+nse_Master_Equity_List_File+". Hence Downloading")
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
+        req = requests.get(NSE_Equity_List_csv_url,headers=headers)
+        url_content = req.content
+        csv_file = open(nse_Master_Equity_List_File, 'wb')
+        csv_file.write(url_content)
+        csv_file.close()
+        logger.debug("NSE Equity List File Saved at :"+nse_Master_Equity_List_File)
+        dfEquity=pd.read_csv(nse_Master_Equity_List_File)
+        
+        #2. Handing ETFS
+        reqEtfInfo=requests.get(NSE_ETF_List_csv_url,headers=headers)
+        url_content = reqEtfInfo.content
+        csv_file = open(nse_Master_Etf_List_File, 'wb')
+        csv_file.write(url_content)
+        csv_file.close()
+        logger.debug("NSE ETF List File Saved at :"+nse_Master_Etf_List_File)
+        dfEtf=pd.read_csv(nse_Master_Etf_List_File)
+        dfEtf.columns=['SYMBOL','NAME OF COMPANY','SERIES','DATE OF LISTING','MARKET LOT','ISIN NUMBER','FACE VALUE','ETF Underlying','Underlying Key']
+        dfEtf['PAID UP VALUE']=0
+        dfEtf=dfEtf[['SYMBOL','NAME OF COMPANY','SERIES','DATE OF LISTING','PAID UP VALUE','MARKET LOT','ISIN NUMBER','FACE VALUE']]
+        
+        #3. Handling INVITS
+        reqInvItInfo=requests.get(NSE_INVIT_List_csv_url,headers=headers)
+        url_content = reqInvItInfo.content
+        csv_file = open(nse_Master_Invit_List_File, 'wb')
+        csv_file.write(url_content)
+        csv_file.close()
+        logger.debug("NSE INVIT List File Saved at :"+nse_Master_Invit_List_File)
+        dfInvIt=pd.read_csv(nse_Master_Invit_List_File)
+        
+        #4. Handling REITS
+        reqReitInfo=requests.get(NSE_REIT_List_csv_url,headers=headers)
+        url_content = reqReitInfo.content
+        csv_file = open(nse_Master_Reit_List_File, 'wb')
+        csv_file.write(url_content)
+        csv_file.close()
+        logger.debug("NSE ETF List File Saved at :"+nse_Master_Reit_List_File)
+        dfReit=pd.read_csv(nse_Master_Reit_List_File)
+        
+        finaldf=pd.concat([dfEquity, dfEtf, dfInvIt, dfReit], ignore_index=True)
+        finaldf.to_csv("NseAllScrips.csv", index=False)
+        return finaldf
     except Exception as e:
         logger.exception("ERROR Occured  having the details as : ")
 
