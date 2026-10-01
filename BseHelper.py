@@ -193,6 +193,10 @@ class BseHelper:
         
         
         combined_df = pd.concat([df1_T_Plus_0, df2_T_Plus_1, df3_Mf_Etf, df4_Hybrid], ignore_index=True)
+        
+        # Clean up the Dataset and Remove the duplicate entries.
+        combined_df = combined_df.drop_duplicates(subset=['ISIN_NUMBER', 'SYMBOL'], keep='first')
+
 
         # Filter and rename columns
         filtered_df = combined_df[['SCRIP_CD', 'Scrip_Name', 'ISIN_NUMBER', 'INDUSTRY', 'Mktcap']]
