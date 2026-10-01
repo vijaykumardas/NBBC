@@ -193,9 +193,9 @@ class BseHelper:
         
         
         combined_df = pd.concat([df1_T_Plus_0, df2_T_Plus_1, df3_Mf_Etf, df4_Hybrid], ignore_index=True)
-        
+        # logging.debug(combined_df.columns)
         # Clean up the Dataset and Remove the duplicate entries.
-        combined_df = combined_df.drop_duplicates(subset=['ISIN_NUMBER', 'SYMBOL'], keep='first')
+        combined_df = combined_df.drop_duplicates(subset=['SCRIP_CD', 'ISIN_NUMBER'], keep='first')
 
 
         # Filter and rename columns
@@ -251,6 +251,9 @@ class BseHelper:
         filtered_df['SECTORNAME'] = filtered_df['SECTORNAME'].astype('string')
         filtered_df['MACRONAME'] = filtered_df['MACRONAME'].astype('string')
         filtered_df['MARKETCAP'] = filtered_df['MARKETCAP'].astype('float64')
+
+        filtered_df = filtered_df.dropna(subset=['INDUSTRYNAME','SECTORNAME','MACRONAME'])
+        filtered_df = filtered_df.drop_duplicates(subset='ISIN_NUMBER', keep='last')
 
         filtered_df.to_csv("BseAllScrips.csv", index=False)
         # Combine the DataFrames
